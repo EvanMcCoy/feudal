@@ -36,6 +36,7 @@ public class Configuration {
 		public String insufficientPermission;
 		public String alreadyInAKingdom;
 		public String notInAKingdom;
+		public String notAPlayer;
 		
 		public String kingdomCreate;
 		public String alreadyAKingdom;
@@ -45,6 +46,16 @@ public class Configuration {
 		public String fiefCreate;
 		public String alreadyAFief;
 		public String fiefDisband;
+		public String notAFief;
+		public String setFiefBaron;
+		public String setFiefBaroness;
+		
+		public String notKingdomLand;
+		public String landAlreadyAllocated;
+		public String landNotAllocated;
+		public String allocateLand;
+		public String deallocateLand;
+		public String deallocateAll;
 		
 		public Messages(Feudal plugin) {
 			this.plugin = plugin;

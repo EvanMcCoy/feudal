@@ -17,10 +17,11 @@ public class Fief implements Government {
 	public Church church;
 	
 	public Chunk capital;
+	public List<Chunk> land;
 	
 	private ConfigurationSection dataPath;
 	
-	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Army army, Church church, Chunk capital, ConfigurationSection section) {
+	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Army army, Church church, Chunk capital, List<Chunk> land, ConfigurationSection section) {
 		this.name = name;
 		this.baron = baron;
 		this.baroness = baroness;
@@ -35,6 +36,7 @@ public class Fief implements Government {
 		this.army = army;
 		this.church = church;
 		this.capital = capital;
+		this.land = land;
 		
 		this.dataPath = section;
 	}

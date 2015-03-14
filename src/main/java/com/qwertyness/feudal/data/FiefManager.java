@@ -1,5 +1,6 @@
 package com.qwertyness.feudal.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,8 +45,12 @@ public class FiefManager {
 		Army army = Feudal.getInstance().armyManager.loadArmy(fiefSection);
 		Church church = Feudal.getInstance().churchManager.loadChurch(fiefSection);
 		Chunk capital = Util.toChunk(fiefSection.getString("capital"));
+		List<Chunk> land = new ArrayList<Chunk>();
+		for (String chunkString : fiefSection.getStringList("land")) {
+			land.add(Util.toChunk(chunkString));
+		}
 		
-		return new Fief(name, baron, baroness, peasents, serfs, army, church, capital, fiefSection);
+		return new Fief(name, baron, baroness, peasents, serfs, army, church, capital, land, fiefSection);
 	}
 	
 	public void saveFief(Fief fief) {
@@ -56,6 +61,11 @@ public class FiefManager {
 		fiefSection.set("peasents", Util.toStringList(fief.peasents));
 		fiefSection.set("serfs", Util.toStringList(fief.serfs));
 		fiefSection.set("capital", Util.toString(fief.capital));
+		List<String> land = new ArrayList<String>();
+		for (Chunk chunk : fief.land) {
+			land.add(Util.toString(chunk));
+		}
+		fiefSection.set("land", land);
 		Feudal.getInstance().armyManager.saveArmy(fief.army);
 		Feudal.getInstance().churchManager.saveChurch(fief.church);
 	}
@@ -63,5 +73,20 @@ public class FiefManager {
 	public void deleteFief(Kingdom kingdom, Fief fief) {
 		Feudal.getInstance().fiefData.get().set(fief.getDataPath().getCurrentPath(), null);
 		kingdom.fiefs.remove(fief);
+	}
+	
+	public Fief getLandOwner(Chunk chunk) {
+		for (Kingdom kingdom : Feudal.getInstance().kingdomManager.kingdoms) {
+			for (Fief fief : kingdom.fiefs) {
+				for (Chunk testChunk : fief.land) {
+					if (chunk.getWorld().getName().equals(testChunk.getWorld().getName()) &&
+							chunk.getX() == testChunk.getX() &&
+							chunk.getZ() == testChunk.getZ()) {
+						return fief;
+					}
+				}	
+			}
+		}
+		return null;
 	}
 }

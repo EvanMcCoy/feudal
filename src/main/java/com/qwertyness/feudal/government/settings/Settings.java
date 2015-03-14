@@ -65,16 +65,16 @@ public class Settings {
 		}
 		
 		public void addKingdomPosition(String position) {
-			this.kingdomPositions.put(position, this);
+			kingdomPositions.put(position, this);
 		}
 		public void addFiefPosition(String position) {
-			this.fiefPositions.put(position, this);
+			fiefPositions.put(position, this);
 		}
 		public void addChurchPosition(String position) {
-			this.churchPositions.put(position, this);
+			churchPositions.put(position, this);
 		}
 		public void addArmyPosition(String position) {
-			this.armyPositions.put(position, this);
+			armyPositions.put(position, this);
 		}
 		
 		//Kingdom positions

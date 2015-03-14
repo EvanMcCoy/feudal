@@ -127,4 +127,17 @@ public class KingdomManager {
 			this.saveKingdom(kingdom);
 		}
 	}
+	
+	public Kingdom getLandOwner(Chunk chunk) {
+		for (Kingdom kingdom : this.kingdoms) {
+			for (Chunk testChunk : kingdom.land) {
+				if (chunk.getWorld().getName().equals(testChunk.getWorld().getName()) &&
+						chunk.getX() == testChunk.getX() &&
+						chunk.getZ() == testChunk.getZ()) {
+					return kingdom;
+				}
+			}	
+		}
+		return null;
+	}
 }
