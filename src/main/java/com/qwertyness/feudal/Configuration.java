@@ -11,6 +11,7 @@ public class Configuration {
 	public int fortressTax;
 	//In hours
 	public int taxFrequency;
+	public int maxLand;
 	
 	public Messages messages;
 	
@@ -37,11 +38,27 @@ public class Configuration {
 		public String alreadyInAKingdom;
 		public String notInAKingdom;
 		public String notAPlayer;
+		public String invalidIndex;
+		public String listTopStarter;
+		public String listTopEnder;
+		public String listIndexColor;
+		public String listItemColor;
+		public String listBottom;
+		public String autoClaimOn;
+		public String autoClaimOff;
 		
 		public String kingdomCreate;
 		public String alreadyAKingdom;
 		public String kingdomDisunite;
 		public String kingdomDisuniteConfirm;
+		public String setCounterpart;
+		public String setDuke;
+		public String setDuchess;
+		public String setPrince;
+		public String setPrincess;
+		public String addEarl;
+		public String alreadyAnEarl;
+		public String removeEarl;
 		
 		public String fiefCreate;
 		public String alreadyAFief;
@@ -56,6 +73,17 @@ public class Configuration {
 		public String allocateLand;
 		public String deallocateLand;
 		public String deallocateAll;
+		public String alreadyCapital;
+		public String setCapital;
+		public String alreadyAFortress;
+		public String notAFortress;
+		public String addFortress;
+		public String removeFortress;
+		public String landAlreadyClaimed;
+		public String claimLand;
+		public String cannotUnclaimCapital;
+		public String cannotUnclaimFortress;
+		public String unclaimLand;
 		
 		public Messages(Feudal plugin) {
 			this.plugin = plugin;

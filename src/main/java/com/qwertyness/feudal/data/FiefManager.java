@@ -77,15 +77,23 @@ public class FiefManager {
 	
 	public Fief getLandOwner(Chunk chunk) {
 		for (Kingdom kingdom : Feudal.getInstance().kingdomManager.kingdoms) {
-			for (Fief fief : kingdom.fiefs) {
-				for (Chunk testChunk : fief.land) {
-					if (chunk.getWorld().getName().equals(testChunk.getWorld().getName()) &&
-							chunk.getX() == testChunk.getX() &&
-							chunk.getZ() == testChunk.getZ()) {
-						return fief;
-					}
-				}	
+			Fief fief = getLandOwner(kingdom, chunk);
+			if (fief != null) {
+				return fief;
 			}
+		}
+		return null;
+	}
+	
+	public Fief getLandOwner(Kingdom kingdom, Chunk chunk) {
+		for (Fief fief : kingdom.fiefs) {
+			for (Chunk testChunk : fief.land) {
+				if (chunk.getWorld().getName().equals(testChunk.getWorld().getName()) &&
+						chunk.getX() == testChunk.getX() &&
+						chunk.getZ() == testChunk.getZ()) {
+					return fief;
+				}
+			}	
 		}
 		return null;
 	}

@@ -5,7 +5,8 @@ import java.util.HashMap;
 public class Settings {
 	public GovernmentPermission buildPermission = GovernmentPermission.CIVILIAN;
 	public GovernmentPermission control = GovernmentPermission.MONARCH;
-	public GovernmentPermission manage = GovernmentPermission.ROYALTY;
+	public GovernmentPermission administrate = GovernmentPermission.ROYALTY;
+	public GovernmentPermission manage = GovernmentPermission.DEPUTY;
 	
 	public static void inizializeDefaultPositions() {
 		//Kingdom positions

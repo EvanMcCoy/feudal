@@ -1,5 +1,6 @@
 package com.qwertyness.feudal;
 
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.qwertyness.feudal.data.ArmyManager;
@@ -11,6 +12,8 @@ import com.qwertyness.feudal.data.KingdomManager;
 import com.qwertyness.feudal.data.MessageData;
 import com.qwertyness.feudal.data.PlayerData;
 import com.qwertyness.feudal.data.PlayerManager;
+import com.qwertyness.feudal.listener.BuildListener;
+import com.qwertyness.feudal.listener.ChunkListener;
 
 public class Feudal extends JavaPlugin {
 	private static Feudal instance;
@@ -41,6 +44,11 @@ public class Feudal extends JavaPlugin {
 		this.armyManager = new ArmyManager();
 		this.churchManager = new ChurchManager();
 		this.playerManager = new PlayerManager();
+		
+		//Register listeners
+		PluginManager pm = this.getServer().getPluginManager();
+		pm.registerEvents(new BuildListener(this), this);
+		pm.registerEvents(new ChunkListener(this), this);
 	}
 	
 	public void onDisable() {
