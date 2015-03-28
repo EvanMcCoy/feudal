@@ -5,4 +5,5 @@ import org.bukkit.configuration.ConfigurationSection;
 public interface CivilOrganizer {
 
 	public ConfigurationSection getDataPath();
+	public Bank getBank();
 }

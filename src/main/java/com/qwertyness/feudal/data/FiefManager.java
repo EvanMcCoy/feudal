@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.government.Army;
+import com.qwertyness.feudal.government.Bank;
 import com.qwertyness.feudal.government.Church;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
@@ -42,6 +43,7 @@ public class FiefManager {
 		UUID baroness = (fiefSection.getString("baroness") != null) ? UUID.fromString(fiefSection.getString("baroness")) : null;
 		List<UUID> peasents = Util.toUUIDList(fiefSection.getStringList("peasents"));
 		List<UUID> serfs = Util.toUUIDList(fiefSection.getStringList("serfs"));
+		Bank bank = Feudal.getInstance().bankManager.loadBank(fiefSection);
 		Army army = Feudal.getInstance().armyManager.loadArmy(fiefSection);
 		Church church = Feudal.getInstance().churchManager.loadChurch(fiefSection);
 		Chunk capital = Util.toChunk(fiefSection.getString("capital"));
@@ -50,7 +52,7 @@ public class FiefManager {
 			land.add(Util.toChunk(chunkString));
 		}
 		
-		return new Fief(name, baron, baroness, peasents, serfs, army, church, capital, land, fiefSection);
+		return new Fief(name, baron, baroness, peasents, serfs, bank, army, church, capital, land, fiefSection);
 	}
 	
 	public void saveFief(Fief fief) {
@@ -66,6 +68,7 @@ public class FiefManager {
 			land.add(Util.toString(chunk));
 		}
 		fiefSection.set("land", land);
+		Feudal.getInstance().bankManager.saveBank(fief);
 		Feudal.getInstance().armyManager.saveArmy(fief.army);
 		Feudal.getInstance().churchManager.saveChurch(fief.church);
 	}

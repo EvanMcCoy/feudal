@@ -21,6 +21,7 @@ public class Kingdom implements Government {
 	public UUID duke;
 	public UUID duchess;
 	public List<UUID> earls;
+	public Bank imperialVault;
 	public Army royalArmy;
 	public Church highChurch;
 	public List<Fief> fiefs;
@@ -29,7 +30,7 @@ public class Kingdom implements Government {
 	public List<Chunk> fortresses;
 	public List<Chunk> land;
 	
-	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Army army, Church church, List<Fief> fiefs, Chunk capital, List<Chunk> fortresses, List<Chunk> land, ConfigurationSection section) {
+	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, List<Chunk> fortresses, List<Chunk> land, ConfigurationSection section) {
 		this.name = name;
 		this.king = king;
 		this.queen = queen;
@@ -41,6 +42,7 @@ public class Kingdom implements Government {
 		if (this.earls == null) {
 			this.earls = new ArrayList<UUID>();
 		}
+		this.imperialVault = bank;
 		this.royalArmy = army;
 		this.highChurch = church;
 		this.fiefs = fiefs;
@@ -74,5 +76,9 @@ public class Kingdom implements Government {
 
 	public ConfigurationSection getDataPath() {
 		return this.dataPath;
+	}
+	
+	public Bank getBank() {
+		return this.imperialVault;
 	}
 }

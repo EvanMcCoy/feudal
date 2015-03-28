@@ -236,7 +236,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(Configuration.instance.messages.prefix + Configuration.instance.messages.alreadyAFief);
 			return;
 		}
-		Fief fief = new Fief(fiefName, null, null, null, null, null, null, null, null, null);
+		Fief fief = new Fief(fiefName, null, null, null, null, null, null, null, null, null, null);
 		if (plugin.playerManager.isPlayer(player.getUniqueId())) {
 			if (plugin.playerManager.getPlayer(player.getUniqueId()).male) {
 				fief.baron = player.getUniqueId();

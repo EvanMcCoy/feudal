@@ -13,6 +13,7 @@ public class Fief implements Government {
 	public UUID baroness;
 	public List<UUID> peasents;
 	public List<UUID> serfs;
+	public Bank bank;
 	public Army army;
 	public Church church;
 	
@@ -21,7 +22,7 @@ public class Fief implements Government {
 	
 	private ConfigurationSection dataPath;
 	
-	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Army army, Church church, Chunk capital, List<Chunk> land, ConfigurationSection section) {
+	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, List<Chunk> land, ConfigurationSection section) {
 		this.name = name;
 		this.baron = baron;
 		this.baroness = baroness;
@@ -33,6 +34,7 @@ public class Fief implements Government {
 		if (this.serfs == null) {
 			this.serfs = new ArrayList<UUID>();
 		}
+		this.bank = bank;
 		this.army = army;
 		this.church = church;
 		this.capital = capital;
@@ -55,5 +57,9 @@ public class Fief implements Government {
 
 	public ConfigurationSection getDataPath() {
 		return this.dataPath;
+	}
+	
+	public Bank getBank() {
+		return this.bank;
 	}
 }

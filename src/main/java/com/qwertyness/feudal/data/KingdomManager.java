@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.government.Army;
+import com.qwertyness.feudal.government.Bank;
 import com.qwertyness.feudal.government.Church;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
@@ -65,6 +66,7 @@ public class KingdomManager {
 		UUID duke = (kingdomSection.getString("duke") != null) ? UUID.fromString(kingdomSection.getString("duke")) : null;
 		UUID duchess = (kingdomSection.getString("duchess") != null) ? UUID.fromString(kingdomSection.getString("duchess")) : null;
 		List<UUID> earls = Util.toUUIDList(kingdomSection.getStringList("earls"));
+		Bank bank = Feudal.getInstance().bankManager.loadBank(kingdomSection);
 		Army army = Feudal.getInstance().armyManager.loadArmy(kingdomSection);
 		Church church = Feudal.getInstance().churchManager.loadChurch(kingdomSection);
 		List<Fief> fiefs = new ArrayList<Fief>();
@@ -82,7 +84,7 @@ public class KingdomManager {
 			land.add(Util.toChunk(string));
 		}
 		
-		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, army, church, fiefs, capital, fortresses, land, kingdomSection);
+		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, fortresses, land, kingdomSection);
 	}
 	
 	public void saveKingdom(Kingdom kingdom) {
@@ -96,6 +98,7 @@ public class KingdomManager {
 		kingdomSection.set("duke", kingdom.duke.toString());
 		kingdomSection.set("dutchess", kingdom.duchess.toString());
 		kingdomSection.set("earls", Util.toStringList(kingdom.earls));
+		Feudal.getInstance().bankManager.saveBank(kingdom);
 		Feudal.getInstance().armyManager.saveArmy(kingdom.royalArmy);
 		Feudal.getInstance().churchManager.saveChurch(kingdom.highChurch);
 		List<String> fiefs = new ArrayList<String>();

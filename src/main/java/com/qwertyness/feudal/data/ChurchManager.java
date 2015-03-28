@@ -5,7 +5,9 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.Util;
+import com.qwertyness.feudal.government.Bank;
 import com.qwertyness.feudal.government.Church;
 
 public class ChurchManager {
@@ -15,8 +17,9 @@ public class ChurchManager {
 		
 		UUID pope = (section.getString("pope") != null) ? UUID.fromString(section.getString("pope")) : null;
 		List<UUID> abbots = Util.toUUIDList(section.getStringList("abbots"));
+		Bank bank = Feudal.getInstance().bankManager.loadBank(section);
 		
-		return new Church(pope, abbots, section);
+		return new Church(pope, abbots, bank, section);
 	}
 	
 	public void saveChurch(Church church) {
@@ -24,5 +27,6 @@ public class ChurchManager {
 		
 		section.set("pope", church.pope.toString());
 		section.set("abbots", Util.toStringList(church.abbots));
+		Feudal.getInstance().bankManager.saveBank(church);
 	}
 }

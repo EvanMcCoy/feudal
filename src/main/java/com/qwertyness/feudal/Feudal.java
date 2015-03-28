@@ -4,6 +4,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.qwertyness.feudal.data.ArmyManager;
+import com.qwertyness.feudal.data.BankManager;
 import com.qwertyness.feudal.data.ChurchManager;
 import com.qwertyness.feudal.data.FiefData;
 import com.qwertyness.feudal.data.FiefManager;
@@ -25,6 +26,7 @@ public class Feudal extends JavaPlugin {
 	
 	public KingdomManager kingdomManager;
 	public FiefManager fiefManager;
+	public BankManager bankManager;
 	public ArmyManager armyManager;
 	public ChurchManager churchManager;
 	public PlayerManager playerManager;
@@ -41,6 +43,7 @@ public class Feudal extends JavaPlugin {
 		
 		this.kingdomManager = new KingdomManager();
 		this.fiefManager = new FiefManager();
+		this.bankManager = new BankManager();
 		this.armyManager = new ArmyManager();
 		this.churchManager = new ChurchManager();
 		this.playerManager = new PlayerManager();
