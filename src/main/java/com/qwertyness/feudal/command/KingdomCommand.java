@@ -19,13 +19,16 @@ import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
+import com.qwertyness.feudal.listener.ChunkListener;
 
 public class KingdomCommand implements CommandExecutor {
 	private Feudal plugin;
+	public static KingdomCommand instance;
 	private List<String> openDisuniteQueries = new ArrayList<String>();
 	
 	public KingdomCommand(Feudal plugin) {
 		this.plugin = plugin;
+		instance = this;
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
@@ -182,7 +185,7 @@ public class KingdomCommand implements CommandExecutor {
 			}
 		}
 		
-		Kingdom kingdom = new Kingdom(kingdomName, null, null, null, null, null, null, null, null, null, null, null, null, null, 
+		Kingdom kingdom = new Kingdom(kingdomName, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 
 				plugin.kingdomData.get().getConfigurationSection(kingdomName));
 		if (plugin.playerManager.isPlayer(player.getUniqueId())) {
 			if (plugin.playerManager.getPlayer(player.getUniqueId()).male) {
@@ -706,6 +709,14 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void autoClaim(Player player) {
-		
+		if (ChunkListener.activeAutoclaim.contains(player.getUniqueId().toString())) {
+			ChunkListener.activeAutoclaim.remove(player.getUniqueId().toString());
+			player.sendMessage(Configuration.instance.messages.prefix + Configuration.instance.messages.autoClaimOff);
+		}
+		else {
+			ChunkListener.activeAutoclaim.add(player.getUniqueId().toString());
+			claim(player);
+			player.sendMessage(Configuration.instance.messages.prefix + Configuration.instance.messages.autoClaimOn);
+		}
 	}
 }

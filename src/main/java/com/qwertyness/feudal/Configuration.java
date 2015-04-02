@@ -1,5 +1,7 @@
 package com.qwertyness.feudal;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 
 public class Configuration {
@@ -10,7 +12,7 @@ public class Configuration {
 	public int landTax;
 	public int fortressTax;
 	//In hours
-	public int taxFrequency;
+	public List<Integer> taxTimes;
 	public int maxLand;
 	
 	public Messages messages;
@@ -25,7 +27,7 @@ public class Configuration {
 		allowMultipleTitles = this.plugin.getConfig().getBoolean("allowMultipleTitles");
 		this.landTax = this.plugin.getConfig().getInt("landTax");
 		this.fortressTax = this.plugin.getConfig().getInt("fortressTax");
-		this.taxFrequency = this.plugin.getConfig().getInt("taxFrequency");
+		this.taxTimes = this.plugin.getConfig().getIntegerList("taxTimes");
 		
 		this.messages = new Messages(this.plugin);
 	}
