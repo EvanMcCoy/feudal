@@ -671,6 +671,16 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(Configuration.instance.messages.prefix + Configuration.instance.messages.landAlreadyClaimed);
 			return;
 		}
+		boolean fortressInRange = false;
+		for (Chunk chunk : kingdom.fortresses) {
+			if (Util.toChunkStringList(Util.getChunksInRadius(Configuration.instance.fortressRadius, chunk)).contains(Util.toString(player.getLocation().getChunk()))) {
+				fortressInRange = true;
+			}
+		}
+		if (!fortressInRange) {
+			player.sendMessage(Configuration.instance.messages.prefix + Configuration.instance.messages.noFortressInRange);
+			return;
+		}
 		
 		kingdom.land.add(player.getLocation().getChunk());
 		player.sendMessage(Configuration.instance.messages.prefix + Configuration.instance.messages.claimLand);

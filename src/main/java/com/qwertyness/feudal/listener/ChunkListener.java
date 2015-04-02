@@ -30,7 +30,7 @@ public class ChunkListener implements Listener {
 		}
 		
 		updateLocation(event.getPlayer(), event);
-		
+		attemptClaim(event.getPlayer());
 	}
 	
 	public void updateLocation(Player player, PlayerMoveEvent event) {

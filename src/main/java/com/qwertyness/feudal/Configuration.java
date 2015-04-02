@@ -14,6 +14,7 @@ public class Configuration {
 	//In hours
 	public List<Integer> taxTimes;
 	public int maxLand;
+	public int fortressRadius;
 	
 	public Messages messages;
 	
@@ -82,6 +83,7 @@ public class Configuration {
 		public String addFortress;
 		public String removeFortress;
 		public String landAlreadyClaimed;
+		public String noFortressInRange;
 		public String claimLand;
 		public String cannotUnclaimCapital;
 		public String cannotUnclaimFortress;

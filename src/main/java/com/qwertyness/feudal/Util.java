@@ -1,6 +1,7 @@
 package com.qwertyness.feudal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,6 +47,14 @@ public class Util {
 		return chunk.getWorld().getName() + ";" + chunk.getX() + ";" + chunk.getZ() + ";";
 	}
 	
+	public static List<String> toChunkStringList(List<Chunk> chunks) {
+		List<String> strings = new ArrayList<String>();
+		for (Chunk chunk : chunks) {
+			strings.add(toString(chunk));
+		}
+		return strings;
+	}
+	
 	public static boolean governmentContainsPlayer(Government government, Player player) {
 		String uuid = player.getUniqueId().toString();
 		if (government.getArmy().knight.toString().equals(uuid) ||
@@ -56,6 +65,24 @@ public class Util {
 			return true;
 		}
 		return false;
+	}
+	
+	public static int getChunkRadius(Chunk chunk0, Chunk chunk1) {
+		//Might switch to distance formula
+		 return Math.abs(chunk1.getX()-chunk0.getX()) + Math.abs(chunk1.getZ()-chunk0.getZ());
+	}
+	
+	public static List<Chunk> getChunksInRadius(int radius, Chunk center) {
+		List<Chunk> chunks = Arrays.asList(center);
+		for (int i = 0; i < radius;i++) {
+			for (Chunk chunk : chunks) {
+				chunks.add(chunk.getWorld().getChunkAt(chunk.getX()+1, chunk.getZ()));
+				chunks.add(chunk.getWorld().getChunkAt(chunk.getX()-1, chunk.getZ()));
+				chunks.add(chunk.getWorld().getChunkAt(chunk.getX(), chunk.getZ()+1));
+				chunks.add(chunk.getWorld().getChunkAt(chunk.getX(), chunk.getZ()-1));
+			}
+		}
+		return chunks;
 	}
 	
 	public static Kingdom getKingdom(Player player) {
