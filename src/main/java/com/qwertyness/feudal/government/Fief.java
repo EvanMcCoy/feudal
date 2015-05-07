@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.government.settings.GovernmentSettings;
+
 public class Fief implements Government {
 	public String name;
 	public UUID baron;
@@ -21,6 +23,19 @@ public class Fief implements Government {
 	public List<Chunk> land;
 	
 	private ConfigurationSection dataPath;
+	public GovernmentSettings settings;
+	
+	public Fief(String name, ConfigurationSection section) {
+		this.name = name;
+		this.dataPath = section;
+		this.peasents = new ArrayList<UUID>();
+		this.serfs = new ArrayList<UUID>();
+		this.land = new ArrayList<Chunk>();
+		
+		this.bank = new Bank();
+		this.army = new Army(section.getConfigurationSection("army"));
+		this.church = new Church(section.getConfigurationSection("church"));
+	}
 	
 	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, List<Chunk> land, ConfigurationSection section) {
 		this.name = name;

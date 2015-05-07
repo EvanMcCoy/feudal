@@ -1,5 +1,6 @@
 package com.qwertyness.feudal.government;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,16 +12,25 @@ public class Army implements CivilOrganizer {
 	public List<UUID> soldiers;
 	public Bank bank;
 	
-	public Army(UUID knight, UUID dame, List<UUID> soldiers, Bank bank) {
+	public ConfigurationSection dataPath;
+	
+	public Army(ConfigurationSection section) {
+		this.dataPath = section;
+		
+		this.soldiers = new ArrayList<UUID>();
+	}
+	
+	public Army(UUID knight, UUID dame, List<UUID> soldiers, Bank bank, ConfigurationSection section) {
 		this.knight = knight;
 		this.dame = dame;
 		this.soldiers = soldiers;
 		this.bank = bank;
+		
+		this.dataPath = section;
 	}
 
 	public ConfigurationSection getDataPath() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dataPath;
 	}
 	
 	public Bank getBank() {

@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.Feudal;
-import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.government.Army;
 import com.qwertyness.feudal.government.Bank;
+import com.qwertyness.feudal.util.Util;
 
 public class ArmyManager {
 	
@@ -20,7 +20,7 @@ public class ArmyManager {
 		List<UUID> soldiers = Util.toUUIDList(section.getStringList("soldiers"));
 		Bank bank = Feudal.getInstance().bankManager.loadBank(section);
 		
-		return new Army(knight, dame, soldiers, bank);
+		return new Army(knight, dame, soldiers, bank, section);
 	}
 	
 	public void saveArmy(Army army) {

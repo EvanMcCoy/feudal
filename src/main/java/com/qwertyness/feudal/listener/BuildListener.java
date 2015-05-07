@@ -7,9 +7,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.qwertyness.feudal.Feudal;
-import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
+import com.qwertyness.feudal.util.Util;
 
 public class BuildListener implements Listener {
 	private Feudal plugin;

@@ -8,12 +8,12 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.Feudal;
-import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.government.Army;
 import com.qwertyness.feudal.government.Bank;
 import com.qwertyness.feudal.government.Church;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
+import com.qwertyness.feudal.util.Util;
 
 public class KingdomManager {
 

@@ -1,5 +1,6 @@
 package com.qwertyness.feudal.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,9 +12,7 @@ public class PlayerManager {
 	List<FeudalPlayer> players;
 	
 	public PlayerManager() {
-		for (String uuid : Feudal.getInstance().playerData.get().getKeys(false)) {
-			this.regiseterPlayer(this.loadPlayer(uuid));
-		}
+		players = new ArrayList<FeudalPlayer>();
 	}
 	
 	public FeudalPlayer getPlayer(UUID player) {
@@ -26,7 +25,7 @@ public class PlayerManager {
 	}
 	
 	public boolean isPlayer(UUID player) {
-		return this.getPlayer(player) == null;
+		return this.getPlayer(player) != null;
 	}
 	
 	public void regiseterPlayer(FeudalPlayer player) {
@@ -55,6 +54,8 @@ public class PlayerManager {
 		ConfigurationSection section = player.getDataPath();
 		
 		section.set("gender", player.male);
+		section.set("kingdom", player.kingdom);
+		section.set("fief", player.fief);
 	}
 	
 	public void saveAll() {

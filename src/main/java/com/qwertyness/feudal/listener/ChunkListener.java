@@ -10,10 +10,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.qwertyness.feudal.Configuration;
 import com.qwertyness.feudal.Feudal;
-import com.qwertyness.feudal.Util;
 import com.qwertyness.feudal.command.KingdomCommand;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
+import com.qwertyness.feudal.util.Util;
 
 public class ChunkListener implements Listener {
 	private Feudal plugin;
@@ -38,9 +38,9 @@ public class ChunkListener implements Listener {
 		String fromKingdomName = (fromKingdom == null) ? "" : fromKingdom.getName();
 		Kingdom toKingdom = this.plugin.kingdomManager.getLandOwner(event.getTo().getChunk());
 		String toKingdomName = (toKingdom == null) ? "" : toKingdom.getName();
-		Fief fromFief = this.plugin.fiefManager.getLandOwner(fromKingdom, event.getFrom().getChunk());
+		Fief fromFief = (fromKingdom == null) ? null : this.plugin.fiefManager.getLandOwner(fromKingdom, event.getFrom().getChunk());
 		String fromFiefName = (fromFief == null) ? "" : fromFief.getName();
-		Fief toFief = this.plugin.fiefManager.getLandOwner(toKingdom, event.getFrom().getChunk());
+		Fief toFief = (toKingdom == null) ? null : this.plugin.fiefManager.getLandOwner(toKingdom, event.getFrom().getChunk());
 		String toFiefName = (toFief == null) ? "" : toFief.getName();
 		
 		String kingdomTitle = "";

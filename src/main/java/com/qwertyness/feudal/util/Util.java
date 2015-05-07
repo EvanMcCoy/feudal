@@ -1,4 +1,4 @@
-package com.qwertyness.feudal;
+package com.qwertyness.feudal.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,7 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.qwertyness.feudal.government.Fief;
-import com.qwertyness.feudal.government.Government;
+import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.government.Kingdom;
 
 public class Util {
@@ -55,18 +54,6 @@ public class Util {
 		return strings;
 	}
 	
-	public static boolean governmentContainsPlayer(Government government, Player player) {
-		String uuid = player.getUniqueId().toString();
-		if (government.getArmy().knight.toString().equals(uuid) ||
-				government.getArmy().dame.toString().equals(uuid) ||
-				toStringList(government.getArmy().soldiers).contains(uuid) ||
-				government.getChurch().pope.equals(uuid) ||
-				toStringList(government.getChurch().abbots).contains(uuid)) {
-			return true;
-		}
-		return false;
-	}
-	
 	public static int getChunkRadius(Chunk chunk0, Chunk chunk1) {
 		//Might switch to distance formula
 		 return Math.abs(chunk1.getX()-chunk0.getX()) + Math.abs(chunk1.getZ()-chunk0.getZ());
@@ -86,38 +73,15 @@ public class Util {
 	}
 	
 	public static Kingdom getKingdom(Player player) {
-		List<Kingdom> kingdoms = Feudal.getInstance().kingdomManager.kingdoms;
-		String uuid = player.getUniqueId().toString();
-		for (Kingdom kingdom : kingdoms) {
-			if (kingdom.king.toString().equals(uuid) ||
-					kingdom.queen.toString().equals(uuid) ||
-					kingdom.prince.toString().equals(uuid) ||
-					kingdom.princess.toString().equals(uuid) ||
-					kingdom.duke.toString().equals(uuid) ||
-					kingdom.duchess.toString().equals(uuid) ||
-					toStringList(kingdom.earls).contains(uuid)) {
-				return kingdom;
-			}
-			if (governmentContainsPlayer(kingdom, player)) {
-				return kingdom;
-			}
-			for (Fief fief : kingdom.fiefs) {
-				if (fief.baron.toString().equals(uuid) ||
-						fief.baroness.toString().equals(uuid) ||
-						toStringList(fief.serfs).contains(uuid) ||
-						toStringList(fief.peasents).contains(uuid)) {
-					return kingdom;
-				}
-				if (governmentContainsPlayer(fief, player)) {
-					return kingdom;
-				}
-			}
+		Feudal plugin = Feudal.getInstance();
+		if (plugin.playerManager.isPlayer(player.getUniqueId())) {
+			return plugin.kingdomManager.getKingdom(plugin.playerManager.getPlayer(player.getUniqueId()).kingdom);
 		}
 		return null;
 	}
 	
 	public static boolean isInKingdom(Player player) {
-		return getKingdom(player) == null;
+		return getKingdom(player) != null;
 	}
 	
 	public static String getTitle(Player player, Kingdom kingdom) {

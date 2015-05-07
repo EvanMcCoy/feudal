@@ -1,5 +1,6 @@
 package com.qwertyness.feudal.government;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +13,12 @@ public class Church implements CivilOrganizer {
 	public Bank bank;
 	
 	private ConfigurationSection dataPath;
+	
+	public Church(ConfigurationSection section) {
+		this.dataPath = section;
+		
+		this.abbots = new ArrayList<UUID>();
+	}
 	
 	public Church(UUID pope, List<UUID> abbots, Bank bank, ConfigurationSection section) {
 		this.pope = pope;
