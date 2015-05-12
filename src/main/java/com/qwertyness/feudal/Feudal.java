@@ -12,17 +12,19 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.qwertyness.feudal.command.KingdomCommand;
-import com.qwertyness.feudal.data.ArmyManager;
-import com.qwertyness.feudal.data.BankManager;
-import com.qwertyness.feudal.data.ChurchManager;
 import com.qwertyness.feudal.data.FeudalPlayer;
-import com.qwertyness.feudal.data.FiefData;
-import com.qwertyness.feudal.data.FiefManager;
-import com.qwertyness.feudal.data.KingdomData;
-import com.qwertyness.feudal.data.KingdomManager;
 import com.qwertyness.feudal.data.MessageData;
 import com.qwertyness.feudal.data.PlayerData;
 import com.qwertyness.feudal.data.PlayerManager;
+import com.qwertyness.feudal.data.government.ArmyManager;
+import com.qwertyness.feudal.data.government.BankManager;
+import com.qwertyness.feudal.data.government.ChurchManager;
+import com.qwertyness.feudal.data.government.FiefData;
+import com.qwertyness.feudal.data.government.FiefManager;
+import com.qwertyness.feudal.data.government.KingdomData;
+import com.qwertyness.feudal.data.government.KingdomManager;
+import com.qwertyness.feudal.data.government.LandData;
+import com.qwertyness.feudal.data.government.LandManager;
 import com.qwertyness.feudal.listener.BuildListener;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.listener.TaxExecutor;
@@ -32,11 +34,13 @@ public class Feudal extends JavaPlugin implements Listener {
 	
 	public KingdomData kingdomData;
 	public FiefData fiefData;
+	public LandData landData;
 	public PlayerData playerData;
 	public MessageData messageData;
 	
 	public KingdomManager kingdomManager;
 	public FiefManager fiefManager;
+	public LandManager landManager;
 	public BankManager bankManager;
 	public ArmyManager armyManager;
 	public ChurchManager churchManager;
@@ -48,6 +52,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.saveDefaultConfig();
 		this.kingdomData = new KingdomData(this);
 		this.fiefData = new FiefData(this);
+		this.landData = new LandData(this);
 		this.playerData = new PlayerData(this);
 		this.saveResource("messages.yml", false);
 		this.messageData = new MessageData(this);
@@ -57,6 +62,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		
 		this.kingdomManager = new KingdomManager();
 		this.fiefManager = new FiefManager();
+		this.landManager = new LandManager();
 		this.bankManager = new BankManager();
 		this.armyManager = new ArmyManager();
 		this.churchManager = new ChurchManager();

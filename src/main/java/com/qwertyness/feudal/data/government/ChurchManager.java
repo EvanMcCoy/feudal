@@ -1,4 +1,4 @@
-package com.qwertyness.feudal.data;
+package com.qwertyness.feudal.data.government;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class ChurchManager {
 	public void saveChurch(Church church) {
 		ConfigurationSection section = church.getDataPath();
 		
-		section.set("pope", church.pope.toString());
+		section.set("pope", (church.pope == null) ? null : church.pope.toString());
 		section.set("abbots", Util.toStringList(church.abbots));
 		Feudal.getInstance().bankManager.saveBank(church);
 	}

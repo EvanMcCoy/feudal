@@ -11,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.qwertyness.feudal.Configuration;
@@ -18,8 +19,10 @@ import com.qwertyness.feudal.Configuration.Messages;
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
+import com.qwertyness.feudal.government.Land;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
 import com.qwertyness.feudal.listener.ChunkListener;
+import com.qwertyness.feudal.util.LandUtil;
 import com.qwertyness.feudal.util.Util;
 
 public class KingdomCommand implements CommandExecutor {
@@ -223,8 +226,8 @@ public class KingdomCommand implements CommandExecutor {
 		if (plugin.kingdomData.get().getConfigurationSection(kingdomName) == null) {
 			plugin.kingdomData.get().createSection(kingdomName);
 		}
-		
-		Kingdom kingdom = new Kingdom(kingdomName, plugin.kingdomData.get().getConfigurationSection(kingdomName));
+		ConfigurationSection section = plugin.kingdomData.get().createSection(kingdomName);
+		Kingdom kingdom = new Kingdom(kingdomName, section);
 		if (plugin.playerManager.isPlayer(player.getUniqueId())) {
 			if (plugin.playerManager.getPlayer(player.getUniqueId()).male) {
 				kingdom.king = player.getUniqueId();
@@ -237,7 +240,7 @@ public class KingdomCommand implements CommandExecutor {
 			kingdom.king = player.getUniqueId();
 		}
 		
-		kingdom.land.add(player.getLocation().getChunk());
+		LandUtil.claimLand(kingdom, plugin.landManager.getLand(Util.toString(player.getLocation().getChunk())));
 		kingdom.capital = player.getLocation().getChunk();
 		
 		plugin.kingdomManager.registerKingdom(kingdom);
@@ -284,7 +287,8 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyAFief);
 			return;
 		}
-		Fief fief = new Fief(fiefName, null, null, null, null, null, null, null, null, null, null);
+		ConfigurationSection section = this.plugin.fiefData.get().createSection(fiefName);
+		Fief fief = new Fief(fiefName, section);
 		if (plugin.playerManager.isPlayer(player.getUniqueId())) {
 			if (plugin.playerManager.getPlayer(player.getUniqueId()).male) {
 				fief.baron = player.getUniqueId();
@@ -395,7 +399,7 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 		Fief fief = this.plugin.fiefManager.getFief(kingdom.getName(), fiefName);
-		fief.land.add(player.getLocation().getChunk());
+		plugin.landManager.getLand(Util.toString(player.getLocation().getChunk())).fief = fief;
 		player.sendMessage(this.messages.prefix + this.messages.allocateLand);
 	}
 	
@@ -418,7 +422,7 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 		Fief fief = this.plugin.fiefManager.getLandOwner(player.getLocation().getChunk());
-		fief.land.remove(player.getLocation().getChunk());
+		LandUtil.unclaimLand(fief, plugin.landManager.getLand(Util.toString(player.getLocation().getChunk())));
 		player.sendMessage(this.messages.prefix + this.messages.deallocateLand);
 	}
 	
@@ -432,10 +436,10 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		for (Chunk chunk : kingdom.land) {
-			Fief fief = this.plugin.fiefManager.getLandOwner(chunk);
+		for (Land land : kingdom.land) {
+			Fief fief = land.fief;
 			if (fief != null) {
-				fief.land.remove(chunk);
+				fief.land.remove(land);
 			}
 		}
 		player.sendMessage(this.messages.prefix + this.messages.deallocateAll);
@@ -700,10 +704,13 @@ public class KingdomCommand implements CommandExecutor {
 		
 		kingdom.fortresses.remove(fortressStrings.indexOf(Util.toString(player.getLocation().getChunk())));
 		
-		for (Chunk land : kingdom.land) {
+		for (Land land : kingdom.land) {
 			boolean validChunk = false;
-			for (Chunk fortress : kingdom.fortresses) {
-				if (Util.toChunkStringList(Util.getChunksInRadius(Configuration.instance.fortressRadius, fortress)).contains(Util.toString(land))) {
+			for (Land fortress : kingdom.land) {
+				if (!land.isFortress()) {
+					continue;
+				}
+				if (Util.toChunkStringList(Util.getChunksInRadius(Configuration.instance.fortressRadius, fortress.getChunk())).contains(Util.toString(land.getChunk()))) {
 					validChunk = true;
 				}
 			}
@@ -740,7 +747,7 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 		
-		kingdom.land.add(player.getLocation().getChunk());
+		LandUtil.claimLand(kingdom, plugin.landManager.getLand(Util.toString(player.getLocation().getChunk())));
 		player.sendMessage(this.messages.prefix + this.messages.claimLand);
 	}
 	
@@ -768,9 +775,9 @@ public class KingdomCommand implements CommandExecutor {
 				return;
 			}
 		}
-		for (Chunk land : kingdom.land) {
-			if (Util.toString(land).equals(Util.toString(player.getLocation().getChunk()))) {
-				kingdom.land.remove(land);
+		for (Land land : kingdom.land) {
+			if (land.getCoordinates().equals(Util.toString(player.getLocation().getChunk()))) {
+				LandUtil.unlclaimLand(kingdom, land);
 				player.sendMessage(this.messages.prefix + this.messages.unclaimLand);
 			}
 		}

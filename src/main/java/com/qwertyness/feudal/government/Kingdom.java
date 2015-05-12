@@ -28,7 +28,7 @@ public class Kingdom implements Government {
 	
 	public Chunk capital;
 	public List<Chunk> fortresses;
-	public List<Chunk> land;
+	public List<Land> land;
 	
 	public Kingdom(String name, ConfigurationSection section) {
 		this.name = name;
@@ -36,8 +36,11 @@ public class Kingdom implements Government {
 		this.earls = new ArrayList<UUID>();
 		this.fiefs = new ArrayList<Fief>();
 		this.fortresses = new ArrayList<Chunk>();
-		this.land = new ArrayList<Chunk>();
+		this.land = new ArrayList<Land>();
 		
+		if (section.getConfigurationSection("bank") == null) {
+			section.createSection("bank");
+		}
 		this.imperialVault = new Bank();
 		if (section.getConfigurationSection("church") == null) {
 			section.createSection("church");
@@ -49,7 +52,7 @@ public class Kingdom implements Government {
 		this.royalArmy = new Army(section.getConfigurationSection("army"));
 	}
 	
-	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, List<Chunk> fortresses, List<Chunk> land, ConfigurationSection section) {
+	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, List<Chunk> fortresses, ConfigurationSection section) {
 		this.name = name;
 		this.king = king;
 		this.queen = queen;
@@ -58,13 +61,33 @@ public class Kingdom implements Government {
 		this.duke = duke;
 		this.duchess = duchess;
 		this.earls = earls;
+		if (earls == null) {
+			earls = new ArrayList<UUID>();
+		}
 		this.imperialVault = bank;
+		if (this.imperialVault == null) {
+			this.imperialVault = new Bank();
+		}
 		this.royalArmy = army;
+		if (this.royalArmy == null) {
+			ConfigurationSection armySection = section.createSection("army");
+			this.royalArmy = new Army(armySection);
+		}
 		this.highChurch = church;
+		if (this.highChurch == null) {
+			ConfigurationSection churchSection = section.createSection("church");
+			this.highChurch = new Church(churchSection);
+		}
 		this.fiefs = fiefs;
+		if (this.fiefs == null) {
+			this.fiefs = new ArrayList<Fief>();
+		}
 		this.capital = capital;
 		this.fortresses = fortresses;
-		this.land = land;
+		if (this.fortresses == null) {
+			this.fortresses = new ArrayList<Chunk>();
+		}
+		this.land = new ArrayList<Land>();
 		
 		this.dataPath = section;
 	}

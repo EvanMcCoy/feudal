@@ -17,6 +17,9 @@ public class Util {
 
 	public static List<UUID> toUUIDList(List<String> stringList) {
 		List<UUID> uuidList = new ArrayList<UUID>();
+		if (stringList == null) {
+			return uuidList;
+		}
 		for (String string : stringList) {
 			uuidList.add(UUID.fromString(string));
 		}
@@ -25,6 +28,9 @@ public class Util {
 	
 	public static List<String> toStringList(List<UUID> uuidList) {
 		List<String> stringList = new ArrayList<String>();
+		if (uuidList == null) {
+			return stringList;
+		}
 		for (UUID uuid : uuidList) {
 			stringList.add(uuid.toString());
 		}
@@ -32,22 +38,41 @@ public class Util {
 	}
 	
 	public static Chunk toChunk(String string) {
+		if (string == null) {
+			return null;
+		}
+		if (string.equals("")) {
+			return null;
+		}
 		String[] args = string.split(";");
 		World world = Bukkit.getWorld(args[0]);
 		if (world == null) {
 			return null;
 		}
-		int x = Integer.parseInt(args[1]);
-		int z = Integer.parseInt(args[2]);
+		int x = 0;
+		int z = 0;
+		try {
+			x = Integer.parseInt(args[1]);
+			z = Integer.parseInt(args[2]);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+		
 		return world.getChunkAt(x, z);
 	}
 	
 	public static String toString(Chunk chunk) {
+		if (chunk == null) {
+			return null;
+		}
 		return chunk.getWorld().getName() + ";" + chunk.getX() + ";" + chunk.getZ() + ";";
 	}
 	
 	public static List<String> toChunkStringList(List<Chunk> chunks) {
 		List<String> strings = new ArrayList<String>();
+		if (chunks == null) {
+			return strings;
+		}
 		for (Chunk chunk : chunks) {
 			strings.add(toString(chunk));
 		}

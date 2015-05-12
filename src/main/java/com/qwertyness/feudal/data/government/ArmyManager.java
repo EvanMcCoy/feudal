@@ -1,4 +1,4 @@
-package com.qwertyness.feudal.data;
+package com.qwertyness.feudal.data.government;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,8 +26,8 @@ public class ArmyManager {
 	public void saveArmy(Army army) {
 		ConfigurationSection section = army.getDataPath().getConfigurationSection("army");
 		
-		section.set("knight", army.knight.toString());
-		section.set("dame", army.dame.toString());
+		section.set("knight", (army.knight == null) ? null : army.knight.toString());
+		section.set("dame", (army.dame == null) ? null : army.dame.toString());
 		section.set("soldiers", Util.toStringList(army.soldiers));
 		Feudal.getInstance().bankManager.saveBank(army);
 	}

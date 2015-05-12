@@ -1,6 +1,5 @@
-package com.qwertyness.feudal.data;
+package com.qwertyness.feudal.data.government;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +15,11 @@ import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.util.Util;
 
 public class FiefManager {
+	private Feudal plugin;
+	
+	public FiefManager() {
+		this.plugin = Feudal.getInstance();
+	}
 	
 	public boolean isFief(String kingdomName, String fiefName) {
 		if (getFief(kingdomName, fiefName) != null) {
@@ -25,7 +29,7 @@ public class FiefManager {
 	}
 	
 	public Fief getFief(String kingdomName, String fiefName) {
-		Kingdom kingdom = Feudal.getInstance().kingdomManager.getKingdom(kingdomName);
+		Kingdom kingdom = this.plugin.kingdomManager.getKingdom(kingdomName);
 		
 		for (Fief fief : kingdom.fiefs) {
 			if (fief.getName().equals(fiefName)) {
@@ -36,50 +40,41 @@ public class FiefManager {
 	}
 	
 	public Fief loadFief(String kingdomName, String fiefName) {
-		ConfigurationSection fiefSection = Feudal.getInstance().fiefData.get().getConfigurationSection(kingdomName + "." + fiefName);
+		ConfigurationSection fiefSection = this.plugin.fiefData.get().getConfigurationSection(kingdomName + "." + fiefName);
 		
 		String name = fiefSection.getName();
 		UUID baron = (fiefSection.getString("baron") != null) ? UUID.fromString(fiefSection.getString("baron")) : null;
 		UUID baroness = (fiefSection.getString("baroness") != null) ? UUID.fromString(fiefSection.getString("baroness")) : null;
 		List<UUID> peasents = Util.toUUIDList(fiefSection.getStringList("peasents"));
 		List<UUID> serfs = Util.toUUIDList(fiefSection.getStringList("serfs"));
-		Bank bank = Feudal.getInstance().bankManager.loadBank(fiefSection);
-		Army army = Feudal.getInstance().armyManager.loadArmy(fiefSection);
-		Church church = Feudal.getInstance().churchManager.loadChurch(fiefSection);
+		Bank bank = this.plugin.bankManager.loadBank(fiefSection);
+		Army army = this.plugin.armyManager.loadArmy(fiefSection);
+		Church church = this.plugin.churchManager.loadChurch(fiefSection);
 		Chunk capital = Util.toChunk(fiefSection.getString("capital"));
-		List<Chunk> land = new ArrayList<Chunk>();
-		for (String chunkString : fiefSection.getStringList("land")) {
-			land.add(Util.toChunk(chunkString));
-		}
 		
-		return new Fief(name, baron, baroness, peasents, serfs, bank, army, church, capital, land, fiefSection);
+		return new Fief(name, baron, baroness, peasents, serfs, bank, army, church, capital, fiefSection);
 	}
 	
 	public void saveFief(Fief fief) {
 		ConfigurationSection fiefSection = fief.getDataPath();
 		
-		fiefSection.set("baron", fief.baron.toString());
-		fiefSection.set("baroness", fief.baroness.toString());
+		fiefSection.set("baron", (fief.baron == null) ? null : fief.baron.toString());
+		fiefSection.set("baroness", (fief.baroness == null) ? null : fief.baroness.toString());
 		fiefSection.set("peasents", Util.toStringList(fief.peasents));
 		fiefSection.set("serfs", Util.toStringList(fief.serfs));
 		fiefSection.set("capital", Util.toString(fief.capital));
-		List<String> land = new ArrayList<String>();
-		for (Chunk chunk : fief.land) {
-			land.add(Util.toString(chunk));
-		}
-		fiefSection.set("land", land);
-		Feudal.getInstance().bankManager.saveBank(fief);
-		Feudal.getInstance().armyManager.saveArmy(fief.army);
-		Feudal.getInstance().churchManager.saveChurch(fief.church);
+		this.plugin.bankManager.saveBank(fief);
+		this.plugin.armyManager.saveArmy(fief.army);
+		this.plugin.churchManager.saveChurch(fief.church);
 	}
 	
 	public void deleteFief(Kingdom kingdom, Fief fief) {
-		Feudal.getInstance().fiefData.get().set(fief.getDataPath().getCurrentPath(), null);
+		this.plugin.fiefData.get().set(fief.getDataPath().getCurrentPath(), null);
 		kingdom.fiefs.remove(fief);
 	}
 	
 	public Fief getLandOwner(Chunk chunk) {
-		for (Kingdom kingdom : Feudal.getInstance().kingdomManager.kingdoms) {
+		for (Kingdom kingdom : this.plugin.kingdomManager.kingdoms) {
 			Fief fief = getLandOwner(kingdom, chunk);
 			if (fief != null) {
 				return fief;
@@ -89,15 +84,6 @@ public class FiefManager {
 	}
 	
 	public Fief getLandOwner(Kingdom kingdom, Chunk chunk) {
-		for (Fief fief : kingdom.fiefs) {
-			for (Chunk testChunk : fief.land) {
-				if (chunk.getWorld().getName().equals(testChunk.getWorld().getName()) &&
-						chunk.getX() == testChunk.getX() &&
-						chunk.getZ() == testChunk.getZ()) {
-					return fief;
-				}
-			}	
-		}
-		return null;
+		return this.plugin.landManager.getLand(Util.toString(chunk)).fief;
 	}
 }

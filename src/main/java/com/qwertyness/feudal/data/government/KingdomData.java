@@ -1,4 +1,4 @@
-package com.qwertyness.feudal.data;
+package com.qwertyness.feudal.data.government;
 
 import java.io.File;
 import java.io.IOException;

@@ -20,7 +20,7 @@ public class Fief implements Government {
 	public Church church;
 	
 	public Chunk capital;
-	public List<Chunk> land;
+	public List<Land> land;
 	
 	private ConfigurationSection dataPath;
 	public GovernmentSettings settings;
@@ -30,14 +30,14 @@ public class Fief implements Government {
 		this.dataPath = section;
 		this.peasents = new ArrayList<UUID>();
 		this.serfs = new ArrayList<UUID>();
-		this.land = new ArrayList<Chunk>();
+		this.land = new ArrayList<Land>();
 		
 		this.bank = new Bank();
 		this.army = new Army(section.getConfigurationSection("army"));
 		this.church = new Church(section.getConfigurationSection("church"));
 	}
 	
-	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, List<Chunk> land, ConfigurationSection section) {
+	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, ConfigurationSection section) {
 		this.name = name;
 		this.baron = baron;
 		this.baroness = baroness;
@@ -50,10 +50,19 @@ public class Fief implements Government {
 			this.serfs = new ArrayList<UUID>();
 		}
 		this.bank = bank;
+		if (this.bank == null) {
+			this.bank = new Bank();
+		}
 		this.army = army;
+		if (this.army == null) {
+			this.army = new Army(section.createSection("army"));
+		}
 		this.church = church;
+		if (this.church == null) {
+			this.church = new Church(section.createSection("church"));
+		}
 		this.capital = capital;
-		this.land = land;
+		this.land = new ArrayList<Land>();
 		
 		this.dataPath = section;
 	}
