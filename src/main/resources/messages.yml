@@ -1,0 +1,77 @@
+#The messages in this configuration are not very pretty, so modification
+#is recommended.
+
+#Global messages
+
+#The prefix to most of the messages sent by the plugin.
+prefix: "[Feudal] &a"
+#When a player doesn't have permission to perform an action.
+insufficientPermission: "&cYou do not have permission to do that."
+#When a player is not in a kingdom, but uses a command that requires it.
+notInAKingdom: "&cYou must be in a kingdom to do that."
+#When a querried player is offline or not a member.
+notAPlayer: "&cThat player could not be found."
+#When a command accesses an index outside of the bounds of an array.
+invalidIndex: "&cThat index is too high."
+#When the plugin displays a list, this is the beginning of the header.
+listTopStarter: "&a----- &r"
+#When the plugin displays a list, this is the end of the header.
+listTopEnder: " &a-----"
+#The color of the list item's index number when the plugin displays a list.
+listIndexColor: "&a"
+#The color of a list item's text when the plugin displays a list.
+listItemColor: "&3"
+#The footer when the plugin displays a list.
+listBottom: "      &a>----------<"
+
+#Kingdom messages
+alreadyInAKingdom: "&cYou are already in a kingdom."
+kingdomCreate: "You are now the ruler of a kingdom."
+alreadyAKingdom: "&cThat is already a kingdom."
+kingdomDisunite: "You have disunited your mighty kingdom."
+kingdomDisuniteConfirm: "Are you sure you want to disunite your kingdom?  Type command again to confirm."
+
+setCounterpart: "You have set your ruling counterpart."
+setDuke: "You have set the duke of your kingdom."
+setDuchess: "You have set the duchess of your kingdom."
+setPrince: "You have set the prince of your kingdom."
+setPrincess: "You have set the princess of your kingdom."
+addEarl: "You have added an earl to your kingdom."
+alreadyAnEarl: "&cThat person is already an earl."
+removeEarl: "You have removed an earl from your kingdom."
+
+fiefCreate: "You have created a fief."
+alreadyAFief: "&cThat is already a fief in your kingdom."
+fiefDisband: "You have disbanded a fief."
+notAFief: "&cThat is not a fief in your kingdom."
+setFiefBaron: "You have set the baron of the fief."
+setFiefBaroness: "You have set the baroness of the fief."
+
+#Fief messages
+
+#Army messages
+
+#Church messages
+
+#Land messages
+notKingdomLand: "&cThis land is not a part of your kingdom."
+landAlreadyAllocated: "&cThis land is already allocated to a fief in your kingdom."
+allocateLand: "You have allocated this land to the fief."
+deallocateLand: "You have deallocated this land."
+deallocateAll: "You have deallocated all of the land in your kingdom."
+alreadyCapital: "&cThis land is already the capital of your kingdom."
+setCapital: "You have set the capital of your kingdom."
+alreadyAFortress: "&cThis land is already a fortress."
+notAFortress: "&cThis land is not a fortress."
+addFortress: "You have added a fortress to your kingdom."
+removeFortress: "You have removed a fortress from your kingdom."
+landAlreadyClaimed: "&cThis land is already claimed."
+noFortressInRange: "&cThere is no fortress nearby."
+claimLand: "You have claimed this land for your kingdom."
+cannotUnclaimCapital: "&cYou cannot unclaim your kingdom's capital."
+cannotUnclaimFortress: "&cYou cannot unclaim a fortress of your kingdom."
+unclaimLand: "You have unclaimed this land."
+autoClaimOn: "You will now automatically claim land where you walk."
+autoClaimOff: "You have stopped automatically claiming land."
+
+#When a player turns land autoclaiming on.

@@ -1,0 +1,16 @@
+name: Feudal
+main: com.qwertyness.feudal.Feudal
+version: 1.0
+description: The feudalist government system brought to Minecraft.
+author: Qwertyness
+commands:
+  kingdom:
+    description: Base kingdom command.
+  fief:
+    description: Base fief command.
+  army:
+    description: Base army command.
+  church:
+    description: Base church command.
+  feudal:
+    description: Main plugin command.

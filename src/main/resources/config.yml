@@ -1,0 +1,6 @@
+allowMultipleTitles: true
+landTax: 5
+fortressTax: 15
+taxTimes:
+- 0
+- 12
