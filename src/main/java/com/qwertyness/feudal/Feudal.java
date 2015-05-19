@@ -92,7 +92,6 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.saveConfig();
 		this.kingdomManager.saveAll();
 		this.playerManager.saveAll();
-		this.playerManager.saveAll();
 		this.kingdomData.save();
 		this.fiefData.save();
 		this.playerData.save();
@@ -117,7 +116,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		else {
 			ConfigurationSection playerSection = this.playerData.get().createSection(event.getPlayer().getUniqueId().toString());
 			playerSection.set(event.getPlayer().getUniqueId().toString() + ".gender", true);
-			player = new FeudalPlayer(event.getPlayer().getUniqueId(), true, playerSection);
+			player = new FeudalPlayer(event.getPlayer().getUniqueId(), playerSection);
 		}
 		this.playerManager.regiseterPlayer(player);
 	}

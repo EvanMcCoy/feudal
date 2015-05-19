@@ -59,6 +59,7 @@ public class LandManager {
 		List<UUID> owners = Util.toUUIDList(section.getStringList("owners"));
 		
 		Land land = new Land(chunk, kingdom, fief, owners, section);
+		land.setFortress(section.getBoolean("fortress"));
 		
 		if (kingdom != null) {
 			kingdom.land.add(land);
@@ -75,6 +76,7 @@ public class LandManager {
 		section.set("kingdom", land.kingdom);
 		section.set("fief", land.fief);
 		section.set("owners", Util.toStringList(land.owners));
+		section.set("fortress", land.isFortress());
 	}
 	
 	public void saveAll() {

@@ -77,12 +77,8 @@ public class KingdomManager {
 		}
 		
 		Chunk capital = Util.toChunk(kingdomSection.getString("captial"));
-		List<Chunk> fortresses = new ArrayList<Chunk>();
-		for (String string : kingdomSection.getStringList("fortresses")) {
-			fortresses.add(Util.toChunk(string));
-		}
 		
-		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, fortresses, kingdomSection);
+		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, kingdomSection);
 	}
 	
 	public void saveKingdom(Kingdom kingdom) {
@@ -99,6 +95,7 @@ public class KingdomManager {
 		this.plugin.bankManager.saveBank(kingdom);
 		this.plugin.armyManager.saveArmy(kingdom.royalArmy);
 		this.plugin.churchManager.saveChurch(kingdom.highChurch);
+		kingdom.flag.setFlag(kingdomSection.getConfigurationSection("flag"));
 		List<String> fiefs = new ArrayList<String>();
 		for (Fief fief : kingdom.fiefs) {
 			this.plugin.fiefManager.saveFief(fief);
@@ -106,7 +103,6 @@ public class KingdomManager {
 		}
 		kingdomSection.set("fiefs", fiefs);
 		kingdomSection.set("capital", Util.toString(kingdom.capital));
-		kingdomSection.set("fortresses", Util.toChunkStringList(kingdom.fortresses));
 	}
 	
 	public void deleteKingdom(Kingdom kingdom) {

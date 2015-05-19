@@ -15,6 +15,7 @@ public class Land implements CivilOrganizer {
 	public List<UUID> owners;
 	
 	private boolean fortress = false;
+	private boolean church = false;
 	
 	private ConfigurationSection dataPath;
 	
@@ -43,6 +44,10 @@ public class Land implements CivilOrganizer {
 	
 	public boolean isFortress() {
 		return this.fortress;
+	}
+	
+	public void setFortress(boolean isFortress) {
+		this.fortress = isFortress;
 	}
 
 	public ConfigurationSection getDataPath() {

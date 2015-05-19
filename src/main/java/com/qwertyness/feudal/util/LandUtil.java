@@ -16,7 +16,7 @@ public class LandUtil {
 		land.fief = fief;
 	}
 	
-	public static void unlclaimLand(Kingdom kingdom, Land land) {
+	public static void unclaimLand(Kingdom kingdom, Land land) {
 		kingdom.land.remove(land);
 		land.kingdom = null;
 	}

@@ -45,15 +45,13 @@ public class PlayerManager {
 		ConfigurationSection playerSection = Feudal.getInstance().playerData.get().getConfigurationSection(uuid);
 		
 		UUID playerUUID = UUID.fromString(uuid);
-		boolean male = playerSection.getBoolean("gender");
 		
-		return new FeudalPlayer(playerUUID, male, playerSection);
+		return new FeudalPlayer(playerUUID, playerSection);
 	}
 	
 	public void savePlayer(FeudalPlayer player) {
 		ConfigurationSection section = player.getDataPath();
 		
-		section.set("gender", player.male);
 		section.set("kingdom", player.kingdom);
 		section.set("fief", player.fief);
 	}

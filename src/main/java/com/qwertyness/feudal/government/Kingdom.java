@@ -26,8 +26,9 @@ public class Kingdom implements Government {
 	public Church highChurch;
 	public List<Fief> fiefs;
 	
+	public Flag flag;
+	
 	public Chunk capital;
-	public List<Chunk> fortresses;
 	public List<Land> land;
 	
 	public Kingdom(String name, ConfigurationSection section) {
@@ -35,7 +36,6 @@ public class Kingdom implements Government {
 		this.dataPath = section;
 		this.earls = new ArrayList<UUID>();
 		this.fiefs = new ArrayList<Fief>();
-		this.fortresses = new ArrayList<Chunk>();
 		this.land = new ArrayList<Land>();
 		
 		if (section.getConfigurationSection("bank") == null) {
@@ -52,7 +52,7 @@ public class Kingdom implements Government {
 		this.royalArmy = new Army(section.getConfigurationSection("army"));
 	}
 	
-	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, List<Chunk> fortresses, ConfigurationSection section) {
+	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, ConfigurationSection section) {
 		this.name = name;
 		this.king = king;
 		this.queen = queen;
@@ -83,10 +83,6 @@ public class Kingdom implements Government {
 			this.fiefs = new ArrayList<Fief>();
 		}
 		this.capital = capital;
-		this.fortresses = fortresses;
-		if (this.fortresses == null) {
-			this.fortresses = new ArrayList<Chunk>();
-		}
 		this.land = new ArrayList<Land>();
 		
 		this.dataPath = section;
@@ -102,6 +98,16 @@ public class Kingdom implements Government {
 
 	public Army getArmy() {
 		return this.royalArmy;
+	}
+	
+	public List<Land> getFortresses() {
+		List<Land> fortresses = new ArrayList<Land>();
+		for (Land land : this.land) {
+			if (land.isFortress()) {
+				fortresses.add(land);
+			}
+		}
+		return fortresses;
 	}
 
 	public ConfigurationSection getDataPath() {

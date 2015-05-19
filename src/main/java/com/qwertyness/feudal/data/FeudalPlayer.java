@@ -8,15 +8,13 @@ import org.bukkit.entity.Player;
 
 public class FeudalPlayer {
 	public UUID player;
-	public boolean male;
 	public String kingdom;
 	public String fief;
 	
 	private ConfigurationSection dataPath;
 	
-	public FeudalPlayer(UUID player, boolean male, ConfigurationSection section) {
+	public FeudalPlayer(UUID player, ConfigurationSection section) {
 		this.player = player;
-		this.male = male;
 	}
 	
 	public Player toPlayer() {

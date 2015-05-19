@@ -54,7 +54,7 @@ public class TaxExecutor extends BukkitRunnable implements Listener  {
 			}
 			int tax = 0;
 			tax += Configuration.instance.landTax * kingdom.land.size();
-			tax += Configuration.instance.fortressTax * kingdom.fortresses.size();
+			tax += Configuration.instance.fortressTax * kingdom.getFortresses().size();
 			if (kingdom.imperialVault.getBalance() >= tax) {
 				kingdom.imperialVault.withdrawMoney(tax);
 			}
