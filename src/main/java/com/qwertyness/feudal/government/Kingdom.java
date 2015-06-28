@@ -8,28 +8,29 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.government.settings.GovernmentSettings;
+import com.qwertyness.feudal.util.Util;
 
 public class Kingdom implements Government {
-	public String name;
+	private String name;
 	private ConfigurationSection dataPath;
-	public GovernmentSettings settings;
+	private GovernmentSettings settings;
 	
-	public UUID king;
-	public UUID queen;
-	public UUID prince;
-	public UUID princess;
-	public UUID duke;
-	public UUID duchess;
-	public List<UUID> earls;
-	public Bank imperialVault;
-	public Army royalArmy;
-	public Church highChurch;
-	public List<Fief> fiefs;
+	private UUID king;
+	private UUID queen;
+	private UUID prince;
+	private UUID princess;
+	private UUID duke;
+	private UUID duchess;
+	private List<UUID> earls;
+	private Bank imperialVault;
+	private Army royalArmy;
+	private Church highChurch;
+	private List<Fief> fiefs;
 	
-	public Flag flag;
+	private Flag flag;
 	
-	public Chunk capital;
-	public List<Land> land;
+	private Chunk capital;
+	private List<Land> land;
 	
 	public Kingdom(String name, ConfigurationSection section) {
 		this.name = name;
@@ -91,13 +92,53 @@ public class Kingdom implements Government {
 	public String getName() {
 		return this.name;
 	}
-
-	public Church getChurch() {
-		return this.highChurch;
+	
+	public UUID getKing() {return this.king;}
+	public void setKing(UUID king) {this.king = king;}
+	
+	public UUID getQueen() {return this.queen;}
+	public void setQueen(UUID queen) {this.queen = queen;}
+	
+	public UUID getPrince() {return this.prince;}
+	public void setPrince(UUID prince) {this.prince = prince;}
+	
+	public UUID getPrincess() {return this.princess;}
+	public void setPrincess(UUID princess) {this.princess = princess;}
+	
+	public UUID getDuke() {return this.duke;}
+	public void setDuke(UUID duke) {this.duke = duke;}
+	
+	public UUID getDuchess() {return this.duchess;}
+	public void setDuchess(UUID duchess) {this.duchess = duchess;}
+	
+	public List<UUID> getEarls() {return this.earls;}
+	public void setEarls(List<UUID> earls) {this.earls = earls;}
+	public void addEarl(UUID earl) {this.earls.add(earl);}
+	public void removeEarl(int earl) {this.earls.remove(earl);}
+	public boolean isEarl(UUID earl) {
+		if (Util.toStringList(this.getEarls()).contains(earl.toString())) {
+			return true;
+		}
+		return false;
 	}
 
-	public Army getArmy() {
-		return this.royalArmy;
+	public Church getChurch() {return this.highChurch;}
+
+	public Army getArmy() {return this.royalArmy;}
+	
+	public Bank getBank() {return this.imperialVault;}
+	
+	public Chunk getCapital() {return this.capital;}
+	public void setCapital(Chunk capital) {this.capital = capital;}
+	
+	public List<Land> getLand() {return this.land;}
+	public void addLand(Land land) {this.land.add(land);}
+	public void removeLand(Land land) {
+		for (Land currentLand : this.land) {
+			if (land.getCoordinates().equals(currentLand.getCoordinates())) {
+				this.land.remove(this.land.indexOf(currentLand));
+			}
+		}
 	}
 	
 	public List<Land> getFortresses() {
@@ -109,12 +150,25 @@ public class Kingdom implements Government {
 		}
 		return fortresses;
 	}
+	
+	public List<Fief> getFiefs() {return this.fiefs;}
+	public void addFief(Fief fief) {this.fiefs.add(fief);}
+	public void removeFief(Fief fief) {
+		for (Fief currentFief : this.fiefs) {
+			if (currentFief.getName().equals(fief.getName())) {
+				this.fiefs.remove(this.fiefs.indexOf(currentFief));
+			}
+		}
+	}
+	
+	public Flag getFlag() {return this.flag;}
+	public void setFlag(Flag flag) {this.flag = flag;}
+	
+	public GovernmentSettings getSettings() {return this.settings;}
 
 	public ConfigurationSection getDataPath() {
 		return this.dataPath;
 	}
 	
-	public Bank getBank() {
-		return this.imperialVault;
-	}
+	
 }

@@ -6,11 +6,13 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.util.Util;
+
 public class Church implements CivilOrganizer {
 	//Display as bishop in fiefs
-	public UUID pope;
-	public List<UUID> abbots;
-	public Bank bank;
+	private UUID pope;
+	private List<UUID> abbots;
+	private Bank bank;
 	
 	private ConfigurationSection dataPath;
 	
@@ -27,6 +29,25 @@ public class Church implements CivilOrganizer {
 		
 		this.dataPath = section;
 	}
+	
+	public UUID getPope() {return pope;}
+	public void setPope(UUID pope) {
+		this.pope = pope;
+	}
+	
+	public List<UUID> getAbbots() {return this.abbots;}
+	public void addAbbot(UUID abbot) {
+		this.abbots.add(abbot);
+	}
+	public void removeAbbot(int abbot) {
+		this.abbots.remove(abbot);
+	}
+	public boolean isAbbot(UUID abbot) {
+		if (Util.toStringList(this.getAbbots()).contains(abbot.toString())) {
+			return true;
+		}
+		return false;
+	}
 
 	public ConfigurationSection getDataPath() {
 		return this.dataPath;
@@ -35,4 +56,6 @@ public class Church implements CivilOrganizer {
 	public Bank getBank() {
 		return this.bank;
 	}
+
+	
 }

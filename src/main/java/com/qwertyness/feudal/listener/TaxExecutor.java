@@ -26,37 +26,37 @@ public class TaxExecutor extends BukkitRunnable implements Listener  {
 	}
 
 	public void runTaxes() {
-		for(Kingdom kingdom : this.plugin.kingdomManager.kingdoms) {
-			for (Fief fief : kingdom.fiefs) {
-				for (UUID peasent : fief.peasents) {
-					if (!this.plugin.bankManager.vaultEconomy.hasAccount(Bukkit.getOfflinePlayer(peasent))) {
+		for(Kingdom kingdom : this.plugin.getKingdomManager().kingdoms) {
+			for (Fief fief : kingdom.getFiefs()) {
+				for (UUID peasent : fief.getPeasents()) {
+					if (!this.plugin.getBankManager().vaultEconomy.hasAccount(Bukkit.getOfflinePlayer(peasent))) {
 						continue;
 					}
-					if (!(this.plugin.bankManager.vaultEconomy.getBalance(Bukkit.getOfflinePlayer(peasent)) >= fief.settings.tax)) {
+					if (!(this.plugin.getBankManager().vaultEconomy.getBalance(Bukkit.getOfflinePlayer(peasent)) >= fief.settings.tax)) {
 						continue;
 					}
-					this.plugin.bankManager.vaultEconomy.withdrawPlayer(Bukkit.getOfflinePlayer(peasent), fief.settings.tax);
-					fief.bank.depositMoney(fief.settings.tax);
+					this.plugin.getBankManager().vaultEconomy.withdrawPlayer(Bukkit.getOfflinePlayer(peasent), fief.settings.tax);
+					fief.getBank().depositMoney(fief.settings.tax);
 				}
-				if (kingdom.settings.taxPerPlot) {
-					double tax = kingdom.settings.tax * fief.land.size();
-					if (fief.bank.getBalance() >= tax) {
-						fief.bank.withdrawMoney(tax);
-						kingdom.imperialVault.depositMoney(tax);
+				if (kingdom.getSettings().taxPerPlot) {
+					double tax = kingdom.getSettings().tax * fief.getLand().size();
+					if (fief.getBank().getBalance() >= tax) {
+						fief.getBank().withdrawMoney(tax);
+						kingdom.getBank().depositMoney(tax);
 					}
 				}
 				else {
-					if (fief.bank.getBalance() >= kingdom.settings.tax) {
-						fief.bank.withdrawMoney(kingdom.settings.tax);
-						kingdom.imperialVault.depositMoney(kingdom.settings.tax);
+					if (fief.getBank().getBalance() >= kingdom.getSettings().tax) {
+						fief.getBank().withdrawMoney(kingdom.getSettings().tax);
+						kingdom.getBank().depositMoney(kingdom.getSettings().tax);
 					}
 				}
 			}
 			int tax = 0;
-			tax += Configuration.instance.landTax * kingdom.land.size();
+			tax += Configuration.instance.landTax * kingdom.getLand().size();
 			tax += Configuration.instance.fortressTax * kingdom.getFortresses().size();
-			if (kingdom.imperialVault.getBalance() >= tax) {
-				kingdom.imperialVault.withdrawMoney(tax);
+			if (kingdom.getBank().getBalance() >= tax) {
+				kingdom.getBank().withdrawMoney(tax);
 			}
 		}
 	}

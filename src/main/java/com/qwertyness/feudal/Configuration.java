@@ -98,7 +98,7 @@ public class Configuration {
 		}
 		
 		public void loadMessages() {
-			FileConfiguration messages = this.plugin.messageData.get();
+			FileConfiguration messages = this.plugin.getMessageData().get();
 			this.prefix = color(messages.getString("prefix"));
 			this.insufficientPermission = color(messages.getString("insufficientPermission"));
 			this.notInAKingdom = color(messages.getString("notInAKingdom"));

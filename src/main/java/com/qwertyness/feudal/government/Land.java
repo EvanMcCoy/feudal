@@ -49,6 +49,14 @@ public class Land implements CivilOrganizer {
 	public void setFortress(boolean isFortress) {
 		this.fortress = isFortress;
 	}
+	
+	public boolean isChurch() {
+		return this.church;
+	}
+	
+	public void setChurch(boolean isChurch) {
+		this.church = isChurch;
+	}
 
 	public ConfigurationSection getDataPath() {
 		return this.dataPath;

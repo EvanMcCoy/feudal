@@ -17,7 +17,7 @@ public class ChurchManager {
 		
 		UUID pope = (section.getString("pope") != null) ? UUID.fromString(section.getString("pope")) : null;
 		List<UUID> abbots = Util.toUUIDList(section.getStringList("abbots"));
-		Bank bank = Feudal.getInstance().bankManager.loadBank(section);
+		Bank bank = Feudal.getInstance().getBankManager().loadBank(section);
 		
 		return new Church(pope, abbots, bank, section);
 	}
@@ -25,8 +25,8 @@ public class ChurchManager {
 	public void saveChurch(Church church) {
 		ConfigurationSection section = church.getDataPath();
 		
-		section.set("pope", (church.pope == null) ? null : church.pope.toString());
-		section.set("abbots", Util.toStringList(church.abbots));
-		Feudal.getInstance().bankManager.saveBank(church);
+		section.set("pope", (church.getPope() == null) ? null : church.getPope().toString());
+		section.set("abbots", Util.toStringList(church.getAbbots()));
+		Feudal.getInstance().getBankManager().saveBank(church);
 	}
 }

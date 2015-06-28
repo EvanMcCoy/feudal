@@ -34,13 +34,13 @@ public class ChunkListener implements Listener {
 	}
 	
 	public void updateLocation(Player player, PlayerMoveEvent event) {
-		Kingdom fromKingdom = this.plugin.kingdomManager.getLandOwner(event.getFrom().getChunk());
+		Kingdom fromKingdom = this.plugin.getKingdomManager().getLandOwner(event.getFrom().getChunk());
 		String fromKingdomName = (fromKingdom == null) ? "" : fromKingdom.getName();
-		Kingdom toKingdom = this.plugin.kingdomManager.getLandOwner(event.getTo().getChunk());
+		Kingdom toKingdom = this.plugin.getKingdomManager().getLandOwner(event.getTo().getChunk());
 		String toKingdomName = (toKingdom == null) ? "" : toKingdom.getName();
-		Fief fromFief = (fromKingdom == null) ? null : this.plugin.fiefManager.getLandOwner(fromKingdom, event.getFrom().getChunk());
+		Fief fromFief = (fromKingdom == null) ? null : this.plugin.getFiefManager().getLandOwner(fromKingdom, event.getFrom().getChunk());
 		String fromFiefName = (fromFief == null) ? "" : fromFief.getName();
-		Fief toFief = (toKingdom == null) ? null : this.plugin.fiefManager.getLandOwner(toKingdom, event.getFrom().getChunk());
+		Fief toFief = (toKingdom == null) ? null : this.plugin.getFiefManager().getLandOwner(toKingdom, event.getFrom().getChunk());
 		String toFiefName = (toFief == null) ? "" : toFief.getName();
 		
 		String kingdomTitle = "";

@@ -33,16 +33,16 @@ public class BuildListener implements Listener {
 	}
 	
 	public boolean hasBuildPermission(Player player) {
-		if (this.plugin.kingdomManager.getLandOwner(player.getLocation().getChunk()) == null) {
+		if (this.plugin.getKingdomManager().getLandOwner(player.getLocation().getChunk()) == null) {
 			return true;
 		}
-		Kingdom owner = this.plugin.kingdomManager.getLandOwner(player.getLocation().getChunk());
-		if (Util.isInKingdom(player) && owner.settings.buildPermission != GovernmentPermission.ALL) {
+		Kingdom owner = this.plugin.getKingdomManager().getLandOwner(player.getLocation().getChunk());
+		if (Util.isInKingdom(player) && owner.getSettings().buildPermission != GovernmentPermission.ALL) {
 			return false;
 		}
 		Kingdom playerKingdom = Util.getKingdom(player);
 		if (owner.getName().equals(playerKingdom.getName())) {
-			if (owner.settings.buildPermission.hasKingdomPermission(Util.getTitle(player, owner))) {
+			if (owner.getSettings().buildPermission.hasKingdomPermission(Util.getTitle(player, owner, null))) {
 				return true;
 			}
 		}

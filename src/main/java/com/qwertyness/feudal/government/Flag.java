@@ -6,18 +6,22 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Banner;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.meta.BannerMeta;
-import org.bukkit.material.MaterialData;
 
 public class Flag {
 	public static Flag fakeInstance = new Flag(null);
 
-	public DyeColor color = DyeColor.WHITE;
-	public List<Pattern> patterns = new ArrayList<Pattern>();
+	private DyeColor color;
+	private List<Pattern> patterns;
+	
+	public Flag() {
+		this.color = DyeColor.WHITE;
+		this.patterns = new ArrayList<Pattern>();
+	}
 	
 	public Flag(ConfigurationSection section) {
 		if (section == null) {
@@ -46,7 +50,7 @@ public class Flag {
 	public Flag(DyeColor color, List<Pattern> patterns, Kingdom kingdom) {
 		this.color = color;
 		this.patterns = patterns;
-		kingdom.flag = this;
+		kingdom.setFlag(this);
 		setFlag(kingdom.getDataPath().createSection("flag"));
 	}
 	
@@ -77,10 +81,10 @@ public class Flag {
 			track.getBlock().setType(block.material);
 			if (block.material == Material.BANNER) {
 				BlockState state = track.getBlock().getState();
-				BannerMeta meta = (BannerMeta)state.getData();
-				meta.setBaseColor(kingdom.flag.color);
-				meta.setPatterns(kingdom.flag.patterns);
-				state.setData((MaterialData)meta);
+				Banner meta = (Banner)state.getData();
+				meta.setBaseColor(kingdom.getFlag().color);
+				meta.setPatterns(kingdom.getFlag().patterns);
+				meta.update(true, true);
 			}
 		}
 	}

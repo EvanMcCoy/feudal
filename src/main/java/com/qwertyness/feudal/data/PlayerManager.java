@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.Feudal;
@@ -21,14 +23,19 @@ public class PlayerManager {
 				return feudalPlayer;
 			}
 		}
-		return null;
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
+		FeudalPlayer newPlayer = null;
+		if (offlinePlayer != null) {
+			registerPlayer(loadPlayer(offlinePlayer.getUniqueId().toString()));
+		}
+		return newPlayer;
 	}
 	
 	public boolean isPlayer(UUID player) {
 		return this.getPlayer(player) != null;
 	}
 	
-	public void regiseterPlayer(FeudalPlayer player) {
+	public void registerPlayer(FeudalPlayer player) {
 		if (!isPlayer(player.player)) {
 			this.players.add(player);
 		}
@@ -42,7 +49,7 @@ public class PlayerManager {
 	}
 	
 	public FeudalPlayer loadPlayer(String uuid) {
-		ConfigurationSection playerSection = Feudal.getInstance().playerData.get().getConfigurationSection(uuid);
+		ConfigurationSection playerSection = Feudal.getInstance().getPlayerData().get().getConfigurationSection(uuid);
 		
 		UUID playerUUID = UUID.fromString(uuid);
 		

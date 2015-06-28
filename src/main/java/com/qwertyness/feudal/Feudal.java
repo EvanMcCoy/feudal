@@ -1,8 +1,13 @@
 package com.qwertyness.feudal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +16,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.qwertyness.feudal.command.AttackCommand;
+import com.qwertyness.feudal.command.FutureCommand;
 import com.qwertyness.feudal.command.KingdomCommand;
 import com.qwertyness.feudal.data.FeudalPlayer;
 import com.qwertyness.feudal.data.MessageData;
@@ -28,23 +35,26 @@ import com.qwertyness.feudal.data.government.LandManager;
 import com.qwertyness.feudal.listener.BuildListener;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.listener.TaxExecutor;
+import com.qwertyness.feudal.util.LandUtil;
 
 public class Feudal extends JavaPlugin implements Listener {
 	private static Feudal instance;
 	
-	public KingdomData kingdomData;
-	public FiefData fiefData;
-	public LandData landData;
-	public PlayerData playerData;
-	public MessageData messageData;
+	private KingdomData kingdomData;
+	private FiefData fiefData;
+	private LandData landData;
+	private PlayerData playerData;
+	private MessageData messageData;
 	
-	public KingdomManager kingdomManager;
-	public FiefManager fiefManager;
-	public LandManager landManager;
-	public BankManager bankManager;
-	public ArmyManager armyManager;
-	public ChurchManager churchManager;
-	public PlayerManager playerManager;
+	private KingdomManager kingdomManager;
+	private FiefManager fiefManager;
+	private LandManager landManager;
+	private BankManager bankManager;
+	private ArmyManager armyManager;
+	private ChurchManager churchManager;
+	private PlayerManager playerManager;
+	
+	private List<FutureCommand> futureCommands;
 	
 	public void onEnable() {
 		instance = this;
@@ -60,6 +70,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		//Initialize static configuration fields.
 		new Configuration(this);
 		
+		//Initialize data managers and utilities.
 		this.kingdomManager = new KingdomManager();
 		this.fiefManager = new FiefManager();
 		this.landManager = new LandManager();
@@ -67,6 +78,8 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.armyManager = new ArmyManager();
 		this.churchManager = new ChurchManager();
 		this.playerManager = new PlayerManager();
+		new LandUtil(this.landManager);
+		this.futureCommands = new ArrayList<FutureCommand>();
 		
 		//Register listeners and runnables
 		PluginManager pm = this.getServer().getPluginManager();
@@ -77,6 +90,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		
 		//Register command handlers
 		this.getCommand("kingdom").setExecutor(new KingdomCommand(this));
+		this.getCommand("attack").setExecutor(new AttackCommand(this));
 		
 		//Set up vault ecnomony
 		if (Configuration.useEconomy) {
@@ -95,6 +109,16 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.kingdomData.save();
 		this.fiefData.save();
 		this.playerData.save();
+	}
+	
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		for (int i = 0;i < this.futureCommands.size();i++) {
+			FutureCommand futureCommand = this.futureCommands.get(i);
+			if (futureCommand.getCommand().equalsIgnoreCase(command.getName()) && futureCommand.compareSubcommands(args) && futureCommand.compareRecipiant(sender)) {
+				futureCommand.run(args);
+			}
+		}
+		return false;
 	}
 	
 	public static Feudal getInstance() {
@@ -118,6 +142,28 @@ public class Feudal extends JavaPlugin implements Listener {
 			playerSection.set(event.getPlayer().getUniqueId().toString() + ".gender", true);
 			player = new FeudalPlayer(event.getPlayer().getUniqueId(), playerSection);
 		}
-		this.playerManager.regiseterPlayer(player);
+		this.playerManager.registerPlayer(player);
 	}
+	
+	public KingdomData getKingdomData() {return this.kingdomData;}
+	public KingdomManager getKingdomManager() {return this.kingdomManager;}
+	
+	public FiefData getFiefData() {return this.fiefData;}
+	public FiefManager getFiefManager() {return this.fiefManager;}
+	
+	public LandData getLandData() {return this.landData;}
+	public LandManager getLandManager() {return this.landManager;}
+	
+	public PlayerData getPlayerData() {return this.playerData;}
+	public PlayerManager getPlayerManager() {return this.playerManager;}
+	
+	public MessageData getMessageData() {return this.messageData;}
+	
+	public BankManager getBankManager() {return this.bankManager;}
+	
+	public ChurchManager getChurchManager() {return this.churchManager;}
+	
+	public ArmyManager getArmyManager() {return this.armyManager;}
+	
+	public void registerFutureCommand(FutureCommand futureCommand) {this.futureCommands.add(futureCommand);}
 }

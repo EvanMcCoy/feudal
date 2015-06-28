@@ -23,12 +23,12 @@ public class Settings {
 		GovernmentPermission.OFFICIAL.addKingdomPosition("baron");
 		GovernmentPermission.OFFICIAL.addKingdomPosition("baroness");
 		
-		GovernmentPermission.CIVILIAN.addKingdomPosition("abbot");
-		GovernmentPermission.OFFICIAL.addKingdomPosition("pope");
+		GovernmentPermission.CIVILIAN.addKingdomPosition("royalabbot");
+		GovernmentPermission.OFFICIAL.addKingdomPosition("royalpope");
 		
-		GovernmentPermission.CIVILIAN.addKingdomPosition("solider");
-		GovernmentPermission.OFFICIAL.addKingdomPosition("knight");
-		GovernmentPermission.OFFICIAL.addKingdomPosition("dame");
+		GovernmentPermission.CIVILIAN.addKingdomPosition("royalsolider");
+		GovernmentPermission.OFFICIAL.addKingdomPosition("royalknight");
+		GovernmentPermission.OFFICIAL.addKingdomPosition("royaldame");
 		
 		//Fief positions
 		GovernmentPermission.CIVILIAN.addFiefPosition("serf");
@@ -46,11 +46,38 @@ public class Settings {
 		//Church positions
 		GovernmentPermission.DEPUTY.addChurchPosition("abbot");
 		GovernmentPermission.ROYALTY.addChurchPosition("pope");
+		GovernmentPermission.DEPUTY.addChurchPosition("royalAbbot");
+		GovernmentPermission.ROYALTY.addChurchPosition("royalPope");
+		
+		GovernmentPermission.ROYALTY.addArmyPosition("king");
+		GovernmentPermission.ROYALTY.addArmyPosition("queen");
+		GovernmentPermission.ROYALTY.addArmyPosition("prince");
+		GovernmentPermission.ROYALTY.addArmyPosition("princess");
+		GovernmentPermission.ROYALTY.addArmyPosition("duke");
+		GovernmentPermission.ROYALTY.addArmyPosition("duchess");
+		GovernmentPermission.ROYALTY.addArmyPosition("earl");
+		
+		GovernmentPermission.ROYALTY.addArmyPosition("baron");
+		GovernmentPermission.ROYALTY.addArmyPosition("baroness");
 		
 		//Army positions
 		GovernmentPermission.CIVILIAN.addArmyPosition("soldier");
 		GovernmentPermission.ROYALTY.addArmyPosition("knight");
 		GovernmentPermission.ROYALTY.addArmyPosition("dame");
+		GovernmentPermission.CIVILIAN.addArmyPosition("royalSoldier");
+		GovernmentPermission.ROYALTY.addArmyPosition("royalKnight");
+		GovernmentPermission.ROYALTY.addArmyPosition("royalDame");
+		
+		GovernmentPermission.ROYALTY.addArmyPosition("king");
+		GovernmentPermission.ROYALTY.addArmyPosition("queen");
+		GovernmentPermission.ROYALTY.addArmyPosition("prince");
+		GovernmentPermission.ROYALTY.addArmyPosition("princess");
+		GovernmentPermission.ROYALTY.addArmyPosition("duke");
+		GovernmentPermission.ROYALTY.addArmyPosition("duchess");
+		GovernmentPermission.ROYALTY.addArmyPosition("earl");
+		
+		GovernmentPermission.ROYALTY.addArmyPosition("baron");
+		GovernmentPermission.ROYALTY.addArmyPosition("baroness");
 	}
 	
 	public enum GovernmentPermission {
@@ -103,7 +130,7 @@ public class Settings {
 		}
 		
 		public boolean hasFiefPermission(String title) {
-			return hasPermission(getGroupByKingdomTitle(title));
+			return hasPermission(getGroupByFiefTitle(title));
 		}
 		
 		//Church positions
@@ -117,7 +144,7 @@ public class Settings {
 		}
 		
 		public boolean hasChurchPermission(String title) {
-			return hasPermission(getGroupByKingdomTitle(title));
+			return hasPermission(getGroupByChurchTitle(title));
 		}
 		
 		//Army positions
@@ -131,12 +158,12 @@ public class Settings {
 		}
 		
 		public boolean hasArmyPermission(String title) {
-			return hasPermission(getGroupByKingdomTitle(title));
+			return hasPermission(getGroupByArmyTitle(title));
 		}
 		
 		
 		public boolean hasPermission(GovernmentPermission group) {
-			if (this.permLevel <= group.permLevel) {
+			if (this.permLevel >= group.permLevel) {
 				return true;
 			}
 			return false;

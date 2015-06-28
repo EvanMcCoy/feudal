@@ -20,7 +20,7 @@ public class LandManager {
 	
 	public LandManager() {
 		this.plugin = Feudal.getInstance();
-		for (String key : this.plugin.landData.get().getKeys(false)) {
+		for (String key : this.plugin.getLandData().get().getKeys(false)) {
 			if (Util.toChunk(key) != null) {
 				this.registerLand(loadLand(key));
 			}
@@ -50,22 +50,29 @@ public class LandManager {
 		return null;
 	}
 	
+	public boolean isLand(String coordinates) {
+		if (getLand(coordinates) != null) {
+			return true;
+		}
+		return false;
+	}
+	
 	public Land loadLand(String coordinates) {
-		ConfigurationSection section = this.plugin.landData.get().getConfigurationSection(coordinates);
+		ConfigurationSection section = this.plugin.getLandData().get().getConfigurationSection(coordinates);
 		
 		Chunk chunk = Util.toChunk(coordinates);
-		Kingdom kingdom = this.plugin.kingdomManager.getKingdom(section.getString("kingdom"));
-		Fief fief = this.plugin.fiefManager.getFief((kingdom == null) ? "" : kingdom.name, section.getString("fief"));
+		Kingdom kingdom = this.plugin.getKingdomManager().getKingdom(section.getString("kingdom"));
+		Fief fief = this.plugin.getFiefManager().getFief((kingdom == null) ? "" : kingdom.getName(), section.getString("fief"));
 		List<UUID> owners = Util.toUUIDList(section.getStringList("owners"));
 		
 		Land land = new Land(chunk, kingdom, fief, owners, section);
 		land.setFortress(section.getBoolean("fortress"));
 		
 		if (kingdom != null) {
-			kingdom.land.add(land);
+			kingdom.addLand(land);
 		}
 		if (fief != null) {
-			fief.land.add(land);
+			fief.addLand(land);
 		}
 		return land;
 	}

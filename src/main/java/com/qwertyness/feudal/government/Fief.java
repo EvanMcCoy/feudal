@@ -8,19 +8,20 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.government.settings.GovernmentSettings;
+import com.qwertyness.feudal.util.Util;
 
 public class Fief implements Government {
-	public String name;
-	public UUID baron;
-	public UUID baroness;
-	public List<UUID> peasents;
-	public List<UUID> serfs;
-	public Bank bank;
-	public Army army;
-	public Church church;
+	private String name;
+	private UUID baron;
+	private UUID baroness;
+	private List<UUID> peasents;
+	private List<UUID> serfs;
+	private Bank bank;
+	private Army army;
+	private Church church;
 	
-	public Chunk capital;
-	public List<Land> land;
+	private Chunk capital;
+	private List<Land> land;
 	
 	private ConfigurationSection dataPath;
 	public GovernmentSettings settings;
@@ -69,6 +70,47 @@ public class Fief implements Government {
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public UUID getBaron() {return this.baron;}
+	public void setBaron(UUID baron) {this.baron = baron;}
+	
+	public UUID getBaroness() {return this.baroness;}
+	public void setBaroness(UUID baroness) {this.baroness = baroness;}
+	
+	public List<UUID> getPeasents() {return this.peasents;}
+	public void setPeasents(List<UUID> peasents) {this.peasents = peasents;}
+	public void addPeasent(UUID peasent) {this.peasents.add(peasent);}
+	public void removePeasent(int peasent) {this.peasents.remove(peasent);}
+	public boolean isPeasent(UUID peasent) {
+		if (Util.toStringList(this.peasents).contains(peasent.toString())) {
+			return true;
+		}
+		return false;
+	}
+	
+	public List<UUID> getSerfs() {return this.serfs;}
+	public void setSerfs(List<UUID> serfs) {this.serfs = serfs;}
+	public void addSerf(UUID serf) {this.serfs.add(serf);}
+	public void removeSerf(int serf) {this.serfs.remove(serf);}
+	public boolean isSerf(UUID serf) {
+		if (Util.toStringList(this.serfs).contains(serf.toString())) {
+			return true;
+		}
+		return false;
+	}
+	
+	public Chunk getCapital() {return this.capital;}
+	public void setCapital(Chunk capital) {this.capital = capital;}
+	
+	public List<Land> getLand() {return this.land;}
+	public void addLand(Land land) {this.land.add(land);}
+	public void removeLand(Land land) {
+		for (Land currentLand : this.land) {
+			if (land.getCoordinates().equals(currentLand.getCoordinates())) {
+				this.land.remove(this.land.indexOf(currentLand));
+			}
+		}
 	}
 
 	public Church getChurch() {

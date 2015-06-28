@@ -6,13 +6,15 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.util.Util;
+
 public class Army implements CivilOrganizer {
-	public UUID knight;
-	public UUID dame;
-	public List<UUID> soldiers;
-	public Bank bank;
+	private UUID knight;
+	private UUID dame;
+	private List<UUID> soldiers;
+	private Bank bank;
 	
-	public ConfigurationSection dataPath;
+	private ConfigurationSection dataPath;
 	
 	public Army(ConfigurationSection section) {
 		this.dataPath = section;
@@ -27,6 +29,30 @@ public class Army implements CivilOrganizer {
 		this.bank = bank;
 		
 		this.dataPath = section;
+	}
+	
+	public UUID getKnight() {return this.knight;}
+	public void setKnight(UUID knight) {
+		this.knight = knight;
+	}
+	
+	public UUID getDame() {return this.dame;}
+	public void setDame(UUID dame) {
+		this.dame = dame;
+	}
+	
+	public List<UUID> getSoldiers() {return this.soldiers;}
+	public void addSoldier(UUID soldier) {
+		this.soldiers.add(soldier);
+	}
+	public void removeSoldier(int soldier) {
+		this.soldiers.remove(soldier);
+	}
+	public boolean isSoldier(UUID soldier) {
+		if (Util.toStringList(this.getSoldiers()).contains(soldier.toString())) {
+			return true;
+		}
+		return false;
 	}
 
 	public ConfigurationSection getDataPath() {
