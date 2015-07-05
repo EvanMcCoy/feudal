@@ -1,8 +1,10 @@
 package com.qwertyness.feudal.command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public abstract class FutureCommand {
 	protected String command;
@@ -37,6 +39,10 @@ public abstract class FutureCommand {
 		return true;
 	}
 	
+	public OfflinePlayer getRecipiant() {
+		return this.recipiant;
+	}
+	
 	public boolean compareRecipiant(CommandSender sender) {
 		if (this.recipiant == null) {
 			return true;
@@ -61,6 +67,10 @@ public abstract class FutureCommand {
 	
 	public FutureCommand setJoinMessage(String message) {
 		this.joinMessage = ChatColor.translateAlternateColorCodes('&', message);
+		Player player = Bukkit.getPlayer(this.recipiant.getUniqueId());
+		if (player != null) {
+			player.sendMessage(this.joinMessage);
+		}
 		return this;
 	}
 }

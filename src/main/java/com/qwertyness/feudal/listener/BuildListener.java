@@ -9,6 +9,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
+import com.qwertyness.feudal.government.settings.Settings.TitlePermission;
 import com.qwertyness.feudal.util.Util;
 
 public class BuildListener implements Listener {
@@ -42,7 +43,7 @@ public class BuildListener implements Listener {
 		}
 		Kingdom playerKingdom = Util.getKingdom(player);
 		if (owner.getName().equals(playerKingdom.getName())) {
-			if (owner.getSettings().buildPermission.hasKingdomPermission(Util.getTitle(player, owner, null))) {
+			if (owner.getSettings().buildPermission.titleHasPermission(Util.getTitle(player, owner, null), TitlePermission.KINGDOM_LEVEL)) {
 				return true;
 			}
 		}

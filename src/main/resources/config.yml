@@ -4,3 +4,47 @@ fortressTax: 15
 taxTimes:
 - 0
 - 12
+maxLand: 100
+fortressRadius: 3
+flags:
+  enabled: true
+  defaultFlag:
+    color: RED
+    patterns:
+      '0':
+        pattern: STRIPE_CENTER
+        color: YELLOW
+      '1':
+        pattern: BORDER
+        color: BLACK
+  structure:
+    '0':
+      offsetX: 0
+      offsetY: -1
+      offsetZ: 0
+      material: WOOD
+    '1':
+      offsetX: 1
+      offsetY: -1
+      offsetZ: 0
+      material: WOOD
+    '2':
+      offsetX: -1
+      offsetY: -1
+      offsetZ: 0
+      material: WOOD
+    '3':
+      offsetX: 0
+      offsetY: -1
+      offsetZ: 1
+      material: WOOD
+    '4':
+      offsetX: 0
+      offsetY: -1
+      offsetZ: -1
+      material: WOOD
+    '5':
+      offsetX: 0
+      offsetY: 0
+      offsetZ: 0
+      material: BANNER

@@ -5,10 +5,8 @@ import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.qwertyness.feudal.command.AttackCommand;
 import com.qwertyness.feudal.command.FutureCommand;
 import com.qwertyness.feudal.command.KingdomCommand;
-import com.qwertyness.feudal.data.FeudalPlayer;
 import com.qwertyness.feudal.data.MessageData;
 import com.qwertyness.feudal.data.PlayerData;
 import com.qwertyness.feudal.data.PlayerManager;
@@ -32,6 +29,7 @@ import com.qwertyness.feudal.data.government.KingdomData;
 import com.qwertyness.feudal.data.government.KingdomManager;
 import com.qwertyness.feudal.data.government.LandData;
 import com.qwertyness.feudal.data.government.LandManager;
+import com.qwertyness.feudal.government.settings.Settings;
 import com.qwertyness.feudal.listener.BuildListener;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.listener.TaxExecutor;
@@ -71,14 +69,15 @@ public class Feudal extends JavaPlugin implements Listener {
 		new Configuration(this);
 		
 		//Initialize data managers and utilities.
-		this.kingdomManager = new KingdomManager();
-		this.fiefManager = new FiefManager();
-		this.landManager = new LandManager();
 		this.bankManager = new BankManager();
 		this.armyManager = new ArmyManager();
 		this.churchManager = new ChurchManager();
+		this.fiefManager = new FiefManager();
+		this.kingdomManager = new KingdomManager();
+		this.landManager = new LandManager();
 		this.playerManager = new PlayerManager();
 		new LandUtil(this.landManager);
+		Settings.inizializeDefaultPositions();
 		this.futureCommands = new ArrayList<FutureCommand>();
 		
 		//Register listeners and runnables
@@ -106,9 +105,11 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.saveConfig();
 		this.kingdomManager.saveAll();
 		this.playerManager.saveAll();
+		this.landManager.saveAll();
 		this.kingdomData.save();
 		this.fiefData.save();
 		this.playerData.save();
+		this.landData.save();
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
@@ -116,6 +117,7 @@ public class Feudal extends JavaPlugin implements Listener {
 			FutureCommand futureCommand = this.futureCommands.get(i);
 			if (futureCommand.getCommand().equalsIgnoreCase(command.getName()) && futureCommand.compareSubcommands(args) && futureCommand.compareRecipiant(sender)) {
 				futureCommand.run(args);
+				this.futureCommands.remove(i);
 			}
 		}
 		return false;
@@ -127,22 +129,16 @@ public class Feudal extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		Bukkit.broadcastMessage("RunEvent");
 		if (this.playerManager.isPlayer(event.getPlayer().getUniqueId())) {
-			return;
+			System.out.println(this.getPlayerManager().getPlayers());
 		}
-		Bukkit.broadcastMessage("IsNotPlayer");
-		FeudalPlayer player;
-		if (this.playerData.get().contains(event.getPlayer().getUniqueId().toString())) {
-			Bukkit.broadcastMessage("PlayerDataContains");
-			player = this.playerManager.loadPlayer(event.getPlayer().getUniqueId().toString());
+		for (FutureCommand command : this.futureCommands) {
+			if (command.getRecipiant().getUniqueId().toString().equals(event.getPlayer().getUniqueId().toString())) {
+				if (!command.hasJoinMessage()) {
+					event.getPlayer().sendMessage(command.getJoinMessage());
+				}
+			}
 		}
-		else {
-			ConfigurationSection playerSection = this.playerData.get().createSection(event.getPlayer().getUniqueId().toString());
-			playerSection.set(event.getPlayer().getUniqueId().toString() + ".gender", true);
-			player = new FeudalPlayer(event.getPlayer().getUniqueId(), playerSection);
-		}
-		this.playerManager.registerPlayer(player);
 	}
 	
 	public KingdomData getKingdomData() {return this.kingdomData;}

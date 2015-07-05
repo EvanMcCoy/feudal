@@ -80,8 +80,8 @@ public class LandManager {
 	public void saveLand(Land land) {
 		ConfigurationSection section = land.getDataPath();
 		
-		section.set("kingdom", land.kingdom);
-		section.set("fief", land.fief);
+		section.set("kingdom", (land.kingdom == null) ? null : land.kingdom.getName());
+		section.set("fief", (land.fief == null) ? null : land.fief.getName());
 		section.set("owners", Util.toStringList(land.owners));
 		section.set("fortress", land.isFortress());
 	}

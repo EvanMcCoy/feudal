@@ -17,16 +17,24 @@ public class PlayerManager {
 		players = new ArrayList<FeudalPlayer>();
 	}
 	
+	public List<FeudalPlayer> getPlayers() {
+		return this.players;
+	}
+	
 	public FeudalPlayer getPlayer(UUID player) {
 		for (FeudalPlayer feudalPlayer : this.players) {
 			if (feudalPlayer.player.toString().equals(player.toString())) {
 				return feudalPlayer;
 			}
 		}
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
+		
 		FeudalPlayer newPlayer = null;
-		if (offlinePlayer != null) {
-			registerPlayer(loadPlayer(offlinePlayer.getUniqueId().toString()));
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
+		if (offlinePlayer == null) {
+			return null;
+		}
+		else {
+			newPlayer = createPlayer(player);
 		}
 		return newPlayer;
 	}
@@ -36,24 +44,34 @@ public class PlayerManager {
 	}
 	
 	public void registerPlayer(FeudalPlayer player) {
-		if (!isPlayer(player.player)) {
-			this.players.add(player);
-		}
+		this.players.add(player);
 	}
 	
 	public void unregisterPlayer(FeudalPlayer player) {
-		if (!isPlayer(player.player)) {
-			return;
-		}
 		this.players.remove(player);
+	}
+	
+	public FeudalPlayer createPlayer(UUID uuid) {
+		ConfigurationSection playerSection = Feudal.getInstance().getPlayerData().get().getConfigurationSection(uuid.toString());
+		if (playerSection != null) {
+			return loadPlayer(uuid.toString());
+		}
+		playerSection = Feudal.getInstance().getPlayerData().get().createSection(uuid.toString());
+		FeudalPlayer player = new FeudalPlayer(uuid, "", "", playerSection);
+		System.out.println(player);
+		registerPlayer(player);
+		return player;
 	}
 	
 	public FeudalPlayer loadPlayer(String uuid) {
 		ConfigurationSection playerSection = Feudal.getInstance().getPlayerData().get().getConfigurationSection(uuid);
 		
 		UUID playerUUID = UUID.fromString(uuid);
+		String kingdom = playerSection.getString("kingdom");
+		System.out.println(kingdom);
+		String fief = playerSection.getString("fief");
 		
-		return new FeudalPlayer(playerUUID, playerSection);
+		return new FeudalPlayer(playerUUID, kingdom, fief, playerSection);
 	}
 	
 	public void savePlayer(FeudalPlayer player) {

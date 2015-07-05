@@ -64,7 +64,7 @@ public class FiefManager {
 		fiefSection.set("peasents", Util.toStringList(fief.getPeasents()));
 		fiefSection.set("serfs", Util.toStringList(fief.getSerfs()));
 		fiefSection.set("capital", Util.toString(fief.getCapital()));
-		this.plugin.getBankManager().saveBank(fief);
+		this.plugin.getBankManager().saveBank(fief.getBank());
 		this.plugin.getArmyManager().saveArmy(fief.getArmy());
 		this.plugin.getChurchManager().saveChurch(fief.getChurch());
 	}

@@ -5,18 +5,21 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.qwertyness.feudal.government.Flag;
+
 public class Configuration {
 	private Feudal plugin;
 	public static Configuration instance;
 	
-	public boolean allowMultipleTitles;
 	public int landTax;
 	public int fortressTax;
 	public static boolean useEconomy;
 	//In hours
 	public List<Integer> taxTimes;
 	public int maxLand;
-	public int fortressRadius;
+	public int fortressRadius; 
+	
+	public Flag defaultFlag;
 	
 	public Messages messages;
 	
@@ -27,10 +30,13 @@ public class Configuration {
 	}
 	
 	public void loadConfiguration() {
-		allowMultipleTitles = this.plugin.getConfig().getBoolean("allowMultipleTitles");
 		this.landTax = this.plugin.getConfig().getInt("landTax");
 		this.fortressTax = this.plugin.getConfig().getInt("fortressTax");
 		this.taxTimes = this.plugin.getConfig().getIntegerList("taxTimes");
+		this.maxLand = this.plugin.getConfig().getInt("maxLand");
+		this.fortressRadius = this.plugin.getConfig().getInt("fortressRadius");
+		this.defaultFlag = new Flag(this.plugin.getConfig().getConfigurationSection("flags.defaultFlag"));
+		Flag.buildStructureBlockList(this.plugin.getConfig().getConfigurationSection("flags.structure"));
 		
 		this.messages = new Messages(this.plugin);
 	}
@@ -41,8 +47,10 @@ public class Configuration {
 		public String prefix;
 		public String insufficientPermission;
 		public String notInAKingdom;
+		public String notInAGovernment;
 		public String notAPlayer;
 		public String invalidIndex;
+		public String invalidMaterial;
 		public String listTopStarter;
 		public String listTopEnder;
 		public String listIndexColor;
@@ -68,8 +76,6 @@ public class Configuration {
 		public String notAFief;
 		public String setFiefBaron;
 		public String setFiefBaroness;
-		
-		
 		
 		public String notKingdomLand;
 		public String landAlreadyAllocated;
@@ -101,9 +107,11 @@ public class Configuration {
 			FileConfiguration messages = this.plugin.getMessageData().get();
 			this.prefix = color(messages.getString("prefix"));
 			this.insufficientPermission = color(messages.getString("insufficientPermission"));
+			this.notInAGovernment = color(messages.getString("notInAGovernment"));
 			this.notInAKingdom = color(messages.getString("notInAKingdom"));
 			this.notAPlayer = color(messages.getString("notAPlayer"));
 			this.invalidIndex = color(messages.getString("invalidIndex"));
+			this.invalidMaterial = color(messages.getString("invalidMaterial"));
 			this.listTopStarter = color(messages.getString("listTopStarter"));
 			this.listTopEnder = color(messages.getString("listTopEnder"));
 			this.listIndexColor = color(messages.getString("listIndexColor"));

@@ -33,9 +33,23 @@ public class Fief implements Government {
 		this.serfs = new ArrayList<UUID>();
 		this.land = new ArrayList<Land>();
 		
-		this.bank = new Bank();
-		this.army = new Army(section.getConfigurationSection("army"));
-		this.church = new Church(section.getConfigurationSection("church"));
+		ConfigurationSection bankSection = section.getConfigurationSection("bank");
+		if (bankSection == null) {
+			bankSection = section.createSection("bank");
+		}
+		this.bank = new Bank(bankSection);
+
+		ConfigurationSection churchSection = section.getConfigurationSection("church");
+		if (churchSection == null) {
+			churchSection = section.createSection("church");
+		}
+		this.church = new Church(churchSection);
+		
+		ConfigurationSection armySection = section.getConfigurationSection("army");
+		if (armySection == null) {
+			armySection = section.createSection("army");
+		}
+		this.army = new Army(armySection);
 	}
 	
 	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, ConfigurationSection section) {
@@ -52,7 +66,7 @@ public class Fief implements Government {
 		}
 		this.bank = bank;
 		if (this.bank == null) {
-			this.bank = new Bank();
+			this.bank = new Bank(section.createSection("bank"));
 		}
 		this.army = army;
 		if (this.army == null) {

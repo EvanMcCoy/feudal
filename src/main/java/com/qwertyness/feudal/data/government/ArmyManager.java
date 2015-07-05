@@ -19,16 +19,15 @@ public class ArmyManager {
 		UUID dame = (section.getString("dame") != null) ? UUID.fromString(section.getString("dame")) : null;
 		List<UUID> soldiers = Util.toUUIDList(section.getStringList("soldiers"));
 		Bank bank = Feudal.getInstance().getBankManager().loadBank(section);
-		
 		return new Army(knight, dame, soldiers, bank, section);
 	}
 	
 	public void saveArmy(Army army) {
-		ConfigurationSection section = army.getDataPath().getConfigurationSection("army");
+		ConfigurationSection section = army.getDataPath();
 		
 		section.set("knight", (army.getKnight() == null) ? null : army.getKnight().toString());
 		section.set("dame", (army.getDame() == null) ? null : army.getDame().toString());
 		section.set("soldiers", Util.toStringList(army.getSoldiers()));
-		Feudal.getInstance().getBankManager().saveBank(army);
+		Feudal.getInstance().getBankManager().saveBank(army.getBank());
 	}
 }

@@ -7,11 +7,14 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.data.FeudalPlayer;
+import com.qwertyness.feudal.government.Army;
+import com.qwertyness.feudal.government.Church;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 
@@ -97,6 +100,36 @@ public class Util {
 			}
 		}
 		return chunks;
+	}
+	
+	public static String toPlayerName(UUID uuid) {
+		OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+		if (player != null) {
+			return player.getName();
+		}
+		return "";
+	}
+	
+	public static List<String> toPlayerNameList(List<UUID> uuids) {
+		List<String> output = new ArrayList<String>();
+		for (UUID uuid : uuids) {
+			String playerName = toPlayerName(uuid);
+			if (playerName != "") {
+				output.add(playerName);
+			}
+		}
+		return output;
+	}
+	
+	public static String toUIString(List<String> strings) {
+		String output = "";
+		for (String string : strings) {
+			output += string + ", ";
+		}
+		if (output.length() > 1) {
+			output = output.substring(0, 2);
+		}
+		return output;
 	}
 	
 	public static Kingdom getKingdom(Player player) {
@@ -208,214 +241,218 @@ public class Util {
 		return null;
 	}
 	
-	public static void setPosition(String title, Kingdom kingdom, Fief fief, Player player) {
+	public static void setPosition(String title, Kingdom kingdom, Fief fief, OfflinePlayer player) {
 		FeudalPlayer fPlayer = Feudal.getInstance().getPlayerManager().getPlayer(player.getUniqueId());
 		if (title.equalsIgnoreCase("king")) {
 			kingdom.setKing(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("queen")) {
 			kingdom.setQueen(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("prince")) {
 			kingdom.setPrince(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("princess")) {
 			kingdom.setPrincess(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("duke")) {
 			kingdom.setDuke(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("duchess")) {
 			kingdom.setDuchess(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("earl")) {
 			kingdom.addEarl(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("royalpope")) {
 			kingdom.getChurch().setPope(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("royalabbot")) {
 			kingdom.getChurch().addAbbot(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("royalknight")) {
 			kingdom.getArmy().setKnight(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("royaldame")) {
 			kingdom.getArmy().setDame(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("royalsoldier")) {
 			kingdom.getArmy().addSoldier(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.kingdom = kingdom.getName();
 		}
 		if (title.equalsIgnoreCase("baron")) {
 			fief.setBaron(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("baroness")) {
 			fief.setBaroness(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("peasent")) {
 			fief.addPeasent(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("serf")) {
 			fief.addSerf(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("pope")) {
 			fief.getChurch().setPope(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("abbot")) {
 			fief.getChurch().addAbbot(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("knight")) {
 			fief.getArmy().setKnight(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("dame")) {
 			fief.getArmy().setDame(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("soldier")) {
 			fief.getArmy().addSoldier(player.getUniqueId());
-			removePosition(fPlayer);
 			fPlayer.fief = fief.getName();
 		}
 	}
 	
-	public static void removePosition(FeudalPlayer player) {
+	public static void removePosition(FeudalPlayer player, boolean destroy) {
 		Feudal plugin = Feudal.getInstance();
 		
 		Kingdom kingdom = plugin.getKingdomManager().getKingdom(player.kingdom);
-		Fief fief = plugin.getFiefManager().getFief(kingdom.getName(), player.fief);
+		Fief fief = null;
 		
 		if (kingdom != null) {
+			fief = plugin.getFiefManager().getFief(kingdom.getName(), player.fief);
 			if (((kingdom.getKing() != null) ? kingdom.getKing().toString() : "").equals(player.player.toString())) {
 				kingdom.setKing(null);
-				if (kingdom.getQueen() == null) {
+				if (kingdom.getQueen() == null && destroy) {
 					plugin.getKingdomManager().deleteKingdom(kingdom);
 				}
-				player.kingdom = "";
 			}
 			if (((kingdom.getQueen() != null) ? kingdom.getQueen().toString() : "").equals(player.player.toString())) {
 				kingdom.setQueen(null);
-				if (kingdom.getKing() == null) {
+				if (kingdom.getKing() == null && destroy) {
 					plugin.getKingdomManager().deleteKingdom(kingdom);
 				}
-				player.kingdom = "";
 			}
 			if (((kingdom.getPrincess() != null) ? kingdom.getPrince().toString() : "").equals(player.player.toString())) {
 				kingdom.setPrince(null);
-				player.kingdom = "";
 			}
 			if (((kingdom.getPrincess() != null) ? kingdom.getPrincess().toString() : "").equals(player.player.toString())) {
 				kingdom.setPrincess(null);
-				player.kingdom = "";
 			}
 			if (((kingdom.getDuke() != null) ? kingdom.getDuke().toString() : "").equals(player.player.toString())) {
 				kingdom.setDuke(null);
-				player.kingdom = "";
 			}
 			if (((kingdom.getDuchess() != null) ? kingdom.getDuchess().toString() : "").equals(player.player.toString())) {
 				kingdom.setDuchess(null);
-				player.kingdom = "";
 			}
 			if (kingdom.isEarl(player.player)) {
 				kingdom.removeEarl(kingdom.getEarls().indexOf(player.player));
-				player.kingdom = "";
 			}
 			if (((kingdom.getChurch().getPope() != null) ? kingdom.getChurch().getPope().toString() : "").equals(player.player.toString())) {
 				kingdom.getChurch().setPope(null);
-				player.kingdom = "";
 			}
 			if (toStringList(kingdom.getChurch().getAbbots()).contains(player.player.toString())) {
 				kingdom.getChurch().removeAbbot(kingdom.getChurch().getAbbots().indexOf(player.player));
-				player.kingdom = "";
 			}
 			if (((kingdom.getArmy().getKnight() != null) ? kingdom.getArmy().getKnight().toString() : "").equals(player.player.toString())) {
 				kingdom.getArmy().setKnight(null);
-				player.kingdom = "";
 			}
 			if (((kingdom.getArmy().getDame() != null) ? kingdom.getArmy().getDame().toString() : "").equals(player.player.toString())) {
 				kingdom.getArmy().setDame(null);
-				player.kingdom = "";
 			}
 			if (toStringList(kingdom.getArmy().getSoldiers()).contains(player.player.toString())) {
 				kingdom.getArmy().removeSoldier(kingdom.getArmy().getSoldiers().indexOf(player.player));
-				player.kingdom = "";
 			}
 		}
 		if (fief != null) {
 			if (((fief.getBaron() != null) ? fief.getBaron().toString() : "").equals(player.player.toString())) {
 				fief.setBaron(null);
-				player.fief = "";
 			}
 			if (((fief.getBaroness() != null) ? fief.getBaroness().toString() : "").equals(player.player.toString())) {
 				fief.setBaroness(null);
-				player.fief = "";
 			}
 			if (toStringList(fief.getPeasents()).contains(player.player.toString())) {
 				fief.removePeasent(fief.getPeasents().indexOf(player.player));
-				player.fief = "";
 			}
 			if (toStringList(fief.getSerfs()).contains(player.player.toString())) {
 				fief.removeSerf(fief.getSerfs().indexOf(player.player));
-				player.fief = "";
 			}
 			if (((fief.getChurch().getPope() != null) ? fief.getChurch().getPope().toString() : "").equals(player.player.toString())) {
 				fief.getChurch().setPope(null);
-				player.fief = "";
 			}
 			if (toStringList(fief.getChurch().getAbbots()).contains(player.player.toString())) {
 				fief.getChurch().removeAbbot(fief.getChurch().getAbbots().indexOf(player.player));
-				player.fief = "";
 			}
 			if (((fief.getArmy().getKnight() != null) ? fief.getArmy().getKnight().toString() : "").equals(player.player.toString())) {
 				fief.getArmy().setKnight(null);
-				player.fief = "";
 			}
 			if (((fief.getArmy().getDame() != null) ? fief.getArmy().getDame().toString() : "").equals(player.player.toString())) {
 				fief.getArmy().setDame(null);
-				player.fief = "";
 			}
 			if (toStringList(fief.getArmy().getSoldiers()).contains(player.player.toString())) {
 				fief.getArmy().removeSoldier(fief.getArmy().getSoldiers().indexOf(player.player));
-				player.fief = "";
 			}
 		}
+		player.kingdom = "";
+		player.fief = "";
+	}
+	
+	public static List<UUID> getKingdomMembers(Kingdom kingdom) {
+		List<UUID> members = new ArrayList<UUID>();
+		members.add(kingdom.getKing());
+		members.add(kingdom.getQueen());
+		members.add(kingdom.getPrince());
+		members.add(kingdom.getPrincess());
+		members.add(kingdom.getDuke());
+		members.add(kingdom.getDuchess());
+		members.addAll(kingdom.getEarls());
+		for (Fief fief : kingdom.getFiefs()) {
+			members.addAll(getFiefMembers(fief));
+		}
+		members.addAll(getArmyMembers(kingdom.getArmy()));
+		members.addAll(getChurchMembers(kingdom.getChurch()));
+		return members;
+	}
+	
+	public static List<UUID> getFiefMembers(Fief fief) {
+		List<UUID> members = new ArrayList<UUID>();
+		members.add(fief.getBaron());
+		members.add(fief.getBaroness());
+		members.addAll(fief.getPeasents());
+		members.addAll(fief.getSerfs());
+		members.addAll(getArmyMembers(fief.getArmy()));
+		members.addAll(getChurchMembers(fief.getChurch()));
+		return members;
+	}
+	
+	public static List<UUID> getArmyMembers(Army army) {
+		List<UUID> members = new ArrayList<UUID>();
+		members.add(army.getKnight());
+		members.add(army.getDame());
+		members.addAll(army.getSoldiers());
+		return members;
+	}
+	
+	public static List<UUID> getChurchMembers(Church church) {
+		List<UUID> members = new ArrayList<UUID>();
+		members.add(church.getPope());
+		members.addAll(church.getAbbots());
+		return members;
 	}
 }

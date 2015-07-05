@@ -6,31 +6,32 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.government.Bank;
-import com.qwertyness.feudal.government.CivilOrganizer;
 
 public class BankManager {
 	public Economy vaultEconomy;
 
 	public Bank loadBank(ConfigurationSection government) {
 		ConfigurationSection bankSection = government.getConfigurationSection("bank");
-		
-		Bank bank = new Bank();
+		Bank bank = new Bank(bankSection);
 		bank.depositMoney(bankSection.getDouble("balance"));
-		for (String materialString : bankSection.getConfigurationSection("inventory").getKeys(false)) {
-			Material material = Material.valueOf(materialString);
-			int amount = bankSection.getInt("inventory." + materialString);
-			bank.depositItem(material, amount);
+		
+		ConfigurationSection inventorySection = bankSection.getConfigurationSection("inventory");
+		if (inventorySection != null) {
+			for (String materialString : bankSection.getConfigurationSection("inventory").getKeys(false)) {
+				Material material = Material.valueOf(materialString);
+				int amount = bankSection.getInt("inventory." + materialString);
+				bank.depositItem(material, amount);
+			}
 		}
 		
 		return bank;
 	}
 	
-	public void saveBank(CivilOrganizer civilOrganizer) {
-		ConfigurationSection bankSection = civilOrganizer.getDataPath().getConfigurationSection("bank");
-		
-		bankSection.set("balance", civilOrganizer.getBank().getBalance());
-		for (Material key : civilOrganizer.getBank().getInventory().keySet()) {
-			bankSection.set("inventory." + key.toString(), civilOrganizer.getBank().getInventory().get(key));
+	public void saveBank(Bank bank) {
+		ConfigurationSection bankSection = bank.getDataPath();
+		bankSection.set("balance", bank.getBalance());
+		for (Material key : bank.getInventory().keySet()) {
+			bankSection.set("inventory." + key.toString(), bank.getInventory().get(key));
 		}
 	}
 }

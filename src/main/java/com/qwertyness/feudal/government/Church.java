@@ -19,6 +19,12 @@ public class Church implements CivilOrganizer {
 	public Church(ConfigurationSection section) {
 		this.dataPath = section;
 		
+		ConfigurationSection bankSection = section.getConfigurationSection("bank");
+		if (bankSection == null) {
+			bankSection = section.createSection("bank");
+		}
+		this.bank = new Bank(bankSection);
+		
 		this.abbots = new ArrayList<UUID>();
 	}
 	

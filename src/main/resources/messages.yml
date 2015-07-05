@@ -9,10 +9,14 @@ prefix: "[Feudal] &a"
 insufficientPermission: "&cYou do not have permission to do that."
 #When a player is not in a kingdom, but uses a command that requires it.
 notInAKingdom: "&cYou must be in a kingdom to do that."
+#When a player is not in any form of government, but uses a command that requires it.
+notInAGovernment: "&cYou muse hold a position in government to do that."
 #When a querried player is offline or not a member.
 notAPlayer: "&cThat player could not be found."
 #When a command accesses an index outside of the bounds of an array.
 invalidIndex: "&cThat index is too high."
+#When a command accesses an invalid material name
+invalidMaterial: "&cThat material is unknown to the realm."
 #When the plugin displays a list, this is the beginning of the header.
 listTopStarter: "&a----- &r"
 #When the plugin displays a list, this is the end of the header.

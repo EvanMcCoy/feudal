@@ -11,6 +11,7 @@ import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.government.Army;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
+import com.qwertyness.feudal.government.settings.Settings.TitlePermission;
 import com.qwertyness.feudal.util.Util;
 
 public class AttackCommand implements CommandExecutor {
@@ -61,7 +62,7 @@ public class AttackCommand implements CommandExecutor {
 		Kingdom kingdom = Util.getKingdom(player);
 		String title = Util.getTitle(player, kingdom, null);
 		Army army = null;
-		if (!GovernmentPermission.getGroupByArmyTitle(title).hasPermission(GovernmentPermission.ROYALTY)) {
+		if (!GovernmentPermission.ROYALTY.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			if (title.equalsIgnoreCase("royalKnight") || title.equalsIgnoreCase("royalDame")) {
 				army = kingdom.getArmy();
 			}

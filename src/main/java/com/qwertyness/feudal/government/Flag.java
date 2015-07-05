@@ -12,6 +12,9 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.Configuration;
+import com.qwertyness.feudal.Feudal;
+
 public class Flag {
 	public static Flag fakeInstance = new Flag(null);
 
@@ -19,12 +22,17 @@ public class Flag {
 	private List<Pattern> patterns;
 	
 	public Flag() {
-		this.color = DyeColor.WHITE;
-		this.patterns = new ArrayList<Pattern>();
+		this.color = Configuration.instance.defaultFlag.color;
+		this.patterns = Configuration.instance.defaultFlag.patterns;
 	}
 	
 	public Flag(ConfigurationSection section) {
 		if (section == null) {
+			section = Feudal.getInstance().getConfig().getConfigurationSection("flags.defaultFlag");
+			if (Configuration.instance.defaultFlag != null) {
+				this.color = Configuration.instance.defaultFlag.color;
+				this.patterns = Configuration.instance.defaultFlag.patterns;
+			}
 			return;
 		}
 		
@@ -33,7 +41,7 @@ public class Flag {
 			testColor = DyeColor.WHITE;
 		}
 		this.color = testColor;
-		
+		this.patterns = new ArrayList<Pattern>();
 		for (String key : section.getConfigurationSection("patterns").getKeys(false)) {
 			DyeColor color = DyeColor.valueOf(section.getString("patterns." + key + ".color"));
 			if (color == null) {
@@ -56,6 +64,7 @@ public class Flag {
 	
 	public void setFlag(ConfigurationSection section) {
 		section.set("color", this.color.toString());
+		section.set("patterns", null);
 		for (int i = 0;i < this.patterns.size();i++) {
 			section.set("patterns." + i + ".pattern", this.patterns.get(i).getPattern().toString());
 			section.set("patterns." + i + ".color", this.patterns.get(i).getColor().toString());
@@ -69,7 +78,7 @@ public class Flag {
 		for (String key : flagConfig.getKeys(false)) {
 			ConfigurationSection blockSection = flagConfig.getConfigurationSection(key);
 			flagStructure.add(fakeInstance.new StructureBlock(blockSection.getInt("offsetX"), 
-					blockSection.getInt("offsetZ"),
+					blockSection.getInt("offsetY"),
 					blockSection.getInt("offsetZ"), 
 					blockSection.getString("material")));
 		}

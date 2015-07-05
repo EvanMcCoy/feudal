@@ -3,10 +3,17 @@ package com.qwertyness.feudal.government;
 import java.util.HashMap;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class Bank {
 	private double balance = 0;
 	private HashMap<Material, Integer> inventory = new HashMap<Material, Integer>();
+	
+	private ConfigurationSection dataPath;
+	
+	public Bank(ConfigurationSection dataPath) {
+		this.dataPath = dataPath;
+	}
 	
 	public double getBalance() {
 		return this.balance;
@@ -49,5 +56,9 @@ public class Bank {
 			}
 		}
 		return false;
+	}
+	
+	public ConfigurationSection getDataPath() {
+		return this.dataPath;
 	}
 }

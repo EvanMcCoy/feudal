@@ -27,6 +27,6 @@ public class ChurchManager {
 		
 		section.set("pope", (church.getPope() == null) ? null : church.getPope().toString());
 		section.set("abbots", Util.toStringList(church.getAbbots()));
-		Feudal.getInstance().getBankManager().saveBank(church);
+		Feudal.getInstance().getBankManager().saveBank(church.getBank());
 	}
 }

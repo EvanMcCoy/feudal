@@ -12,6 +12,7 @@ import com.qwertyness.feudal.government.Army;
 import com.qwertyness.feudal.government.Bank;
 import com.qwertyness.feudal.government.Church;
 import com.qwertyness.feudal.government.Fief;
+import com.qwertyness.feudal.government.Flag;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
 import com.qwertyness.feudal.util.Util;
@@ -67,8 +68,8 @@ public class KingdomManager {
 		UUID prince = (kingdomSection.getString("prince") != null) ? UUID.fromString(kingdomSection.getString("prince")) : null;
 		UUID princess = (kingdomSection.getString("princess") != null) ? UUID.fromString(kingdomSection.getString("princess")) : null;
 		UUID duke = (kingdomSection.getString("duke") != null) ? UUID.fromString(kingdomSection.getString("duke")) : null;
-		UUID duchess = (kingdomSection.getString("getDuchess()") != null) ? UUID.fromString(kingdomSection.getString("getDuchess()")) : null;
-		List<UUID> earls = Util.toUUIDList(kingdomSection.getStringList("getEarls()"));
+		UUID duchess = (kingdomSection.getString("duchess") != null) ? UUID.fromString(kingdomSection.getString("duchess")) : null;
+		List<UUID> earls = Util.toUUIDList(kingdomSection.getStringList("earls"));
 		Bank bank = this.plugin.getBankManager().loadBank(kingdomSection);
 		Army army = this.plugin.getArmyManager().loadArmy(kingdomSection);
 		Church church = this.plugin.getChurchManager().loadChurch(kingdomSection);
@@ -76,10 +77,11 @@ public class KingdomManager {
 		for (String string : kingdomSection.getStringList("fiefs")) {
 			this.plugin.getFiefManager().loadFief(kingdomSection.getName(), string);
 		}
+		Flag flag = new Flag(kingdomSection.getConfigurationSection("flag"));
 		
 		Chunk capital = Util.toChunk(kingdomSection.getString("captial"));
 		
-		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, kingdomSection);
+		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, flag, kingdomSection);
 	}
 	
 	public void saveKingdom(Kingdom kingdom) {
@@ -93,10 +95,14 @@ public class KingdomManager {
 		kingdomSection.set("duke", (kingdom.getDuke() == null) ? null : kingdom.getDuke().toString());
 		kingdomSection.set("dutchess", (kingdom.getDuchess() == null) ? null : kingdom.getDuchess().toString());
 		kingdomSection.set("earls", Util.toStringList(kingdom.getEarls()));
-		this.plugin.getBankManager().saveBank(kingdom);
+		this.plugin.getBankManager().saveBank(kingdom.getBank());
 		this.plugin.getArmyManager().saveArmy(kingdom.getArmy());
 		this.plugin.getChurchManager().saveChurch(kingdom.getChurch());
-		kingdom.getFlag().setFlag(kingdomSection.getConfigurationSection("flag"));
+		ConfigurationSection flagSection = kingdomSection.getConfigurationSection("flag");
+		if (flagSection == null) {
+			flagSection = kingdomSection.createSection("flag");
+		}
+		kingdom.getFlag().setFlag(flagSection);
 		List<String> fiefs = new ArrayList<String>();
 		for (Fief fief : kingdom.getFiefs()) {
 			this.plugin.getFiefManager().saveFief(fief);

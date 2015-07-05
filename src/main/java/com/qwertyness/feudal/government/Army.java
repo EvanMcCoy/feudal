@@ -19,6 +19,12 @@ public class Army implements CivilOrganizer {
 	public Army(ConfigurationSection section) {
 		this.dataPath = section;
 		
+		ConfigurationSection bankSection = section.getConfigurationSection("bank");
+		if (bankSection == null) {
+			bankSection = section.createSection("bank");
+		}
+		this.bank = new Bank(bankSection);
+		
 		this.soldiers = new ArrayList<UUID>();
 	}
 	

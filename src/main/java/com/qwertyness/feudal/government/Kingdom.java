@@ -39,21 +39,29 @@ public class Kingdom implements Government {
 		this.fiefs = new ArrayList<Fief>();
 		this.land = new ArrayList<Land>();
 		
-		if (section.getConfigurationSection("bank") == null) {
-			section.createSection("bank");
+		ConfigurationSection bankSection = section.getConfigurationSection("bank");
+		if (bankSection == null) {
+			bankSection = section.createSection("bank");
 		}
-		this.imperialVault = new Bank();
-		if (section.getConfigurationSection("church") == null) {
-			section.createSection("church");
+		this.imperialVault = new Bank(bankSection);
+		
+		ConfigurationSection churchSection = section.getConfigurationSection("church");
+		if (churchSection == null) {
+			churchSection = section.createSection("church");
 		}
-		this.highChurch = new Church(section.getConfigurationSection("church"));
-		if (section.getConfigurationSection("army") == null) {
-			section.createSection("army");
+		this.highChurch = new Church(churchSection);
+		
+		ConfigurationSection armySection = section.getConfigurationSection("army");
+		if (armySection == null) {
+			armySection = section.createSection("army");
 		}
-		this.royalArmy = new Army(section.getConfigurationSection("army"));
+		this.royalArmy = new Army(armySection);
+		
+		this.flag = new Flag(section.getConfigurationSection("flag"));
+		this.settings = new GovernmentSettings();
 	}
 	
-	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, ConfigurationSection section) {
+	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, Flag flag, ConfigurationSection section) {
 		this.name = name;
 		this.king = king;
 		this.queen = queen;
@@ -67,7 +75,7 @@ public class Kingdom implements Government {
 		}
 		this.imperialVault = bank;
 		if (this.imperialVault == null) {
-			this.imperialVault = new Bank();
+			this.imperialVault = new Bank(section.createSection("bank"));
 		}
 		this.royalArmy = army;
 		if (this.royalArmy == null) {
@@ -86,6 +94,8 @@ public class Kingdom implements Government {
 		this.capital = capital;
 		this.land = new ArrayList<Land>();
 		
+		this.flag = new Flag(section.getConfigurationSection("flag"));
+		this.settings = new GovernmentSettings();
 		this.dataPath = section;
 	}
 	
