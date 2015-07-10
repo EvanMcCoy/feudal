@@ -19,7 +19,6 @@ import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
-import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
 import com.qwertyness.feudal.government.settings.Settings.TitlePermission;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.util.LandUtil;
@@ -31,7 +30,7 @@ public class KingdomCommand implements CommandExecutor {
 	private Messages messages;
 	
 	private static String[] subcommands = {"found", "disunite", "ally", "enemy", "neutral", "createfief", "disbandfief", "setfiefbaron", "setfiefbaroness", "allocateland", "deallocateland", "deallocateall", "setduke",
-			"setduchess", "setcounterpart", "setprince", "setprincess", "listearls", "addearl", "removeearl", "setcapital", "listfortresses", "addfortress", "removefortress", "claim", "autoclaim", "manage", "info"};
+			"setduchess", "setcounterpart", "setprince", "setprincess", "listearls", "addearl", "removeearl", "setcapital", "listfortresses", "addfortress", "removefortress", "claim", "autoclaim", "bank", "manage", "info"};
 	
 	public KingdomCommand(Feudal plugin) {
 		this.plugin = plugin;
@@ -40,6 +39,10 @@ public class KingdomCommand implements CommandExecutor {
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		if (this.plugin.checkFutureCommands(command.getName(), args, sender)) {
+			return true;
+		}
+		
 		if (!command.getName().equalsIgnoreCase("kingdom") || !(sender instanceof Player)) {
 			return false;
 		}
@@ -182,6 +185,9 @@ public class KingdomCommand implements CommandExecutor {
 		else if (args[0].equalsIgnoreCase("info")) {
 			info(player);
 		}
+		else if (args[0].equalsIgnoreCase("bank")) {
+			BankCommand.bankCommand(player, args, "kingdom");
+		}
 		else {
 			help(player);
 		}
@@ -255,7 +261,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyAKingdom);
 			return;
 		}
-		if (Util.isInKingdom(player)) {
+		if (Util.getKingdom(player) != null) {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyInAKingdom);
 			return;
 		}
@@ -287,7 +293,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		if (!kingdom.getSettings().control.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getControlPermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -307,12 +313,13 @@ public class KingdomCommand implements CommandExecutor {
 	
 	//Create Fief
 	public void createFief(String fiefName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -322,18 +329,19 @@ public class KingdomCommand implements CommandExecutor {
 		}
 		ConfigurationSection section = this.plugin.getFiefData().get().createSection(fiefName);
 		Fief fief = new Fief(fiefName, section);
+		kingdom.addFief(fief);
 		
 		player.sendMessage(this.messages.prefix + this.messages.fiefCreate);
 	}
 	
 	//Disband Feif
 	public void disbandFief(String fiefName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -345,7 +353,6 @@ public class KingdomCommand implements CommandExecutor {
 		plugin.getPlayerManager().getPlayer(player.getUniqueId()).fief = "";
 		for (UUID uuid : Util.getFiefMembers(fief)) {
 			Util.removePosition(this.plugin.getPlayerManager().getPlayer(uuid), false);
-			//TODO: change to fief-only position remover
 		}
 		this.plugin.getFiefManager().deleteFief(kingdom, fief);
 		player.sendMessage(this.messages.prefix + this.messages.fiefDisband);
@@ -354,16 +361,16 @@ public class KingdomCommand implements CommandExecutor {
 	//Set fief baron/baroness
 	@SuppressWarnings("deprecation")
 	public void setFiefBaron(String fiefName, String baron, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newBaron = Bukkit.getOfflinePlayer(fiefName);
+		final OfflinePlayer newBaron = Bukkit.getOfflinePlayer(fiefName);
 		if (newBaron == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -372,25 +379,33 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyAFief);
 			return;
 		}
-		Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
-		//TODO: change to fief-only position remover
-		Util.removePosition(this.plugin.getPlayerManager().getPlayer(fief.getBaron()), true);
-		Util.setPosition("baron", kingdom, fief, newBaron);
+		final Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
+		
+		this.plugin.registerFutureCommand(new FutureCommand("fief", new String[] {"acceptposition", kingdom.getName()}, newBaron) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(fief.getBaron()), true);
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("baron", kingdom, fief, newBaron);
+			}
+			
+		}).setJoinMessage("You have been invited as the Baron of " + fief.getName() + ", " + kingdom.getName() + ". Type /fief acceptposition " + kingdom.getName() + " to accept the position.");
+		
 		player.sendMessage(this.messages.prefix + this.messages.setFiefBaron);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void setFiefBaroness(String fiefName, String baroness, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newBaroness = Bukkit.getOfflinePlayer(fiefName);
+		final OfflinePlayer newBaroness = Bukkit.getOfflinePlayer(fiefName);
 		if (newBaroness == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -399,21 +414,29 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyAFief);
 			return;
 		}
-		Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
-		//TODO: change to fief-only position remover
-		Util.removePosition(this.plugin.getPlayerManager().getPlayer(fief.getBaroness()), true);
-		Util.setPosition("baroness", kingdom, fief, newBaroness);
+		final Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
+
+		this.plugin.registerFutureCommand(new FutureCommand("fief", new String[] {"acceptposition", kingdom.getName()}, newBaroness) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(fief.getBaroness()), true);
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("baroness", kingdom, fief, newBaroness);
+			}
+			
+		}).setJoinMessage("You have been invited as the Baroness of " + fief.getName() + ", " + kingdom.getName() + ". Type /fief acceptposition " + kingdom.getName() + " to accept the position.");
+		
 		player.sendMessage(this.messages.prefix + this.messages.setFiefBaroness);
 	}
 	
 	//Allocate/Deallocate land
 	public void allocateLand(String fiefName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -435,12 +458,12 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void deallocateLand(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -458,12 +481,12 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void deallocateAll(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -478,128 +501,180 @@ public class KingdomCommand implements CommandExecutor {
 	
 	@SuppressWarnings("deprecation")
 	public void setDuke(String dukeName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().administrate.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getAdministratePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer duke = Bukkit.getOfflinePlayer(dukeName);
+		final OfflinePlayer duke = Bukkit.getOfflinePlayer(dukeName);
 		if (duke == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
 		}
-		//TODO: change to kingdom-only position remover
-		Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getDuke()), true);
-		Util.setPosition("duke", kingdom, null, duke);
+
+		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, duke) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getDuke()), true);
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("duke", kingdom, null, duke);
+			}
+			
+		}).setJoinMessage("You have been invited as the Duke of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+		
 		player.sendMessage(this.messages.prefix + this.messages.setDuke);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void setDuchess(String duchessName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().administrate.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getAdministratePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer duchess = Bukkit.getOfflinePlayer(duchessName);
+		final OfflinePlayer duchess = Bukkit.getOfflinePlayer(duchessName);
 		if (duchess == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
 		}
-		//TODO: change to kingdom-only position remover
-		Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getDuchess()), true);
-		Util.setPosition("duchess", kingdom, null, duchess);
+
+		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, duchess) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getDuchess()), true);
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("duchess", kingdom, null, duchess);
+			}
+			
+		}).setJoinMessage("You have been invited as the Duchess of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
 		player.sendMessage(this.messages.prefix + this.messages.setDuchess);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void setCounterpart(String counterpartName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().control.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
-			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
-			return;
+		if (kingdom.getKing() == null) {
+			if (!kingdom.getQueen().toString().equals(player.getUniqueId().toString())) {
+				player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
+				return;
+			}
 		}
-		OfflinePlayer counterpart = Bukkit.getOfflinePlayer(counterpartName);
+		else {
+			if (!kingdom.getKing().toString().equals(player.getUniqueId().toString())) {
+				player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
+				return;
+			}
+		}
+		final OfflinePlayer counterpart = Bukkit.getOfflinePlayer(counterpartName);
 		if (counterpart == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
 		}
 		
 		if (kingdom.getKing().toString().equals(player.getUniqueId().toString())) {
-			//TODO: change to kingdom-only position remover
-			Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getQueen()), false);
-			Util.setPosition("queen", kingdom, null, counterpart);
+			this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, counterpart) {
+				@Override
+				public void run(String[] args) {
+					Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getQueen()), false);
+					Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), false);
+					Util.setPosition("queen", kingdom, null, counterpart);
+				}
+				
+			}).setJoinMessage("You have been invited as the Queen of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
 		}
 		else {
-			//TODO: change to kingdom-only position remover
-			Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getKing()), false);
-			Util.setPosition("king", kingdom, null, counterpart);
+			this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, counterpart) {
+				@Override
+				public void run(String[] args) {
+					Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getKing()), false);
+					Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), false);
+					Util.setPosition("king", kingdom, null, counterpart);
+				}
+				
+			}).setJoinMessage("You have been invited as the King of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+			
 		}
 		player.sendMessage(this.messages.prefix + this.messages.setCounterpart);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void setPrince(String princeName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().control.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getControlPermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer prince = Bukkit.getOfflinePlayer(princeName);
+		final OfflinePlayer prince = Bukkit.getOfflinePlayer(princeName);
 		if (prince == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
 		}
-		//TODO: change to kingdom-only position remover
-		Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getPrince()), true);
-		Util.setPosition("prince", kingdom, null, prince);
+
+		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, prince) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getPrince()), true);
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("prince", kingdom, null, prince);
+			}
+			
+		}).setJoinMessage("You have been invited as the Prince of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+		
 		player.sendMessage(this.messages.prefix + this.messages.setPrince);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void setPrincess(String princessName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().control.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getControlPermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer princess = Bukkit.getOfflinePlayer(princessName);
+		final OfflinePlayer princess = Bukkit.getOfflinePlayer(princessName);
 		if (princess == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
 		}
-		//TODO: change to kingdom-only position remover
-		Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getPrincess()), true);
-		Util.setPosition("princess", kingdom, null, princess);
+
+		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, princess) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getPrincess()), true);
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("princess", kingdom, null, princess);
+			}
+			
+		}).setJoinMessage("You have been invited as the Princess of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+		
 		player.sendMessage(this.messages.prefix + this.messages.setPrincess);
 	}
 	
 	public void listEarls(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
 		player.sendMessage(this.messages.listTopStarter + kingdom.getName() + " Earls" + this.messages.listTopEnder);
 		for (UUID earlUUID : kingdom.getEarls()) {
 			OfflinePlayer earl = Bukkit.getOfflinePlayer(earlUUID);
@@ -611,16 +686,16 @@ public class KingdomCommand implements CommandExecutor {
 	
 	@SuppressWarnings("deprecation")
 	public void addEarl(String earlName, Player player) {
-		if (!Util.isInKingdom(player)) {
+		final Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer earl = Bukkit.getOfflinePlayer(earlName);
+		final OfflinePlayer earl = Bukkit.getOfflinePlayer(earlName);
 		if (earl == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -629,17 +704,24 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyAnEarl);
 			return;
 		}
-		Util.setPosition("earl", kingdom, null, earl);
+		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, earl) {
+			@Override
+			public void run(String[] args) {
+				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
+				Util.setPosition("earl", kingdom, null, earl);
+			}
+			
+		}).setJoinMessage("You have been invited as an Earl of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
 		player.sendMessage(this.messages.prefix + this.messages.addEarl);
 	}
 	
 	public void removeEarl(String earlIndex, Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -648,18 +730,17 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.invalidIndex);
 			return;
 		}
-		//TODO: change to kingdom-only position remover
 		Util.removePosition(this.plugin.getPlayerManager().getPlayer(kingdom.getEarls().get(index)), true);
 		player.sendMessage(this.messages.prefix + this.messages.removeEarl);
 	}
 	
 	public void setCapital(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().control.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getControlPermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -677,11 +758,11 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void listFortresses(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
 		
 		player.sendMessage(this.messages.prefix + this.messages.listTopStarter + kingdom.getName() + " Fortresses"
 				+ this.messages.listTopEnder);
@@ -693,12 +774,12 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void addFortress(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -718,12 +799,12 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void removeFortress(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -755,12 +836,12 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void claim(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
@@ -784,12 +865,12 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void unclaim(Player player) {
-		if (!Util.isInKingdom(player)) {
+		Kingdom kingdom = Util.getKingdom(player);
+		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
 		}
-		Kingdom kingdom = Util.getKingdom(player);
-		if (!kingdom.getSettings().manage.titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
+		if (!kingdom.getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, kingdom, null), TitlePermission.KINGDOM_LEVEL)) {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}

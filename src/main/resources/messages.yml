@@ -54,6 +54,16 @@ setFiefBaroness: "You have set the baroness of the fief."
 #Fief messages
 
 #Army messages
+noArmy: "&cYou are not associated with any army."
+setKnight: "You have set the knight of your army."
+setDame: "You have set the dame of your army."
+setArmyCounterpart: "You have set your counterpart in your army."
+addSoldier: "You have added a soldier to your army."
+removeSoldier: "You are removed a soldier from your army."
+capture: "You have initiated the capture of this land."
+weaken: "You have initiated the weakening of this land's defence."
+raze: "You have initiated the raze of this land."
+notAnEnemy: "&cYou must be enemies to attack a kingdom."
 
 #Church messages
 
@@ -77,5 +87,6 @@ cannotUnclaimFortress: "&cYou cannot unclaim a fortress of your kingdom."
 unclaimLand: "You have unclaimed this land."
 autoClaimOn: "You will now automatically claim land where you walk."
 autoClaimOff: "You have stopped automatically claiming land."
+cannotBuild: "&cYou cannot build on this kingdom's land."
 
 #When a player turns land autoclaiming on.

@@ -15,6 +15,8 @@ public class FeudalPlayer {
 	
 	public FeudalPlayer(UUID player, String kingdom, String fief, ConfigurationSection section) {
 		this.player = player;
+		this.kingdom = kingdom;
+		this.fief = fief;
 		this.dataPath = section;
 	}
 	

@@ -1,8 +1,13 @@
 package com.qwertyness.feudal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.qwertyness.feudal.government.Flag;
@@ -35,68 +40,53 @@ public class Configuration {
 		this.taxTimes = this.plugin.getConfig().getIntegerList("taxTimes");
 		this.maxLand = this.plugin.getConfig().getInt("maxLand");
 		this.fortressRadius = this.plugin.getConfig().getInt("fortressRadius");
-		this.defaultFlag = new Flag(this.plugin.getConfig().getConfigurationSection("flags.defaultFlag"));
+		this.defaultFlag = loadDefaultFlag();
 		Flag.buildStructureBlockList(this.plugin.getConfig().getConfigurationSection("flags.structure"));
 		
 		this.messages = new Messages(this.plugin);
 	}
 	
+	private Flag loadDefaultFlag() {
+		ConfigurationSection section = this.plugin.getConfig().getConfigurationSection("flags.defaultFlag");
+		DyeColor testColor = DyeColor.valueOf(section.getString("color"));
+		if (testColor == null) {
+			testColor = DyeColor.WHITE;
+		}
+		DyeColor color = testColor;
+		
+		ConfigurationSection patternSection = section.getConfigurationSection("patterns");
+		if (patternSection == null) {
+			return new Flag(color, new ArrayList<Pattern>());
+		}
+		else {
+			List<Pattern> patterns = new ArrayList<Pattern>();
+			for (String p : patternSection.getKeys(false)) {
+				DyeColor patternColor = DyeColor.valueOf(section.getString("patterns." + p + ".color"));
+				if (patternColor == null) {
+					patternColor = DyeColor.WHITE;
+				}
+				PatternType type = PatternType.valueOf(section.getString("patterns." + p + ".pattern"));
+				if (type == null) {
+					type = PatternType.BASE;
+				}
+				patterns.add(new Pattern(patternColor, type));
+			}
+			return new Flag(color, patterns);
+		}
+	}
+	
 	public class Messages {
 		private Feudal plugin;
 		
-		public String prefix;
-		public String insufficientPermission;
-		public String notInAKingdom;
-		public String notInAGovernment;
-		public String notAPlayer;
-		public String invalidIndex;
-		public String invalidMaterial;
-		public String listTopStarter;
-		public String listTopEnder;
-		public String listIndexColor;
-		public String listItemColor;
-		public String listBottom;
+		public String prefix, insufficientPermission, notInAKingdom, notInAGovernment, notAPlayer, invalidIndex, invalidMaterial, listTopStarter, listTopEnder, listIndexColor, listItemColor, listBottom;
 		
-		public String alreadyInAKingdom;
-		public String kingdomCreate;
-		public String alreadyAKingdom;
-		public String kingdomDisunite;
-		public String kingdomDisuniteConfirm;
-		public String setCounterpart;
-		public String setDuke;
-		public String setDuchess;
-		public String setPrince;
-		public String setPrincess;
-		public String addEarl;
-		public String alreadyAnEarl;
-		public String removeEarl;
-		public String fiefCreate;
-		public String alreadyAFief;
-		public String fiefDisband;
-		public String notAFief;
-		public String setFiefBaron;
-		public String setFiefBaroness;
+		public String alreadyInAKingdom, kingdomCreate, alreadyAKingdom, kingdomDisunite, kingdomDisuniteConfirm, setCounterpart, setDuke, setDuchess, setPrince, setPrincess, addEarl, alreadyAnEarl, removeEarl,
+			fiefCreate, alreadyAFief, fiefDisband, notAFief, setFiefBaron, setFiefBaroness;
 		
-		public String notKingdomLand;
-		public String landAlreadyAllocated;
-		public String landNotAllocated;
-		public String allocateLand;
-		public String deallocateLand;
-		public String deallocateAll;
-		public String alreadyCapital;
-		public String setCapital;
-		public String alreadyAFortress;
-		public String notAFortress;
-		public String addFortress;
-		public String removeFortress;
-		public String landAlreadyClaimed;
-		public String noFortressInRange;
-		public String claimLand;
-		public String cannotUnclaimCapital;
-		public String cannotUnclaimFortress;
-		public String unclaimLand;
-		public String autoClaimOn;
-		public String autoClaimOff;
+		public String noArmy, setKnight, setDame, setArmyCounterpart, addSoldier, removeSoldier, capture, weaken, raze, notAnEnemy;
+		
+		public String notKingdomLand, landAlreadyAllocated, landNotAllocated, allocateLand, deallocateLand, deallocateAll, alreadyCapital, setCapital, alreadyAFortress, notAFortress, addFortress, removeFortress,
+			landAlreadyClaimed, noFortressInRange, claimLand, cannotUnclaimCapital, cannotUnclaimFortress, unclaimLand, autoClaimOn, autoClaimOff, cannotBuild;
 		
 		public Messages(Feudal plugin) {
 			this.plugin = plugin;
@@ -140,7 +130,16 @@ public class Configuration {
 			this.setFiefBaron = color(messages.getString("setFiefBaron"));
 			this.setFiefBaroness = color(messages.getString("setFiefBaroness"));
 			
-			
+			this.noArmy = color(messages.getString("noArmy"));
+			this.setKnight = color(messages.getString("setKnight"));
+			this.setDame = color(messages.getString("setDame"));
+			this.setArmyCounterpart = color(messages.getString("setArmyCounterpart"));
+			this.addSoldier = color(messages.getString("addSoldier"));
+			this.removeSoldier = color(messages.getString("removeSoldier"));
+			this.capture = color(messages.getString("capture"));
+			this.weaken = color(messages.getString("weaken"));
+			this.raze = color(messages.getString("raze"));
+			this.notAnEnemy = color(messages.getString("notAnEnemy"));
 			
 			this.notKingdomLand = color(messages.getString("notKingdomLand"));
 			this.landAlreadyAllocated = color(messages.getString("landAlreadyAllocated"));
@@ -161,6 +160,7 @@ public class Configuration {
 			this.unclaimLand = color(messages.getString("unclaimLand"));
 			this.autoClaimOn = color(messages.getString("autoClaimOn"));
 			this.autoClaimOff = color(messages.getString("autoClaimOff"));
+			this.cannotBuild = color(messages.getString("cannotBuild"));
 		}
 		
 		public String color(String input) {

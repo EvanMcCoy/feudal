@@ -32,23 +32,23 @@ public class TaxExecutor extends BukkitRunnable implements Listener  {
 					if (!this.plugin.getBankManager().vaultEconomy.hasAccount(Bukkit.getOfflinePlayer(peasent))) {
 						continue;
 					}
-					if (!(this.plugin.getBankManager().vaultEconomy.getBalance(Bukkit.getOfflinePlayer(peasent)) >= fief.settings.tax)) {
+					if (!(this.plugin.getBankManager().vaultEconomy.getBalance(Bukkit.getOfflinePlayer(peasent)) >= fief.settings.getTax())) {
 						continue;
 					}
-					this.plugin.getBankManager().vaultEconomy.withdrawPlayer(Bukkit.getOfflinePlayer(peasent), fief.settings.tax);
-					fief.getBank().depositMoney(fief.settings.tax);
+					this.plugin.getBankManager().vaultEconomy.withdrawPlayer(Bukkit.getOfflinePlayer(peasent), fief.settings.getTax());
+					fief.getBank().depositMoney(fief.settings.getTax());
 				}
-				if (kingdom.getSettings().taxPerPlot) {
-					double tax = kingdom.getSettings().tax * fief.getLand().size();
+				if (kingdom.getSettings().doTaxPerPlot()) {
+					double tax = kingdom.getSettings().getTax() * fief.getLand().size();
 					if (fief.getBank().getBalance() >= tax) {
 						fief.getBank().withdrawMoney(tax);
 						kingdom.getBank().depositMoney(tax);
 					}
 				}
 				else {
-					if (fief.getBank().getBalance() >= kingdom.getSettings().tax) {
-						fief.getBank().withdrawMoney(kingdom.getSettings().tax);
-						kingdom.getBank().depositMoney(kingdom.getSettings().tax);
+					if (fief.getBank().getBalance() >= kingdom.getSettings().getTax()) {
+						fief.getBank().withdrawMoney(kingdom.getSettings().getTax());
+						kingdom.getBank().depositMoney(kingdom.getSettings().getTax());
 					}
 				}
 			}

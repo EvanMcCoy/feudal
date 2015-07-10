@@ -13,61 +13,65 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.qwertyness.feudal.Configuration;
-import com.qwertyness.feudal.Feudal;
 
 public class Flag {
-	public static Flag fakeInstance = new Flag(null);
 
 	private DyeColor color;
 	private List<Pattern> patterns;
 	
-	public Flag() {
-		this.color = Configuration.instance.defaultFlag.color;
-		this.patterns = Configuration.instance.defaultFlag.patterns;
-	}
+	private ConfigurationSection dataPath;
 	
 	public Flag(ConfigurationSection section) {
-		if (section == null) {
-			section = Feudal.getInstance().getConfig().getConfigurationSection("flags.defaultFlag");
-			if (Configuration.instance.defaultFlag != null) {
-				this.color = Configuration.instance.defaultFlag.color;
-				this.patterns = Configuration.instance.defaultFlag.patterns;
-			}
-			return;
-		}
-		
-		DyeColor testColor = DyeColor.valueOf(section.getString("color"));
-		if (testColor == null) {
-			testColor = DyeColor.WHITE;
-		}
-		this.color = testColor;
-		this.patterns = new ArrayList<Pattern>();
-		for (String key : section.getConfigurationSection("patterns").getKeys(false)) {
-			DyeColor color = DyeColor.valueOf(section.getString("patterns." + key + ".color"));
-			if (color == null) {
-				color = DyeColor.WHITE;
-			}
-			PatternType type = PatternType.valueOf(section.getString("patterns." + key + ".pattern"));
-			if (type == null) {
-				type = PatternType.BASE;
-			}
-			this.patterns.add(new Pattern(color, type));
-		}
+		Flag flag = loadFlag(section);
+		color = flag.color;
+		patterns = flag.patterns;
+		dataPath = section;
 	}
 	
-	public Flag(DyeColor color, List<Pattern> patterns, Kingdom kingdom) {
+	public Flag(DyeColor color, List<Pattern> patterns) {
 		this.color = color;
 		this.patterns = patterns;
-		kingdom.setFlag(this);
-		setFlag(kingdom.getDataPath().createSection("flag"));
 	}
 	
-	public void setFlag(ConfigurationSection section) {
-		section.set("color", this.color.toString());
-		section.set("patterns", null);
+	public static Flag loadFlag(ConfigurationSection section) {
+		DyeColor color;
+		if (section.getString("color") == null) {
+			color = Configuration.instance.defaultFlag.color;
+		}
+		else {
+			color = DyeColor.valueOf(section.getString("color"));
+			if (color == null) {
+				color = Configuration.instance.defaultFlag.color;
+			}
+		}
+		
+		ConfigurationSection patternSection = section.getConfigurationSection("patterns");
+		if (patternSection == null) {
+			return new Flag(color, Configuration.instance.defaultFlag.patterns);
+		}
+		else {
+			List<Pattern> patterns = new ArrayList<Pattern>();
+			for (String p : patternSection.getKeys(false)) {
+				DyeColor patternColor = DyeColor.valueOf(section.getString("patterns." + p + ".color"));
+				if (patternColor == null) {
+					patternColor = DyeColor.WHITE;
+				}
+				PatternType type = PatternType.valueOf(section.getString("patterns." + p + ".pattern"));
+				if (type == null) {
+					type = PatternType.BASE;
+				}
+				patterns.add(new Pattern(patternColor, type));
+			}
+			return new Flag(color, patterns);
+		}
+	}
+	
+	public void saveFlag() {
+		dataPath.set("color", this.color.toString());
+		dataPath.set("patterns", null);
 		for (int i = 0;i < this.patterns.size();i++) {
-			section.set("patterns." + i + ".pattern", this.patterns.get(i).getPattern().toString());
-			section.set("patterns." + i + ".color", this.patterns.get(i).getColor().toString());
+			dataPath.set("patterns." + i + ".pattern", this.patterns.get(i).getPattern().toString());
+			dataPath.set("patterns." + i + ".color", this.patterns.get(i).getColor().toString());
 		}
 	}
 	
@@ -77,7 +81,7 @@ public class Flag {
 	public static void buildStructureBlockList(ConfigurationSection flagConfig) {
 		for (String key : flagConfig.getKeys(false)) {
 			ConfigurationSection blockSection = flagConfig.getConfigurationSection(key);
-			flagStructure.add(fakeInstance.new StructureBlock(blockSection.getInt("offsetX"), 
+			flagStructure.add(new StructureBlock(blockSection.getInt("offsetX"), 
 					blockSection.getInt("offsetY"),
 					blockSection.getInt("offsetZ"), 
 					blockSection.getString("material")));
@@ -98,7 +102,7 @@ public class Flag {
 		}
 	}
 	
-	public class StructureBlock {
+	public static class StructureBlock {
 		int offsetX = 0;
 		int offsetY = 0;
 		int offsetZ = 0;

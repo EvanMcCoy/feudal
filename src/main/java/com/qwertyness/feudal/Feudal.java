@@ -3,9 +3,6 @@ package com.qwertyness.feudal;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +11,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.qwertyness.feudal.command.AttackCommand;
+import com.qwertyness.feudal.command.ArmyCommand;
+import com.qwertyness.feudal.command.BankCommand;
 import com.qwertyness.feudal.command.FutureCommand;
 import com.qwertyness.feudal.command.KingdomCommand;
 import com.qwertyness.feudal.data.MessageData;
@@ -34,6 +32,8 @@ import com.qwertyness.feudal.listener.BuildListener;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.listener.TaxExecutor;
 import com.qwertyness.feudal.util.LandUtil;
+
+import net.milkbowl.vault.economy.Economy;
 
 public class Feudal extends JavaPlugin implements Listener {
 	private static Feudal instance;
@@ -78,6 +78,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.playerManager = new PlayerManager();
 		new LandUtil(this.landManager);
 		Settings.inizializeDefaultPositions();
+		new BankCommand(this);
 		this.futureCommands = new ArrayList<FutureCommand>();
 		
 		//Register listeners and runnables
@@ -89,7 +90,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		
 		//Register command handlers
 		this.getCommand("kingdom").setExecutor(new KingdomCommand(this));
-		this.getCommand("attack").setExecutor(new AttackCommand(this));
+		this.getCommand("army").setExecutor(new ArmyCommand(this));
 		
 		//Set up vault ecnomony
 		if (Configuration.useEconomy) {
@@ -112,26 +113,13 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.landData.save();
 	}
 	
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		for (int i = 0;i < this.futureCommands.size();i++) {
-			FutureCommand futureCommand = this.futureCommands.get(i);
-			if (futureCommand.getCommand().equalsIgnoreCase(command.getName()) && futureCommand.compareSubcommands(args) && futureCommand.compareRecipiant(sender)) {
-				futureCommand.run(args);
-				this.futureCommands.remove(i);
-			}
-		}
-		return false;
-	}
-	
 	public static Feudal getInstance() {
 		return instance;
 	}
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		if (this.playerManager.isPlayer(event.getPlayer().getUniqueId())) {
-			System.out.println(this.getPlayerManager().getPlayers());
-		}
+		this.playerManager.isPlayer(event.getPlayer().getUniqueId());
 		for (FutureCommand command : this.futureCommands) {
 			if (command.getRecipiant().getUniqueId().toString().equals(event.getPlayer().getUniqueId().toString())) {
 				if (!command.hasJoinMessage()) {
@@ -161,5 +149,20 @@ public class Feudal extends JavaPlugin implements Listener {
 	
 	public ArmyManager getArmyManager() {return this.armyManager;}
 	
-	public void registerFutureCommand(FutureCommand futureCommand) {this.futureCommands.add(futureCommand);}
+	public FutureCommand registerFutureCommand(FutureCommand futureCommand) {
+		this.futureCommands.add(futureCommand);
+		return futureCommand;
+	}
+	
+	public boolean checkFutureCommands(String command, String[] args, CommandSender sender) {
+		for (int i = 0;i < this.futureCommands.size();i++) {
+			FutureCommand futureCommand = this.futureCommands.get(i);
+			if (futureCommand.getCommand().equalsIgnoreCase(command) && futureCommand.compareSubcommands(args) && futureCommand.compareRecipiant(sender)) {
+				futureCommand.run(args);
+				this.futureCommands.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
 }

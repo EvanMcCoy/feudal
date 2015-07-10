@@ -1,5 +1,6 @@
 package com.qwertyness.feudal.government;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class Land implements CivilOrganizer {
 	
 	public Land(Chunk land, ConfigurationSection dataPath) {
 		this.land = land;
+		this.owners = new ArrayList<UUID>();
 		
 		this.dataPath = dataPath;
 	}

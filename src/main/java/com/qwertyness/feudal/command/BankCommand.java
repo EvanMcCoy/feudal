@@ -1,6 +1,5 @@
 package com.qwertyness.feudal.command;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -110,13 +109,17 @@ public class BankCommand {
 		}
 		
 		player.sendMessage(messages.listTopStarter + "Bank Inventory Lookup" + messages.listTopEnder);
-		player.sendMessage(messages.listIndexColor + material.toString() + ": " + messages.listItemColor + ((int)bank.getInventory().get(material)));
+		int amount = 0;
+		if (bank.getInventory().get(material) != null) {
+			amount = ((int)bank.getInventory().get(material));
+		}
+		player.sendMessage(messages.listIndexColor + material.toString() + ": " + messages.listItemColor + amount);
 		player.sendMessage(messages.listBottom);
 	}
 	
 	private static boolean hasPermission(Player player, Kingdom kingdom, Fief fief, CivilOrganizer government) {
 		if (government instanceof Kingdom) {
-			return ((Kingdom) government).getSettings().manage.titleHasPermission(Util.getTitle(player, (Kingdom) government, null), TitlePermission.KINGDOM_LEVEL);
+			return ((Kingdom) government).getSettings().getManagePermission().titleHasPermission(Util.getTitle(player, (Kingdom) government, null), TitlePermission.KINGDOM_LEVEL);
 		}
 		else if (government instanceof Fief) {
 			return GovernmentPermission.DEPUTY.titleHasPermission(Util.getTitle(player, kingdom, (Fief) government), TitlePermission.FIEF_LEVEL);

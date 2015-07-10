@@ -15,6 +15,7 @@ import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Flag;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
+import com.qwertyness.feudal.government.settings.Settings;
 import com.qwertyness.feudal.util.Util;
 
 public class KingdomManager {
@@ -25,25 +26,15 @@ public class KingdomManager {
 	public KingdomManager() {
 		this.plugin = Feudal.getInstance();
 		this.kingdoms = new ArrayList<Kingdom>();
-		for (String string : this.plugin.getKingdomData().get().getKeys(false)) {
-			this.registerKingdom(this.loadKingdom(string));
-		}
+		this.plugin.getKingdomData().get().getKeys(false).forEach((String k) -> this.registerKingdom(this.loadKingdom(k)));
 	}
 	
 	public Kingdom getKingdom(String kingdomName) {
-		for (Kingdom kingdom : this.kingdoms) {
-			if (kingdom.getName().equals(kingdomName)) {
-				return kingdom;
-			}
-		}
-		return null;
+		return this.kingdoms.stream().filter((Kingdom kingdom) -> kingdom.getName().equals(kingdomName)).findFirst().orElse(null);
 	}
 	
 	public boolean isKingdom(String kingdomName) {
-		if (getKingdom(kingdomName) != null) {
-			return true;
-		}
-		return false;
+		return getKingdom(kingdomName) != null;
 	}
 	
 	public void registerKingdom(Kingdom kingdom) {
@@ -63,6 +54,7 @@ public class KingdomManager {
 		ConfigurationSection kingdomSection = this.plugin.getKingdomData().get().getConfigurationSection(kingdomName);
 		
 		String name = kingdomSection.getName();
+		
 		UUID king = (kingdomSection.getString("king") != null) ? UUID.fromString(kingdomSection.getString("king")) : null;
 		UUID queen = (kingdomSection.getString("queen") != null) ? UUID.fromString(kingdomSection.getString("queen")) : null;
 		UUID prince = (kingdomSection.getString("prince") != null) ? UUID.fromString(kingdomSection.getString("prince")) : null;
@@ -70,18 +62,18 @@ public class KingdomManager {
 		UUID duke = (kingdomSection.getString("duke") != null) ? UUID.fromString(kingdomSection.getString("duke")) : null;
 		UUID duchess = (kingdomSection.getString("duchess") != null) ? UUID.fromString(kingdomSection.getString("duchess")) : null;
 		List<UUID> earls = Util.toUUIDList(kingdomSection.getStringList("earls"));
+		
 		Bank bank = this.plugin.getBankManager().loadBank(kingdomSection);
 		Army army = this.plugin.getArmyManager().loadArmy(kingdomSection);
 		Church church = this.plugin.getChurchManager().loadChurch(kingdomSection);
 		List<Fief> fiefs = new ArrayList<Fief>();
-		for (String string : kingdomSection.getStringList("fiefs")) {
-			this.plugin.getFiefManager().loadFief(kingdomSection.getName(), string);
-		}
+		kingdomSection.getStringList("fiefs").forEach((String f) -> this.plugin.getFiefManager().loadFief(kingdomSection.getName(), f));
 		Flag flag = new Flag(kingdomSection.getConfigurationSection("flag"));
+		Settings settings = new Settings(kingdomSection.getConfigurationSection("settings"));
 		
-		Chunk capital = Util.toChunk(kingdomSection.getString("captial"));
+		Chunk capital = Util.toChunk(kingdomSection.getString("capital"));
 		
-		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, flag, kingdomSection);
+		return new Kingdom(name, king, queen, prince, princess, duke, duchess, earls, bank, army, church, fiefs, capital, flag, settings, kingdomSection);
 	}
 	
 	public void saveKingdom(Kingdom kingdom) {
@@ -95,14 +87,13 @@ public class KingdomManager {
 		kingdomSection.set("duke", (kingdom.getDuke() == null) ? null : kingdom.getDuke().toString());
 		kingdomSection.set("dutchess", (kingdom.getDuchess() == null) ? null : kingdom.getDuchess().toString());
 		kingdomSection.set("earls", Util.toStringList(kingdom.getEarls()));
+		
 		this.plugin.getBankManager().saveBank(kingdom.getBank());
 		this.plugin.getArmyManager().saveArmy(kingdom.getArmy());
 		this.plugin.getChurchManager().saveChurch(kingdom.getChurch());
-		ConfigurationSection flagSection = kingdomSection.getConfigurationSection("flag");
-		if (flagSection == null) {
-			flagSection = kingdomSection.createSection("flag");
-		}
-		kingdom.getFlag().setFlag(flagSection);
+		kingdom.getFlag().saveFlag();
+		kingdom.getSettings().saveSettings();
+		
 		List<String> fiefs = new ArrayList<String>();
 		for (Fief fief : kingdom.getFiefs()) {
 			this.plugin.getFiefManager().saveFief(fief);

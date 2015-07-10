@@ -14,5 +14,3 @@ commands:
     description: Base church command.
   feudal:
     description: Main plugin command.
-  attack:
-    description: Main attack command.

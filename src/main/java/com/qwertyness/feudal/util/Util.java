@@ -133,29 +133,91 @@ public class Util {
 	}
 	
 	public static Kingdom getKingdom(Player player) {
+		return getKingdom(Feudal.getInstance().getPlayerManager().getPlayer(player.getUniqueId()));
+	}
+	
+	public static Kingdom getKingdom(FeudalPlayer player) {
 		Feudal plugin = Feudal.getInstance();
-		FeudalPlayer fPlayer = plugin.getPlayerManager().getPlayer(player.getUniqueId());
-		if (fPlayer != null) {
-			if (fPlayer.kingdom != null) {
-				return plugin.getKingdomManager().getKingdom(plugin.getPlayerManager().getPlayer(player.getUniqueId()).kingdom);
+		
+		if (player != null) {
+			Kingdom kingdom = plugin.getKingdomManager().getKingdom(player.kingdom);
+			if (kingdom != null) {
+				return kingdom;
 			}
 		}
 		return null;
 	}
 	
 	public static Fief getFief(Player player) {
+		return getFief(Feudal.getInstance().getPlayerManager().getPlayer(player.getUniqueId()));
+	}
+	
+	public static Fief getFief(FeudalPlayer player) {
 		Feudal plugin = Feudal.getInstance();
-		FeudalPlayer feudalPlayer = plugin.getPlayerManager().getPlayer(player.getUniqueId());
-		if (feudalPlayer != null) {
-			if (feudalPlayer.kingdom != null && feudalPlayer.fief != null) {
-				return plugin.getFiefManager().getFief(feudalPlayer.kingdom, feudalPlayer.fief);
+		
+		if (player != null) {
+			Fief fief = plugin.getFiefManager().getFief(player.kingdom, player.fief);
+			if (fief != null) {
+				return fief;
 			}
 		}
 		return null;
 	}
 	
-	public static boolean isInKingdom(Player player) {
-		return getKingdom(player) != null;
+	public static Army getArmy(Player player) {
+		return getArmy(Feudal.getInstance().getPlayerManager().getPlayer(player.getUniqueId()));
+	}
+	
+	public static Army getArmy(FeudalPlayer player) {
+		Feudal plugin = Feudal.getInstance();
+		
+		if (player != null) {
+			Kingdom kingdom = plugin.getKingdomManager().getKingdom(player.kingdom);
+			Fief fief = plugin.getFiefManager().getFief(player.kingdom, player.fief);
+			Army army = null;
+			if (kingdom != null) {
+				if (fief != null) {
+					army = fief.getArmy();
+				}
+				else {
+					army = kingdom.getArmy();
+				}
+			}
+			if (army != null) {
+				if (toStringList(getArmyMembers(army)).contains(player.player.toString())) {
+					return army;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static Church getChurch(Player player) {
+		return getChurch(Feudal.getInstance().getPlayerManager().getPlayer(player.getUniqueId()));
+	}
+	
+	public static Church getChurch(FeudalPlayer player) {
+		Feudal plugin = Feudal.getInstance();
+		
+		if (player != null) {
+			Kingdom kingdom = plugin.getKingdomManager().getKingdom(player.kingdom);
+			Fief fief = plugin.getFiefManager().getFief(player.kingdom, player.fief);
+			Church church = null;
+			if (kingdom != null) {
+				if (fief != null) {
+					church = fief.getChurch();
+				}
+				else {
+					church = kingdom.getChurch();
+				}
+			}
+			if (church != null) {
+				if (toStringList(getChurchMembers(church)).contains(player.player.toString())) {
+					return church;
+				}
+			}
+		}
+		return null;
 	}
 	
 	public static String getTitle(Player player, Kingdom kingdom, Fief fief) {
@@ -242,6 +304,9 @@ public class Util {
 	}
 	
 	public static void setPosition(String title, Kingdom kingdom, Fief fief, OfflinePlayer player) {
+		if (player == null) {
+			return;
+		}
 		FeudalPlayer fPlayer = Feudal.getInstance().getPlayerManager().getPlayer(player.getUniqueId());
 		if (title.equalsIgnoreCase("king")) {
 			kingdom.setKing(player.getUniqueId());
@@ -331,7 +396,9 @@ public class Util {
 	
 	public static void removePosition(FeudalPlayer player, boolean destroy) {
 		Feudal plugin = Feudal.getInstance();
-		
+		if (player == null) {
+			return;
+		}
 		Kingdom kingdom = plugin.getKingdomManager().getKingdom(player.kingdom);
 		Fief fief = null;
 		

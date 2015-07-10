@@ -1,13 +1,110 @@
 package com.qwertyness.feudal.government.settings;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 public class Settings {
-	public GovernmentPermission buildPermission = GovernmentPermission.CIVILIAN;
-	public GovernmentPermission control = GovernmentPermission.MONARCH;
-	public GovernmentPermission administrate = GovernmentPermission.ROYALTY;
-	public GovernmentPermission manage = GovernmentPermission.DEPUTY;
+	private GovernmentPermission buildPermission = GovernmentPermission.CIVILIAN;
+	private GovernmentPermission control = GovernmentPermission.MONARCH;
+	private GovernmentPermission administrate = GovernmentPermission.ROYALTY;
+	private GovernmentPermission manage = GovernmentPermission.DEPUTY;
+	
+	private boolean taxPerPlot = true;
+	private int tax = 5;
+	//In percent
+	private int blockTax = 50;
+	
+	private ConfigurationSection dataPath;
+	
+	public Settings(ConfigurationSection section, boolean defaultSettings) {
+		if (defaultSettings) {
+			section.createSection("settings");
+		}
+		throw new InvalidParameterException("Cannot use Settings(ConfigurationSection section, boolean defaultSettings) where defaultSettings = false. Use Settings(ConfigurationSection section) instead.");
+	}
+	
+	public Settings(ConfigurationSection section) {
+		String buildPermission = section.getString("buildPermission");
+		if (buildPermission != null) {
+			if (GovernmentPermission.valueOf(buildPermission) != null) {
+				this.buildPermission = GovernmentPermission.valueOf(buildPermission);
+			}
+		}
+		
+		String control = section.getString("buildPermission");
+		if (control != null) {
+			if (GovernmentPermission.valueOf(control) != null) {
+				this.control = GovernmentPermission.valueOf(control);
+			}
+		}
+		
+		String administrate = section.getString("administrate");
+		if (administrate != null) {
+			if (GovernmentPermission.valueOf(administrate) != null) {
+				this.administrate = GovernmentPermission.valueOf(administrate);
+			}
+		}
+		
+		String manage = section.getString("manage");
+		if (manage != null) {
+			if (GovernmentPermission.valueOf(manage) != null) {
+				this.manage = GovernmentPermission.valueOf(manage);
+			}
+		}
+		
+		this.taxPerPlot = section.getBoolean("taxPerPlot");
+		this.tax = section.getInt("tax");
+		this.blockTax = section.getInt("blockTax");
+		if (blockTax > 100 || blockTax < 0) {
+			this.blockTax = 0;
+		}
+		this.dataPath = section;
+	}
+	
+	public Settings(GovernmentPermission buildPermission, GovernmentPermission control, GovernmentPermission administrate, GovernmentPermission manage, boolean taxPerPlot, int tax, int blockTax, ConfigurationSection dataPath) {
+		this.buildPermission = buildPermission;
+		this.control = control;
+		this.administrate = administrate;
+		this.manage = manage;
+		
+		this.taxPerPlot = taxPerPlot;
+		this.tax = tax;
+		this.blockTax = blockTax;
+		this.dataPath = dataPath;
+	}
+	
+	public GovernmentPermission getBuildPermission() {return this.buildPermission;}
+	public void setBuildPermission(GovernmentPermission buildPermission) {this.buildPermission = buildPermission;}
+	
+	public GovernmentPermission getControlPermission() {return this.control;}
+	public void setControlPermission(GovernmentPermission control) {this.control = control;}
+	public GovernmentPermission getAdministratePermission() {return this.administrate;}
+	public void setAdministratePermission(GovernmentPermission administrate) {this.administrate = administrate;}
+	public GovernmentPermission getManagePermission() {return this.manage;}
+	public void setManagePermission(GovernmentPermission manage) {this.manage = manage;}
+	
+	public boolean doTaxPerPlot() {return taxPerPlot;}
+	public void setDoTaxPerPlot(boolean taxPerPlot) {this.taxPerPlot = taxPerPlot;}
+	
+	public int getTax() {return this.tax;}
+	public void setTax(int tax) {this.tax = tax;}
+	
+	public int getBlockTaxPercent() {return this.blockTax;}
+	public void setBlockTaxPercent(int blockTax) {this.blockTax = blockTax;}
+	
+	public void saveSettings() {
+		dataPath.set("buildPermission", this.buildPermission.toString());
+		dataPath.set("control", this.control.toString());
+		dataPath.set("administrate", this.administrate.toString());
+		dataPath.set("manage", this.manage.toString());
+		
+		dataPath.set("taxPerPlot", this.taxPerPlot);
+		dataPath.set("tax", this.tax);
+		dataPath.set("blockTax", this.blockTax);
+	}
 	
 	public static void inizializeDefaultPositions() {
 		GovernmentPermission.titles.add(new TitlePermission("king", GovernmentPermission.MONARCH, GovernmentPermission.MONARCH, GovernmentPermission.MONARCH, GovernmentPermission.MONARCH));
@@ -48,16 +145,11 @@ public class Settings {
 		}
 		
 		public boolean titleHasPermission(String title, int level) {
-			for (TitlePermission titlePermission : titles) {
-				if (titlePermission.getTitle().equalsIgnoreCase(title)) {
-					return titlePermission.hasPermission(this, level);
-				}
-			}
-			return false;
+			return titles.stream().anyMatch((TitlePermission t) -> t.getTitle().equalsIgnoreCase(title) && t.hasPermission(this, level));
 		}
 		
-		public boolean comparePermission(GovernmentPermission compare) {
-			if (compare.permLevel == this.permLevel) {
+		public boolean checkPermission(GovernmentPermission compare) {
+			if (compare.permLevel >= this.permLevel) {
 				return true;
 			}
 			return false;
@@ -89,17 +181,18 @@ public class Settings {
 		}
 		
 		public boolean hasPermission(GovernmentPermission permission, int level) {
+			System.out.println("ParentPerm: " + permission);
 			switch (level) {
 				case 0:
-					return permission.comparePermission(this.kingdomLevel);
+					return permission.checkPermission(this.kingdomLevel);
 				case 1:
-					return permission.comparePermission(this.fiefLevel);
+					return permission.checkPermission(this.fiefLevel);
 				case 2:
-					return permission.comparePermission(this.armyLevel);
+					return permission.checkPermission(this.armyLevel);
 				case 3:
-					return permission.comparePermission(this.churchLevel);
+					return permission.checkPermission(this.churchLevel);
 			}
-			return permission.comparePermission(GovernmentPermission.MONARCH);
+			return permission.checkPermission(GovernmentPermission.MONARCH);
 		}
 	}
 }

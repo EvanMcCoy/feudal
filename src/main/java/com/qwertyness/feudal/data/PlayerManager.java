@@ -22,21 +22,24 @@ public class PlayerManager {
 	}
 	
 	public FeudalPlayer getPlayer(UUID player) {
-		for (FeudalPlayer feudalPlayer : this.players) {
-			if (feudalPlayer.player.toString().equals(player.toString())) {
-				return feudalPlayer;
+		if (player != null) {
+			for (FeudalPlayer feudalPlayer : this.players) {
+				if (feudalPlayer.player.toString().equals(player.toString())) {
+					return feudalPlayer;
+				}
 			}
-		}
 		
-		FeudalPlayer newPlayer = null;
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
-		if (offlinePlayer == null) {
-			return null;
+			FeudalPlayer newPlayer = null;
+			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
+			if (offlinePlayer == null) {
+				return null;
+			}
+			else {
+				newPlayer = createPlayer(player);
+			}
+			return newPlayer;
 		}
-		else {
-			newPlayer = createPlayer(player);
-		}
-		return newPlayer;
+		return null;
 	}
 	
 	public boolean isPlayer(UUID player) {
@@ -58,7 +61,6 @@ public class PlayerManager {
 		}
 		playerSection = Feudal.getInstance().getPlayerData().get().createSection(uuid.toString());
 		FeudalPlayer player = new FeudalPlayer(uuid, "", "", playerSection);
-		System.out.println(player);
 		registerPlayer(player);
 		return player;
 	}
@@ -68,10 +70,10 @@ public class PlayerManager {
 		
 		UUID playerUUID = UUID.fromString(uuid);
 		String kingdom = playerSection.getString("kingdom");
-		System.out.println(kingdom);
 		String fief = playerSection.getString("fief");
-		
-		return new FeudalPlayer(playerUUID, kingdom, fief, playerSection);
+		FeudalPlayer player = new FeudalPlayer(playerUUID, kingdom, fief, playerSection);
+		registerPlayer(player);
+		return player;
 	}
 	
 	public void savePlayer(FeudalPlayer player) {

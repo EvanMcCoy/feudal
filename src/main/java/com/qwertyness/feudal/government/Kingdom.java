@@ -7,13 +7,13 @@ import java.util.UUID;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.qwertyness.feudal.government.settings.GovernmentSettings;
+import com.qwertyness.feudal.government.settings.Settings;
 import com.qwertyness.feudal.util.Util;
 
 public class Kingdom implements Government {
 	private String name;
 	private ConfigurationSection dataPath;
-	private GovernmentSettings settings;
+	private Settings settings;
 	
 	private UUID king;
 	private UUID queen;
@@ -32,6 +32,7 @@ public class Kingdom implements Government {
 	private Chunk capital;
 	private List<Land> land;
 	
+	//Initialize new kingdom
 	public Kingdom(String name, ConfigurationSection section) {
 		this.name = name;
 		this.dataPath = section;
@@ -57,11 +58,21 @@ public class Kingdom implements Government {
 		}
 		this.royalArmy = new Army(armySection);
 		
-		this.flag = new Flag(section.getConfigurationSection("flag"));
-		this.settings = new GovernmentSettings();
+		ConfigurationSection flagSection = section.getConfigurationSection("flag");
+		if (flagSection == null) {
+			flagSection = section.createSection("flag");
+		}
+		this.flag = new Flag(flagSection);
+		
+		ConfigurationSection settingsSection = section.getConfigurationSection("settings");
+		if (settingsSection == null) {
+			settingsSection = section.createSection("settings");
+		}
+		this.settings = new Settings(settingsSection);
 	}
 	
-	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, Flag flag, ConfigurationSection section) {
+	//Initialize current kingdom
+	public Kingdom(String name, UUID king, UUID queen, UUID prince, UUID princess, UUID duke, UUID duchess, List<UUID> earls, Bank bank, Army army, Church church, List<Fief> fiefs, Chunk capital, Flag flag, Settings settings, ConfigurationSection section) {
 		this.name = name;
 		this.king = king;
 		this.queen = queen;
@@ -95,7 +106,7 @@ public class Kingdom implements Government {
 		this.land = new ArrayList<Land>();
 		
 		this.flag = new Flag(section.getConfigurationSection("flag"));
-		this.settings = new GovernmentSettings();
+		this.settings = settings;
 		this.dataPath = section;
 	}
 	
@@ -174,7 +185,7 @@ public class Kingdom implements Government {
 	public Flag getFlag() {return this.flag;}
 	public void setFlag(Flag flag) {this.flag = flag;}
 	
-	public GovernmentSettings getSettings() {return this.settings;}
+	public Settings getSettings() {return this.settings;}
 
 	public ConfigurationSection getDataPath() {
 		return this.dataPath;

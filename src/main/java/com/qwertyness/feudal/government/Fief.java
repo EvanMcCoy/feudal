@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.qwertyness.feudal.government.settings.GovernmentSettings;
+import com.qwertyness.feudal.government.settings.Settings;
 import com.qwertyness.feudal.util.Util;
 
 public class Fief implements Government {
@@ -24,7 +24,7 @@ public class Fief implements Government {
 	private List<Land> land;
 	
 	private ConfigurationSection dataPath;
-	public GovernmentSettings settings;
+	public Settings settings;
 	
 	public Fief(String name, ConfigurationSection section) {
 		this.name = name;
@@ -50,9 +50,15 @@ public class Fief implements Government {
 			armySection = section.createSection("army");
 		}
 		this.army = new Army(armySection);
+		
+		ConfigurationSection settingsSection = section.getConfigurationSection("settings");
+		if (armySection == null) {
+			armySection = section.createSection("settings");
+		}
+		this.settings = new Settings(settingsSection);
 	}
 	
-	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, ConfigurationSection section) {
+	public Fief(String name, UUID baron, UUID baroness, List<UUID> peasents, List<UUID> serfs, Bank bank, Army army, Church church, Chunk capital, Settings settings, ConfigurationSection section) {
 		this.name = name;
 		this.baron = baron;
 		this.baroness = baroness;
@@ -80,6 +86,7 @@ public class Fief implements Government {
 		this.land = new ArrayList<Land>();
 		
 		this.dataPath = section;
+		this.settings = settings;
 	}
 	
 	public String getName() {
@@ -141,5 +148,9 @@ public class Fief implements Government {
 	
 	public Bank getBank() {
 		return this.bank;
+	}
+	
+	public Settings getSettings() {
+		return this.settings;
 	}
 }

@@ -13,6 +13,7 @@ import com.qwertyness.feudal.government.Church;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
+import com.qwertyness.feudal.government.settings.Settings;
 import com.qwertyness.feudal.util.Util;
 
 public class FiefManager {
@@ -29,13 +30,10 @@ public class FiefManager {
 		return false;
 	}
 	
-	public Fief getFief(String kingdomName, String fiefName) {
+	public Fief getFief(String kingdomName, final String fiefName) {
 		Kingdom kingdom = this.plugin.getKingdomManager().getKingdom(kingdomName);
-		
-		for (Fief fief : kingdom.getFiefs()) {
-			if (fief.getName().equals(fiefName)) {
-				return fief;
-			}
+		if (kingdom != null) {
+			return kingdom.getFiefs().stream().filter((Fief fief) -> fief.getName().equals(fiefName)).findFirst().orElse(null);
 		}
 		return null;
 	}
@@ -52,8 +50,9 @@ public class FiefManager {
 		Army army = this.plugin.getArmyManager().loadArmy(fiefSection);
 		Church church = this.plugin.getChurchManager().loadChurch(fiefSection);
 		Chunk capital = Util.toChunk(fiefSection.getString("capital"));
+		Settings settings = new Settings(fiefSection.getConfigurationSection("settings"));
 		
-		return new Fief(name, baron, baroness, peasents, serfs, bank, army, church, capital, fiefSection);
+		return new Fief(name, baron, baroness, peasents, serfs, bank, army, church, capital, settings, fiefSection);
 	}
 	
 	public void saveFief(Fief fief) {
@@ -67,6 +66,11 @@ public class FiefManager {
 		this.plugin.getBankManager().saveBank(fief.getBank());
 		this.plugin.getArmyManager().saveArmy(fief.getArmy());
 		this.plugin.getChurchManager().saveChurch(fief.getChurch());
+		ConfigurationSection settingsSection = fiefSection.getConfigurationSection("settings");
+		if (settingsSection == null) {
+			settingsSection = fiefSection.createSection("settings");
+		}
+		fief.getSettings().saveSettings();
 	}
 	
 	public void deleteFief(Kingdom kingdom, Fief fief) {
