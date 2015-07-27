@@ -89,4 +89,12 @@ autoClaimOn: "You will now automatically claim land where you walk."
 autoClaimOff: "You have stopped automatically claiming land."
 cannotBuild: "&cYou cannot build on this kingdom's land."
 
-#When a player turns land autoclaiming on.
+#Bank messages
+insufficientMoney: "&cYou do not have enough money to deposit that amount."
+insufficentBankMoney: "&cThe bank does not have enough money to fufill that request."
+insufficientItems: "&cYou do not have enough items to deposit that."
+insufficientBankItems: "&cThe bank does not have enough items to fufill that request."
+depositMoney: "You have deposited money in your government's bank."
+depositItems: "You have deposited items into your government's inventory."
+withdrawMoney: "You have withdrawn money from your government's bank."
+withdrawItems: "You have withdrawn items from your government's inventory."

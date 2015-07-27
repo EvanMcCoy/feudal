@@ -16,6 +16,7 @@ import com.qwertyness.feudal.government.Flag;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
 import com.qwertyness.feudal.government.settings.Settings;
+import com.qwertyness.feudal.util.LandUtil;
 import com.qwertyness.feudal.util.Util;
 
 public class KingdomManager {
@@ -67,7 +68,7 @@ public class KingdomManager {
 		Army army = this.plugin.getArmyManager().loadArmy(kingdomSection);
 		Church church = this.plugin.getChurchManager().loadChurch(kingdomSection);
 		List<Fief> fiefs = new ArrayList<Fief>();
-		kingdomSection.getStringList("fiefs").forEach((String f) -> this.plugin.getFiefManager().loadFief(kingdomSection.getName(), f));
+		kingdomSection.getStringList("fiefs").forEach((String f) -> fiefs.add(this.plugin.getFiefManager().loadFief(kingdomSection.getName(), f)));
 		Flag flag = new Flag(kingdomSection.getConfigurationSection("flag"));
 		Settings settings = new Settings(kingdomSection.getConfigurationSection("settings"));
 		
@@ -100,7 +101,7 @@ public class KingdomManager {
 			fiefs.add(fief.getName());
 		}
 		kingdomSection.set("fiefs", fiefs);
-		kingdomSection.set("capital", Util.toString(kingdom.getCapital()));
+		kingdomSection.set("capital", LandUtil.toString(kingdom.getCapital()));
 	}
 	
 	public void deleteKingdom(Kingdom kingdom) {
@@ -115,7 +116,7 @@ public class KingdomManager {
 	}
 	
 	public Kingdom getLandOwner(Chunk chunk) {
-		Land land = this.plugin.getLandManager().getLand(Util.toString(chunk));
+		Land land = this.plugin.getLandManager().getLand(LandUtil.toString(chunk));
 		if (land != null) {
 			return land.kingdom;
 		}

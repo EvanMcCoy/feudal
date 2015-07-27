@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.qwertyness.feudal.util.Util;
+import com.qwertyness.feudal.util.LandUtil;
 
 public class Land implements CivilOrganizer {
 	private Chunk land;
@@ -37,7 +37,7 @@ public class Land implements CivilOrganizer {
 	}
 	
 	public String getCoordinates() {
-		return Util.toString(this.land);
+		return LandUtil.toString(this.land);
 	}
 	
 	public Chunk getChunk() {

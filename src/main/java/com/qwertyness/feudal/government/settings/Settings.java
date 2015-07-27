@@ -181,7 +181,6 @@ public class Settings {
 		}
 		
 		public boolean hasPermission(GovernmentPermission permission, int level) {
-			System.out.println("ParentPerm: " + permission);
 			switch (level) {
 				case 0:
 					return permission.checkPermission(this.kingdomLevel);

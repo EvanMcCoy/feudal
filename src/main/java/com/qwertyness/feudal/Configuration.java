@@ -78,7 +78,7 @@ public class Configuration {
 	public class Messages {
 		private Feudal plugin;
 		
-		public String prefix, insufficientPermission, notInAKingdom, notInAGovernment, notAPlayer, invalidIndex, invalidMaterial, listTopStarter, listTopEnder, listIndexColor, listItemColor, listBottom;
+		public String prefix, insufficientPermission, notInAKingdom, notInAGovernment, notAPlayer, invalidIndex, invalidMaterial, invalidNumber, listTopStarter, listTopEnder, listIndexColor, listItemColor, listBottom;
 		
 		public String alreadyInAKingdom, kingdomCreate, alreadyAKingdom, kingdomDisunite, kingdomDisuniteConfirm, setCounterpart, setDuke, setDuchess, setPrince, setPrincess, addEarl, alreadyAnEarl, removeEarl,
 			fiefCreate, alreadyAFief, fiefDisband, notAFief, setFiefBaron, setFiefBaroness;
@@ -87,6 +87,8 @@ public class Configuration {
 		
 		public String notKingdomLand, landAlreadyAllocated, landNotAllocated, allocateLand, deallocateLand, deallocateAll, alreadyCapital, setCapital, alreadyAFortress, notAFortress, addFortress, removeFortress,
 			landAlreadyClaimed, noFortressInRange, claimLand, cannotUnclaimCapital, cannotUnclaimFortress, unclaimLand, autoClaimOn, autoClaimOff, cannotBuild;
+		
+		public String insufficientMoney, insufficientBankMoney, insufficientItems, insufficientBankItems, depositMoney, withdrawMoney, depositItems, withdrawItems;
 		
 		public Messages(Feudal plugin) {
 			this.plugin = plugin;
@@ -102,6 +104,7 @@ public class Configuration {
 			this.notAPlayer = color(messages.getString("notAPlayer"));
 			this.invalidIndex = color(messages.getString("invalidIndex"));
 			this.invalidMaterial = color(messages.getString("invalidMaterial"));
+			this.invalidNumber = color(messages.getString("invalidNumber"));
 			this.listTopStarter = color(messages.getString("listTopStarter"));
 			this.listTopEnder = color(messages.getString("listTopEnder"));
 			this.listIndexColor = color(messages.getString("listIndexColor"));
@@ -161,6 +164,15 @@ public class Configuration {
 			this.autoClaimOn = color(messages.getString("autoClaimOn"));
 			this.autoClaimOff = color(messages.getString("autoClaimOff"));
 			this.cannotBuild = color(messages.getString("cannotBuild"));
+			
+			this.insufficientMoney = color(messages.getString("insufficientMoney"));
+			this.insufficientBankMoney = color(messages.getString("insufficientBankMoney"));
+			this.insufficientItems = color(messages.getString("insufficientItems"));
+			this.insufficientBankItems = color(messages.getString("insufficientBankItems"));
+			this.depositMoney = color(messages.getString("depositMoney"));
+			this.depositItems = color(messages.getString("depositItems"));
+			this.withdrawMoney = color(messages.getString("withdrawMoney"));
+			this.withdrawItems = color(messages.getString("withdrawItems"));
 		}
 		
 		public String color(String input) {

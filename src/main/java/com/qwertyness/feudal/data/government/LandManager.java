@@ -20,11 +20,6 @@ public class LandManager {
 	
 	public LandManager() {
 		this.plugin = Feudal.getInstance();
-		for (String key : this.plugin.getLandData().get().getKeys(false)) {
-			if (Util.toChunk(key) != null) {
-				this.registerLand(loadLand(key));
-			}
-		}
 	}
 	
 	public void registerLand(Land land) {
@@ -47,7 +42,9 @@ public class LandManager {
 				return land;
 			}
 		}
-		return null;
+		
+		Land land = createLand(coordinates);
+		return land;
 	}
 	
 	public boolean isLand(String coordinates) {
@@ -55,6 +52,19 @@ public class LandManager {
 			return true;
 		}
 		return false;
+	}
+	
+	public Land createLand(String coordinates) {
+		if (this.plugin.getLandData().get().isConfigurationSection(coordinates)) {
+			return loadLand(coordinates);
+		}
+		ConfigurationSection landSection = this.plugin.getLandData().get().createSection(coordinates);
+		Land land = new Land(Util.toChunk(coordinates), null, null, new ArrayList<UUID>(), landSection);
+		if (land.getChunk() == null) {
+			return null;
+		}
+		registerLand(land);
+		return land;
 	}
 	
 	public Land loadLand(String coordinates) {
@@ -74,6 +84,7 @@ public class LandManager {
 		if (fief != null) {
 			fief.addLand(land);
 		}
+		registerLand(land);
 		return land;
 	}
 	

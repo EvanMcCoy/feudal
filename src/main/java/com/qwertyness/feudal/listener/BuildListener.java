@@ -19,6 +19,7 @@ import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
 import com.qwertyness.feudal.government.settings.Settings.TitlePermission;
+import com.qwertyness.feudal.util.LandUtil;
 import com.qwertyness.feudal.util.Util;
 
 public class BuildListener implements Listener {
@@ -110,18 +111,19 @@ public class BuildListener implements Listener {
 	}
 	
 	public boolean hasBuildPermission(Player player, Chunk chunk) {
-		if (this.plugin.getKingdomManager().getLandOwner(player.getLocation().getChunk()) == null) {
-			return true;
-		}
 		Kingdom owner = this.plugin.getKingdomManager().getLandOwner(player.getLocation().getChunk());
 		Kingdom playerKingdom = Util.getKingdom(player);
-		if (playerKingdom == null && owner.getSettings().getBuildPermission() != GovernmentPermission.ALL) {
-			return false;
+		if (owner == null) {
+			return true;
 		}
-		
-		if (owner.getName().equals(playerKingdom.getName())) {
+		else if (playerKingdom == null) {
+			if (owner.getSettings().getBuildPermission() == GovernmentPermission.ALL) {
+				return true;
+			}
+		}
+		else if (owner.getName().equals(playerKingdom.getName())) {
 			if (owner.getSettings().getBuildPermission().titleHasPermission(Util.getTitle(player, owner, null), TitlePermission.KINGDOM_LEVEL)) {
-				Land land = this.plugin.getLandManager().getLand(Util.toString(chunk));
+				Land land = this.plugin.getLandManager().getLand(LandUtil.toString(chunk));
 				if (land.owners.size() > 0) {
 					if (land.owners.contains(player.getUniqueId())) {
 						return true;

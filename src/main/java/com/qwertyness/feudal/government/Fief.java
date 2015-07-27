@@ -52,8 +52,8 @@ public class Fief implements Government {
 		this.army = new Army(armySection);
 		
 		ConfigurationSection settingsSection = section.getConfigurationSection("settings");
-		if (armySection == null) {
-			armySection = section.createSection("settings");
+		if (settingsSection == null) {
+			settingsSection = section.createSection("settings");
 		}
 		this.settings = new Settings(settingsSection);
 	}
@@ -127,7 +127,7 @@ public class Fief implements Government {
 	public List<Land> getLand() {return this.land;}
 	public void addLand(Land land) {this.land.add(land);}
 	public void removeLand(Land land) {
-		for (Land currentLand : this.land) {
+		for (Land currentLand : new ArrayList<Land>(this.land)) {
 			if (land.getCoordinates().equals(currentLand.getCoordinates())) {
 				this.land.remove(this.land.indexOf(currentLand));
 			}

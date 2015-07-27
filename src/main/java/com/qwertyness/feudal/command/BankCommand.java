@@ -3,6 +3,7 @@ package com.qwertyness.feudal.command;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.qwertyness.feudal.Configuration;
 import com.qwertyness.feudal.Configuration.Messages;
@@ -89,6 +90,46 @@ public class BankCommand {
 				}
 				lookup(player, kingdom, fief, government, bank, args[2]);
 			}
+			else if (args[1].equalsIgnoreCase("deposit")) {
+				try {
+					deposit(player, bank, Double.parseDouble(args[2]));
+				} catch(NumberFormatException e) {
+					player.sendMessage(messages.prefix + messages.invalidNumber);
+				}
+			}
+			else if (args[1].equalsIgnoreCase("withdraw")) {
+				try {
+					withdraw(player, kingdom, fief, government, bank, Double.parseDouble(args[2]));
+				} catch(NumberFormatException e) {
+					player.sendMessage(messages.prefix + messages.invalidNumber);
+				}
+			}
+			else if (args[1].equalsIgnoreCase("deposititem")) {
+				Material material = Material.valueOf(args[2]);
+				if (material != null) {
+					try {
+						depositItem(player, bank, Material.valueOf(args[2]), Integer.parseInt(args[3]));
+					} catch(NumberFormatException e) {
+						player.sendMessage(messages.prefix + messages.invalidNumber);
+					}
+				}
+				else {
+					player.sendMessage(messages.prefix + messages.invalidMaterial);
+				}
+			}
+			else if (args[1].equalsIgnoreCase("withdrawitem")) {
+				Material material = Material.valueOf(args[2]);
+				if (material != null) {
+					try {
+						withdrawItem(player, kingdom, fief, government, bank, Material.valueOf(args[2]), Integer.parseInt(args[3]));
+					} catch(NumberFormatException e) {
+						player.sendMessage(messages.prefix + messages.invalidNumber);
+					}
+				}
+				else {
+					player.sendMessage(messages.prefix + messages.invalidMaterial);
+				}
+			}
 		}
 	}
 	
@@ -115,6 +156,83 @@ public class BankCommand {
 		}
 		player.sendMessage(messages.listIndexColor + material.toString() + ": " + messages.listItemColor + amount);
 		player.sendMessage(messages.listBottom);
+	}
+	
+	public static void deposit(Player player, Bank bank, double amount) {
+		double balance = Feudal.getInstance().getBankManager().vaultEconomy.getBalance(player);
+		if (balance < amount) {
+			player.sendMessage(messages.prefix + messages.insufficientMoney);
+			return;
+		}
+		Feudal.getInstance().getBankManager().vaultEconomy.withdrawPlayer(player, amount);
+		bank.depositMoney(amount);
+		player.sendMessage(messages.prefix + messages.depositMoney);
+	}
+	
+	public static void withdraw(Player player, Kingdom kingdom, Fief fief, CivilOrganizer government, Bank bank, double amount) {
+		if (!hasPermission(player, kingdom, fief, government)) {
+			player.sendMessage(messages.prefix + messages.insufficientPermission);
+			return;
+		}
+		if (bank.getBalance() < amount) {
+			player.sendMessage(messages.prefix + messages.insufficientBankMoney);
+			return;
+		}
+		bank.withdrawMoney(amount);
+		Feudal.getInstance().getBankManager().vaultEconomy.depositPlayer(player, amount);
+		player.sendMessage(messages.prefix + messages.withdrawMoney);
+	}
+	
+	public static void depositItem(Player player, Bank bank, Material material, int amount) {
+		int balance = 0;
+		for (ItemStack item : player.getInventory().getContents()) {
+			if (item.getType() == material) {
+				balance += item.getAmount();
+			}
+		}
+		if (balance < amount) {
+			player.sendMessage(messages.prefix + messages.insufficientItems);
+			return;
+		}
+		bank.depositItem(material, amount);
+		if (amount >= player.getItemInHand().getAmount()) {
+			amount -= player.getItemInHand().getAmount();
+			player.setItemInHand(null);
+		}
+		else {
+			player.getItemInHand().setAmount(player.getItemInHand().getAmount() - amount);
+			amount = 0;
+		}
+		for (int i = 0;i < player.getInventory().getSize();i++) {
+			if (amount <= 0) {
+				break;
+			}
+			if (player.getInventory().getItem(i).getType() == material) {
+				if (amount >= player.getInventory().getItem(i).getAmount()) {
+					amount -= player.getInventory().getItem(i).getAmount();
+					player.getInventory().setItem(i, null);
+				}
+				else {
+					player.getInventory().getItem(i).setAmount(player.getInventory().getItem(i).getAmount() - amount);
+					amount = 0;
+				}
+			}
+		}
+		player.sendMessage(messages.prefix + messages.depositItems);
+	}
+	
+	public static void withdrawItem(Player player, Kingdom kingdom, Fief fief, CivilOrganizer government, Bank bank, Material material, int amount) {
+		if (!hasPermission(player, kingdom, fief, government)) {
+			player.sendMessage(messages.prefix + messages.insufficientPermission);
+			return;
+		}
+		if (bank.getInventory().get(material) < amount) {
+			player.sendMessage(messages.prefix + messages.insufficientBankItems);
+			return;
+		}
+		bank.withdrawItem(material, amount);
+		player.getInventory().addItem(new ItemStack(material, amount));
+		player.sendMessage(messages.prefix + messages.withdrawItems);
 	}
 	
 	private static boolean hasPermission(Player player, Kingdom kingdom, Fief fief, CivilOrganizer government) {

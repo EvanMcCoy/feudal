@@ -14,6 +14,7 @@ import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
 import com.qwertyness.feudal.government.settings.Settings;
+import com.qwertyness.feudal.util.LandUtil;
 import com.qwertyness.feudal.util.Util;
 
 public class FiefManager {
@@ -62,7 +63,7 @@ public class FiefManager {
 		fiefSection.set("baroness", (fief.getBaroness() == null) ? null : fief.getBaroness().toString());
 		fiefSection.set("peasents", Util.toStringList(fief.getPeasents()));
 		fiefSection.set("serfs", Util.toStringList(fief.getSerfs()));
-		fiefSection.set("capital", Util.toString(fief.getCapital()));
+		fiefSection.set("capital", LandUtil.toString(fief.getCapital()));
 		this.plugin.getBankManager().saveBank(fief.getBank());
 		this.plugin.getArmyManager().saveArmy(fief.getArmy());
 		this.plugin.getChurchManager().saveChurch(fief.getChurch());
@@ -89,7 +90,7 @@ public class FiefManager {
 	}
 	
 	public Fief getLandOwner(Kingdom kingdom, Chunk chunk) {
-		Land land = this.plugin.getLandManager().getLand(Util.toString(chunk));
+		Land land = this.plugin.getLandManager().getLand(LandUtil.toString(chunk));
 		if (land != null) {
 			return land.fief;
 		}

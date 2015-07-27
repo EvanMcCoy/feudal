@@ -13,7 +13,7 @@ import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.command.KingdomCommand;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
-import com.qwertyness.feudal.util.Util;
+import com.qwertyness.feudal.util.LandUtil;
 
 public class ChunkListener implements Listener {
 	private Feudal plugin;
@@ -25,7 +25,7 @@ public class ChunkListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (Util.toString(event.getFrom().getChunk()).equals(Util.toString(event.getTo().getChunk()))) {
+		if (LandUtil.toString(event.getFrom().getChunk()).equals(LandUtil.toString(event.getTo().getChunk()))) {
 			return;
 		}
 		
