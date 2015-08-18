@@ -1,0 +1,31 @@
+#NPC Profiles are sections that define the attributes of purchasable NPCS.  NPCs can be purchased for a defined cost
+#then deployed to guard the player's kingdom or attack the land of others.
+#WARNING: Removing any profile that players have purchased as part of an NPC with in-game currency will be deleted from the
+#player's army without refund.  If you have a valid replacement or just wanted to change the name, open the kingdom and fief files
+#and manually change the npc listings in the army sections to the proper name.
+
+#Example Profile:
+Swordsman:
+  type: PLAYER
+  profileDisplayName: '&aSwordsman'
+  cost: 100
+  name: '&7Mighty Swordsman'
+  helmet:
+    material: IRON_HELMET
+    enchantments:
+      PROTECTION_ENVIRONMENTAL: 2
+  chestplate:
+    material: CHAINMAIL_CHESTPLATE
+    enchantments:
+      PROTECTION_ENVIRONMENTAL: 2
+      THORNS: 1
+  leggings:
+    material: IRON_LEGGINGS
+  boots:
+    material: IRON_BOOTS
+    enchantments:
+      PROTECTION_FALL: 2
+  hand:
+    material: DIAMOND_SWORD
+    enchantments:
+      DAMAGE_ALL: 2
