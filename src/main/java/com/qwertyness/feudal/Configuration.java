@@ -26,6 +26,11 @@ public class Configuration {
 	
 	public Flag defaultFlag;
 	
+	public boolean titlesEnabled;
+	public String titleLayout;
+	public String defaultTitle;
+	public ConfigurationSection titleColors;
+	
 	public Messages messages;
 	
 	public Configuration(Feudal plugin) {
@@ -43,6 +48,10 @@ public class Configuration {
 		this.defaultFlag = loadDefaultFlag();
 		Flag.buildStructureBlockList(this.plugin.getConfig().getConfigurationSection("flags.structure"));
 		
+		this.titlesEnabled = this.plugin.getConfig().getBoolean("chat.title.enabled");
+		this.titleLayout = this.plugin.getConfig().getString("chat.title.layout");
+		this.defaultTitle = this.plugin.getConfig().getString("chat.title.default");
+		this.titleColors = this.plugin.getConfig().getConfigurationSection("chat.title.colors");
 		this.messages = new Messages(this.plugin);
 	}
 	
@@ -78,15 +87,22 @@ public class Configuration {
 	public class Messages {
 		private Feudal plugin;
 		
-		public String prefix, insufficientPermission, notInAKingdom, notInAGovernment, notAPlayer, invalidIndex, invalidMaterial, invalidNumber, listTopStarter, listTopEnder, listIndexColor, listItemColor, listBottom;
+		public String prefix, insufficientPermission, notInAKingdom, notInAFief, notInAGovernment, notAPlayer, invalidIndex, invalidMaterial, invalidNumber, 
+				listTopStarter, listTopEnder, listIndexColor, listItemColor, listBottom, acceptPosition;
 		
-		public String alreadyInAKingdom, kingdomCreate, alreadyAKingdom, kingdomDisunite, kingdomDisuniteConfirm, setCounterpart, setDuke, setDuchess, setPrince, setPrincess, addEarl, alreadyAnEarl, removeEarl,
-			fiefCreate, alreadyAFief, fiefDisband, notAFief, setFiefBaron, setFiefBaroness;
+		public String alreadyInAKingdom, kingdomCreate, alreadyAKingdom, kingdomDisunite, kingdomDisuniteConfirm, inviteCounterpart, setCounterpart, 
+				alreadyACounterpart, inviteDuke, setDuke, inviteDuchess, setDuchess, invitePrince, setPrince, invitePrincess, setPrincess, inviteEarl, addEarl, 
+				alreadyAnEarl, removeEarl, fiefCreate, alreadyAFief, fiefDisband, notAFief, inviteFiefBaron, setFiefBaron, inviteFiefBaroness, setFiefBaroness;
 		
-		public String noArmy, setKnight, setDame, setArmyCounterpart, addSoldier, removeSoldier, capture, weaken, raze, notAnEnemy;
+		public String inviteFiefCounterpart, setFiefCounterpart, applyPeasent, invitePeasent,addPeasent, alreadyAPeasent, removePeasent, applySerf, inviteSerf, 
+				addSerf, alreadyASerf, removeSerf;
 		
-		public String notKingdomLand, landAlreadyAllocated, landNotAllocated, allocateLand, deallocateLand, deallocateAll, alreadyCapital, setCapital, alreadyAFortress, notAFortress, addFortress, removeFortress,
-			landAlreadyClaimed, noFortressInRange, claimLand, cannotUnclaimCapital, cannotUnclaimFortress, unclaimLand, autoClaimOn, autoClaimOff, cannotBuild;
+		public String noArmy, inviteKnight, setKnight, inviteDame, setDame, inviteArmyCounterpart, setArmyCounterpart, applySoldier, inviteSoldier, addSoldier, 
+				removeSoldier, capture, weaken, raze, notAnEnemy;
+		
+		public String notKingdomLand, landAlreadyAllocated, landNotAllocated, allocateLand, deallocateLand, deallocateAll, alreadyCapital, setCapital, 
+				alreadyAFortress, notAFortress, addFortress, removeFortress, landAlreadyClaimed, noFortressInRange, claimLand, cannotUnclaimCapital, 
+				cannotUnclaimFortress, unclaimLand, autoClaimOn, autoClaimOff, cannotBuild;
 		
 		public String insufficientMoney, insufficientBankMoney, insufficientItems, insufficientBankItems, depositMoney, withdrawMoney, depositItems, withdrawItems;
 		
@@ -101,6 +117,8 @@ public class Configuration {
 			this.insufficientPermission = color(messages.getString("insufficientPermission"));
 			this.notInAGovernment = color(messages.getString("notInAGovernment"));
 			this.notInAKingdom = color(messages.getString("notInAKingdom"));
+			this.notInAFief = color(messages.getString("notInAFief"));
+			this.notInAGovernment = color(messages.getString("notInAGovernment"));
 			this.notAPlayer = color(messages.getString("notAPlayer"));
 			this.invalidIndex = color(messages.getString("invalidIndex"));
 			this.invalidMaterial = color(messages.getString("invalidMaterial"));
@@ -110,6 +128,7 @@ public class Configuration {
 			this.listIndexColor = color(messages.getString("listIndexColor"));
 			this.listItemColor = color(messages.getString("listItemColor"));
 			this.listBottom = color(messages.getString("listBottom"));
+			this.acceptPosition = color(messages.getString("acceptPosition"));
 			
 			this.alreadyInAKingdom = color(messages.getString("alreadyInAKingdom"));
 			this.kingdomCreate = color(messages.getString("kingdomCreate"));
@@ -117,11 +136,18 @@ public class Configuration {
 			this.kingdomDisunite = color(messages.getString("kingdomDisunite"));
 			this.kingdomDisuniteConfirm = color(messages.getString("kingdomDisuniteConfirm"));
 			
+			this.inviteCounterpart = color(messages.getString("inviteCounterpart"));
 			this.setCounterpart = color(messages.getString("setCounterpart"));
+			this.alreadyACounterpart = color(messages.getString("alreadyACounterpart"));
+			this.inviteDuke = color(messages.getString("inviteDuke"));
 			this.setDuke = color(messages.getString("setDuke"));
+			this.inviteDuchess = color(messages.getString("inviteDuchess"));
 			this.setDuchess = color(messages.getString("setDuchess"));
+			this.invitePrince = color(messages.getString("invitePrince"));
 			this.setPrince = color(messages.getString("setPrince"));
+			this.invitePrincess = color(messages.getString("invitePrincess"));
 			this.setPrincess = color(messages.getString("setPrincess"));
+			this.inviteEarl = color(messages.getString("inviteEarl"));
 			this.addEarl = color(messages.getString("addEarl"));
 			this.alreadyAnEarl = color(messages.getString("alreadyAnEarl"));
 			this.removeEarl = color(messages.getString("removeEarl"));
@@ -130,13 +156,32 @@ public class Configuration {
 			this.alreadyAFief = color(messages.getString("alreadyAFief"));
 			this.fiefDisband = color(messages.getString("fiefDisband"));
 			this.notAFief = color(messages.getString("notAFief"));
+			
+			this.inviteFiefBaron = color(messages.getString("inviteFiefBaron"));
 			this.setFiefBaron = color(messages.getString("setFiefBaron"));
+			this.inviteFiefBaroness = color(messages.getString("inviteFiefBaron"));
 			this.setFiefBaroness = color(messages.getString("setFiefBaroness"));
+			this.inviteFiefCounterpart = color(messages.getString("inviteFiefCounterpart"));
+			this.setFiefCounterpart = color(messages.getString("setFiefCounterpart"));
+			this.applyPeasent = color(messages.getString("applyPeasent"));
+			this.invitePeasent = color(messages.getString("invitePeasent"));
+			this.addPeasent = color(messages.getString("addPeasent"));
+			this.alreadyAPeasent = color(messages.getString("alreadyAPeasent"));
+			this.removePeasent = color(messages.getString("removePeasent"));
+			this.applySerf = color(messages.getString("applySerf"));
+			this.inviteSerf = color(messages.getString("inviteSerf"));
+			this.addSerf = color(messages.getString("addSerf"));
+			this.alreadyASerf = color(messages.getString("alreadyASerf"));
+			this.removeSerf = color(messages.getString("removeSerf"));
 			
 			this.noArmy = color(messages.getString("noArmy"));
+			this.inviteKnight = color(messages.getString("inviteKnight"));
 			this.setKnight = color(messages.getString("setKnight"));
+			this.inviteDame = color(messages.getString("inviteDame"));
 			this.setDame = color(messages.getString("setDame"));
+			this.inviteArmyCounterpart = color(messages.getString("inviteArmyCounterpart"));
 			this.setArmyCounterpart = color(messages.getString("setArmyCounterpart"));
+			this.inviteSoldier = color(messages.getString("inviteSoldier"));
 			this.addSoldier = color(messages.getString("addSoldier"));
 			this.removeSoldier = color(messages.getString("removeSoldier"));
 			this.capture = color(messages.getString("capture"));

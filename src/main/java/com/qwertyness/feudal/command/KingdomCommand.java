@@ -1,6 +1,7 @@
 package com.qwertyness.feudal.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
 import com.qwertyness.feudal.government.settings.Settings.TitlePermission;
 import com.qwertyness.feudal.listener.ChunkListener;
+import com.qwertyness.feudal.mail.CommandMail;
 import com.qwertyness.feudal.util.LandUtil;
 import com.qwertyness.feudal.util.Util;
 
@@ -39,7 +41,7 @@ public class KingdomCommand implements CommandExecutor {
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		if (this.plugin.checkFutureCommands(command.getName(), args, sender)) {
+		if (this.plugin.getMailManager().checkCommandMail(command.getName(), args, sender)) {
 			return true;
 		}
 		
@@ -183,7 +185,7 @@ public class KingdomCommand implements CommandExecutor {
 			autoClaim(player);
 		}
 		else if (args[0].equalsIgnoreCase("manage")) {
-			KingdomManageCommand.manageCommand(player, args);
+			ManageCommand.manageCommand(player, args, "kingdom");
 		}
 		else if (args[0].equalsIgnoreCase("info")) {
 			info(player);
@@ -302,7 +304,7 @@ public class KingdomCommand implements CommandExecutor {
 		}
 		player.sendMessage(this.messages.prefix + this.messages.kingdomDisuniteConfirm);
 		player.sendMessage(this.messages.prefix + "Type /kingdom confirm to confirm.");
-		Feudal.getInstance().registerFutureCommand(new FutureCommand("kingdom", new String[]{"confirm"}, player) {
+		Feudal.getInstance().getMailManager().addMail(new CommandMail("kingdom", new String[]{"confirm"}, player, null, false) {
 			@Override
 			public void run(String[] args) {
 				for (UUID uuid : Util.getKingdomMembers(kingdom)) {
@@ -384,17 +386,29 @@ public class KingdomCommand implements CommandExecutor {
 		}
 		final Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
 		
-		this.plugin.registerFutureCommand(new FutureCommand("fief", new String[] {"acceptposition", kingdom.getName()}, newBaron) {
+		this.plugin.getMailManager().addMail(new CommandMail("fief", new String[] {"acceptposition", kingdom.getName()}, newBaron, 
+				Arrays.asList(messages.prefix + "You have been invited as the Baron of " + 
+						fief.getName() + ", " + 
+						kingdom.getName() + 
+						". Type /fief acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(fief.getBaron()), true);
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("baron", kingdom, fief, newBaron);
+				Player baronPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (baronPlayer != null) {
+					baronPlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setFiefBaron);
+				}
 			}
-			
-		}).setJoinMessage("You have been invited as the Baron of " + fief.getName() + ", " + kingdom.getName() + ". Type /fief acceptposition " + kingdom.getName() + " to accept the position.");
+		});
 		
-		player.sendMessage(this.messages.prefix + this.messages.setFiefBaron);
+		player.sendMessage(this.messages.prefix + this.messages.inviteFiefBaron);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -419,17 +433,31 @@ public class KingdomCommand implements CommandExecutor {
 		}
 		final Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
 
-		this.plugin.registerFutureCommand(new FutureCommand("fief", new String[] {"acceptposition", kingdom.getName()}, newBaroness) {
+		this.plugin.getMailManager().addMail(new CommandMail("fief", new String[] {"acceptposition", kingdom.getName()}, newBaroness,
+				Arrays.asList(messages.prefix + "You have been invited as the Baroness of " + 
+						fief.getName() + 
+						", " + 
+						kingdom.getName() + 
+						". Type /fief acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(fief.getBaroness()), true);
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("baroness", kingdom, fief, newBaroness);
+				Player baronessPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (baronessPlayer != null) {
+					baronessPlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setFiefBaroness);
+				}
 			}
 			
-		}).setJoinMessage("You have been invited as the Baroness of " + fief.getName() + ", " + kingdom.getName() + ". Type /fief acceptposition " + kingdom.getName() + " to accept the position.");
+		});
 		
-		player.sendMessage(this.messages.prefix + this.messages.setFiefBaroness);
+		player.sendMessage(this.messages.prefix + this.messages.inviteFiefBaroness);
 	}
 	
 	//Allocate/Deallocate land
@@ -519,17 +547,29 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 
-		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, duke) {
+		this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, duke,
+				Arrays.asList(messages.prefix + "You have been invited as the Duke of " + 
+						kingdom.getName() + 
+						". Type /kingdom acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getDuke()), true);
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("duke", kingdom, null, duke);
+				Player dukePlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (dukePlayer != null) {
+					dukePlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setDuke);
+				}
 			}
 			
-		}).setJoinMessage("You have been invited as the Duke of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+		});
 		
-		player.sendMessage(this.messages.prefix + this.messages.setDuke);
+		player.sendMessage(this.messages.prefix + this.messages.inviteDuke);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -549,16 +589,28 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 
-		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, duchess) {
+		this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, duchess,
+				Arrays.asList(messages.prefix + "You have been invited as the Duchess of " + 
+						kingdom.getName() + 
+						". Type /kingdom acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getDuchess()), true);
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("duchess", kingdom, null, duchess);
+				Player duchessPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (duchessPlayer != null) {
+					duchessPlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setDuchess);
+				}
 			}
 			
-		}).setJoinMessage("You have been invited as the Duchess of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
-		player.sendMessage(this.messages.prefix + this.messages.setDuchess);
+		});
+		player.sendMessage(this.messages.prefix + this.messages.inviteDuchess);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -580,6 +632,10 @@ public class KingdomCommand implements CommandExecutor {
 				return;
 			}
 		}
+		if (kingdom.getKing() != null && kingdom.getQueen() != null) {
+			player.sendMessage(this.messages.prefix + this.messages.alreadyACounterpart);
+			return;
+		}
 		final OfflinePlayer counterpart = Bukkit.getOfflinePlayer(counterpartName);
 		if (counterpart == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
@@ -587,29 +643,55 @@ public class KingdomCommand implements CommandExecutor {
 		}
 		
 		if (kingdom.getKing().toString().equals(player.getUniqueId().toString())) {
-			this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, counterpart) {
+			this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, counterpart,
+					Arrays.asList(messages.prefix + "You have been invited as the Queen of " + 
+							kingdom.getName() + 
+							". Type /kingdom acceptposition " + 
+							kingdom.getName() + 
+							" to accept the position."), true) {
 				@Override
 				public void run(String[] args) {
 					Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getQueen()), false);
-					Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), false);
+					Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 					Util.setPosition("queen", kingdom, null, counterpart);
+					Player queen = Bukkit.getPlayer(this.recipiant.getUniqueId());
+					if (queen != null) {
+						queen.sendMessage(messages.prefix + messages.acceptPosition);
+					}
+					Player king = Bukkit.getPlayer(kingdom.getKing());
+					if (king != null) {
+						king.sendMessage(messages.prefix + messages.setCounterpart);
+					}
 				}
 				
-			}).setJoinMessage("You have been invited as the Queen of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+			});
 		}
 		else {
-			this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, counterpart) {
+			this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, counterpart,
+					Arrays.asList(messages.prefix + "You have been invited as the King of " + 
+							kingdom.getName() + 
+							". Type /kingdom acceptposition " + 
+							kingdom.getName() + 
+							" to accept the position."), true) {
 				@Override
 				public void run(String[] args) {
 					Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getKing()), false);
-					Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), false);
+					Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 					Util.setPosition("king", kingdom, null, counterpart);
+					Player queen = Bukkit.getPlayer(kingdom.getQueen());
+					if (queen != null) {
+						queen.sendMessage(messages.prefix + messages.setCounterpart);
+					}
+					Player king = Bukkit.getPlayer(this.recipiant.getUniqueId());
+					if (king != null) {
+						king.sendMessage(messages.prefix + messages.acceptPosition);
+					}
 				}
 				
-			}).setJoinMessage("You have been invited as the King of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+			});
 			
 		}
-		player.sendMessage(this.messages.prefix + this.messages.setCounterpart);
+		player.sendMessage(this.messages.prefix + this.messages.inviteCounterpart);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -629,17 +711,29 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 
-		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, prince) {
+		this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, prince,
+				Arrays.asList(messages.prefix + "You have been invited as the Prince of " + 
+						kingdom.getName() + 
+						". Type /kingdom acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getPrince()), true);
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("prince", kingdom, null, prince);
+				Player princePlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (princePlayer != null) {
+					princePlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setPrince);
+				}
 			}
 			
-		}).setJoinMessage("You have been invited as the Prince of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+		});
 		
-		player.sendMessage(this.messages.prefix + this.messages.setPrince);
+		player.sendMessage(this.messages.prefix + this.messages.invitePrince);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -659,15 +753,27 @@ public class KingdomCommand implements CommandExecutor {
 			return;
 		}
 
-		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, princess) {
+		this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, princess,
+				Arrays.asList(messages.prefix + "You have been invited as the Princess of " + 
+						kingdom.getName() + 
+						". Type /kingdom acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(kingdom.getPrincess()), true);
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("princess", kingdom, null, princess);
+				Player princessPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (princessPlayer != null) {
+					princessPlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setPrincess);
+				}
 			}
 			
-		}).setJoinMessage("You have been invited as the Princess of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
+		});
 		
 		player.sendMessage(this.messages.prefix + this.messages.setPrincess);
 	}
@@ -707,15 +813,27 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyAnEarl);
 			return;
 		}
-		this.plugin.registerFutureCommand(new FutureCommand("kingdom", new String[] {"acceptposition", kingdom.getName()}, earl) {
+		this.plugin.getMailManager().addMail(new CommandMail("kingdom", new String[] {"acceptposition", kingdom.getName()}, earl,
+				Arrays.asList(messages.prefix + "You have been invited as an Earl of " + 
+						kingdom.getName() + 
+						". Type /kingdom acceptposition " + 
+						kingdom.getName() + 
+						" to accept the position."), true) {
 			@Override
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), true);
 				Util.setPosition("earl", kingdom, null, earl);
+				Player earlPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
+				if (earlPlayer != null) {
+					earlPlayer.sendMessage(messages.prefix + messages.acceptPosition);
+				}
+				if (player.isOnline()) {
+					player.sendMessage(messages.prefix + messages.setPrince);
+				}
 			}
 			
-		}).setJoinMessage("You have been invited as an Earl of " + kingdom.getName() + ". Type /kingdom acceptposition " + kingdom.getName() + " to accept the position.");
-		player.sendMessage(this.messages.prefix + this.messages.addEarl);
+		});
+		player.sendMessage(this.messages.prefix + this.messages.inviteEarl);
 	}
 	
 	public void removeEarl(String earlIndex, Player player) {

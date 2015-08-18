@@ -90,7 +90,21 @@ public class BankCommand {
 				}
 				lookup(player, kingdom, fief, government, bank, args[2]);
 			}
+			else if (args[1].equalsIgnoreCase("list")) {
+				if (args.length < 3) {
+					list(player, bank, 0);
+				}
+				try {
+					list(player, bank, Integer.parseInt(args[2]));
+				} catch(NumberFormatException e) {
+					player.sendMessage(messages.prefix + messages.invalidNumber);
+				}
+			}
 			else if (args[1].equalsIgnoreCase("deposit")) {
+				if (args.length < 3) {
+					printSyntax(player, "deposit <amount>");
+					return;
+				}
 				try {
 					deposit(player, bank, Double.parseDouble(args[2]));
 				} catch(NumberFormatException e) {
@@ -98,6 +112,10 @@ public class BankCommand {
 				}
 			}
 			else if (args[1].equalsIgnoreCase("withdraw")) {
+				if (args.length < 3) {
+					printSyntax(player, "withdraw <amount>");
+					return;
+				}
 				try {
 					withdraw(player, kingdom, fief, government, bank, Double.parseDouble(args[2]));
 				} catch(NumberFormatException e) {
@@ -105,10 +123,19 @@ public class BankCommand {
 				}
 			}
 			else if (args[1].equalsIgnoreCase("deposititem")) {
-				Material material = Material.valueOf(args[2]);
+				if (args.length < 3) {
+					printSyntax(player, "deposititem <amount or ALL>");
+					return;
+				}
+				Material material = (player.getItemInHand() == null) ? null : player.getItemInHand().getType();
 				if (material != null) {
 					try {
-						depositItem(player, bank, Material.valueOf(args[2]), Integer.parseInt(args[3]));
+						if (args[2].equalsIgnoreCase("all")) {
+							depositItem(player, bank, material, -1);
+						}
+						else {
+							depositItem(player, bank, material, Integer.parseInt(args[2]));
+						}
 					} catch(NumberFormatException e) {
 						player.sendMessage(messages.prefix + messages.invalidNumber);
 					}
@@ -118,10 +145,14 @@ public class BankCommand {
 				}
 			}
 			else if (args[1].equalsIgnoreCase("withdrawitem")) {
-				Material material = Material.valueOf(args[2]);
+				if (args.length < 4) {
+					printSyntax(player, "withdraw <material> <amount>");
+					return;
+				}
+				Material material = Material.getMaterial(args[2].toUpperCase());
 				if (material != null) {
 					try {
-						withdrawItem(player, kingdom, fief, government, bank, Material.valueOf(args[2]), Integer.parseInt(args[3]));
+						withdrawItem(player, kingdom, fief, government, bank, material, Integer.parseInt(args[3]));
 					} catch(NumberFormatException e) {
 						player.sendMessage(messages.prefix + messages.invalidNumber);
 					}
@@ -142,8 +173,7 @@ public class BankCommand {
 			player.sendMessage(messages.prefix + messages.insufficientPermission);
 			return;
 		}
-		
-		Material material = Material.valueOf(materialName);
+		Material material = Material.getMaterial(materialName.toUpperCase());
 		if (material == null) {
 			player.sendMessage(messages.prefix + messages.invalidMaterial);
 			return;
@@ -155,6 +185,23 @@ public class BankCommand {
 			amount = ((int)bank.getInventory().get(material));
 		}
 		player.sendMessage(messages.listIndexColor + material.toString() + ": " + messages.listItemColor + amount);
+		player.sendMessage(messages.listBottom);
+	}
+	
+	public static void list(Player player, Bank bank, int page) {
+		player.sendMessage(messages.listTopStarter + "Bank Inventory - Page (" + page + "/" + ((int)Math.ceil(bank.getInventory().size()/5)) + ")" + messages.listTopEnder);
+		int itemsListed = 0; 
+		for (int i = page*5;i < bank.getInventory().size();i++) {
+			if (itemsListed >= 5) {
+				break;
+			}
+			player.sendMessage(messages.listIndexColor + 
+					bank.getInventory().keySet().toArray()[i].toString() + 
+					": " + messages.listItemColor + 
+					bank.getInventory().values().toArray()[i].toString());
+			itemsListed++;
+		}
+		player.sendMessage(messages.listIndexColor + "/<command> bank list <page (0-pages)>");
 		player.sendMessage(messages.listBottom);
 	}
 	
@@ -186,14 +233,21 @@ public class BankCommand {
 	public static void depositItem(Player player, Bank bank, Material material, int amount) {
 		int balance = 0;
 		for (ItemStack item : player.getInventory().getContents()) {
-			if (item.getType() == material) {
-				balance += item.getAmount();
+			if (item != null) {
+				if (item.getType() == material) {
+					balance += item.getAmount();
+				}
 			}
+			
+		}
+		if (amount < 0) {
+			amount = balance;
 		}
 		if (balance < amount) {
 			player.sendMessage(messages.prefix + messages.insufficientItems);
 			return;
 		}
+		
 		bank.depositItem(material, amount);
 		if (amount >= player.getItemInHand().getAmount()) {
 			amount -= player.getItemInHand().getAmount();
@@ -207,16 +261,19 @@ public class BankCommand {
 			if (amount <= 0) {
 				break;
 			}
-			if (player.getInventory().getItem(i).getType() == material) {
-				if (amount >= player.getInventory().getItem(i).getAmount()) {
-					amount -= player.getInventory().getItem(i).getAmount();
-					player.getInventory().setItem(i, null);
-				}
-				else {
-					player.getInventory().getItem(i).setAmount(player.getInventory().getItem(i).getAmount() - amount);
-					amount = 0;
+			if (player.getInventory().getItem(i) != null) {
+				if (player.getInventory().getItem(i).getType() == material) {
+					if (amount >= player.getInventory().getItem(i).getAmount()) {
+						amount -= player.getInventory().getItem(i).getAmount();
+						player.getInventory().setItem(i, null);
+					}
+					else {
+						player.getInventory().getItem(i).setAmount(player.getInventory().getItem(i).getAmount() - amount);
+						amount = 0;
+					}
 				}
 			}
+			
 		}
 		player.sendMessage(messages.prefix + messages.depositItems);
 	}

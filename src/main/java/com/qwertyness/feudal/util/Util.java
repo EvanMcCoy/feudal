@@ -1,7 +1,6 @@
 package com.qwertyness.feudal.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,7 +90,7 @@ public class Util {
 			output += string + ", ";
 		}
 		if (output.length() > 1) {
-			output = output.substring(0, 2);
+			output = output.substring(0, output.length()-2);
 		}
 		return output;
 	}
@@ -322,38 +321,47 @@ public class Util {
 		}
 		if (title.equalsIgnoreCase("baron")) {
 			fief.setBaron(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("baroness")) {
 			fief.setBaroness(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("peasent")) {
 			fief.addPeasent(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("serf")) {
 			fief.addSerf(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("pope")) {
 			fief.getChurch().setPope(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("abbot")) {
 			fief.getChurch().addAbbot(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("knight")) {
 			fief.getArmy().setKnight(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("dame")) {
 			fief.getArmy().setDame(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 		if (title.equalsIgnoreCase("soldier")) {
 			fief.getArmy().addSoldier(player.getUniqueId());
+			fPlayer.kingdom = kingdom.getName();
 			fPlayer.fief = fief.getName();
 		}
 	}
@@ -380,7 +388,7 @@ public class Util {
 					plugin.getKingdomManager().deleteKingdom(kingdom);
 				}
 			}
-			if (((kingdom.getPrincess() != null) ? kingdom.getPrince().toString() : "").equals(player.player.toString())) {
+			if (((kingdom.getPrince() != null) ? kingdom.getPrince().toString() : "").equals(player.player.toString())) {
 				kingdom.setPrince(null);
 			}
 			if (((kingdom.getPrincess() != null) ? kingdom.getPrincess().toString() : "").equals(player.player.toString())) {

@@ -12,5 +12,9 @@ commands:
     description: Base army command.
   church:
     description: Base church command.
+  mail:
+    description: Base mail command.
+  runtaxes:
+    description: Debugging command to run taxes.  REMOVE IN BETA.
   feudal:
     description: Main plugin command.

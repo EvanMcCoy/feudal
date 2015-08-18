@@ -13,10 +13,10 @@ import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 
 public class TaxExecutor extends BukkitRunnable implements Listener  {
-	private Feudal plugin;
+	private static Feudal plugin;
 	
-	public TaxExecutor(Feudal plugin) {
-		this.plugin = plugin;
+	public TaxExecutor(Feudal fPlugin) {
+		plugin = fPlugin;
 	}
 	
 	public void run() {
@@ -25,17 +25,17 @@ public class TaxExecutor extends BukkitRunnable implements Listener  {
 		}
 	}
 
-	public void runTaxes() {
-		for(Kingdom kingdom : this.plugin.getKingdomManager().kingdoms) {
+	public static void runTaxes() {
+		for(Kingdom kingdom : plugin.getKingdomManager().kingdoms) {
 			for (Fief fief : kingdom.getFiefs()) {
 				for (UUID peasent : fief.getPeasents()) {
-					if (!this.plugin.getBankManager().vaultEconomy.hasAccount(Bukkit.getOfflinePlayer(peasent))) {
+					if (!plugin.getBankManager().vaultEconomy.hasAccount(Bukkit.getOfflinePlayer(peasent))) {
 						continue;
 					}
-					if (!(this.plugin.getBankManager().vaultEconomy.getBalance(Bukkit.getOfflinePlayer(peasent)) >= fief.settings.getTax())) {
+					if (!(plugin.getBankManager().vaultEconomy.getBalance(Bukkit.getOfflinePlayer(peasent)) >= fief.settings.getTax())) {
 						continue;
 					}
-					this.plugin.getBankManager().vaultEconomy.withdrawPlayer(Bukkit.getOfflinePlayer(peasent), fief.settings.getTax());
+					plugin.getBankManager().vaultEconomy.withdrawPlayer(Bukkit.getOfflinePlayer(peasent), fief.settings.getTax());
 					fief.getBank().depositMoney(fief.settings.getTax());
 				}
 				if (kingdom.getSettings().doTaxPerPlot()) {

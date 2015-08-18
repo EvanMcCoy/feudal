@@ -6,6 +6,14 @@ taxTimes:
 - 12
 maxLand: 100
 fortressRadius: 3
+
+chat:
+  title:
+    enabled: true
+    default: '&aNomad'
+    layout: '&4[&r%title%&4] &r'
+    colors:
+      king: '&8'
 flags:
   enabled: true
   defaultFlag:

@@ -9,6 +9,8 @@ prefix: "[Feudal] &a"
 insufficientPermission: "&cYou do not have permission to do that."
 #When a player is not in a kingdom, but uses a command that requires it.
 notInAKingdom: "&cYou must be in a kingdom to do that."
+#When a player is not in a fief, but uses a command that required it.
+notInAFief: "&cYou must be in a fief to do that."
 #When a player is not in any form of government, but uses a command that requires it.
 notInAGovernment: "&cYou muse hold a position in government to do that."
 #When a querried player is offline or not a member.
@@ -17,6 +19,8 @@ notAPlayer: "&cThat player could not be found."
 invalidIndex: "&cThat index is too high."
 #When a command accesses an invalid material name
 invalidMaterial: "&cThat material is unknown to the realm."
+#When a command accesses an invalid number.
+invalidNumber: "&cThat is not a number."
 #When the plugin displays a list, this is the beginning of the header.
 listTopStarter: "&a----- &r"
 #When the plugin displays a list, this is the end of the header.
@@ -26,7 +30,8 @@ listIndexColor: "&a"
 #The color of a list item's text when the plugin displays a list.
 listItemColor: "&3"
 #The footer when the plugin displays a list.
-listBottom: "      &a>----------<"
+listBottom: "     &a>------------------------------<"
+acceptPosition: "You have accepted the position."
 
 #Kingdom messages
 alreadyInAKingdom: "&cYou are already in a kingdom."
@@ -35,11 +40,18 @@ alreadyAKingdom: "&cThat is already a kingdom."
 kingdomDisunite: "You have disunited your mighty kingdom."
 kingdomDisuniteConfirm: "Are you sure you want to disunite your kingdom?  Type command again to confirm."
 
+inviteCounterpart: "You have invited your ruling counterpart."
 setCounterpart: "You have set your ruling counterpart."
+alreadyACounterpart: "&cThere is already a counterpart in your kingdom."
+inviteDuke: "You have invited your duke."
 setDuke: "You have set the duke of your kingdom."
+inviteDuchess: "You have invited your duchess."
 setDuchess: "You have set the duchess of your kingdom."
+invitePrince: "You have invited your prince."
 setPrince: "You have set the prince of your kingdom."
+invitePrincess: "You have invited your princess."
 setPrincess: "You have set the princess of your kingdom."
+inviteEarl: "You have invited an earl."
 addEarl: "You have added an earl to your kingdom."
 alreadyAnEarl: "&cThat person is already an earl."
 removeEarl: "You have removed an earl from your kingdom."
@@ -48,16 +60,37 @@ fiefCreate: "You have created a fief."
 alreadyAFief: "&cThat is already a fief in your kingdom."
 fiefDisband: "You have disbanded a fief."
 notAFief: "&cThat is not a fief in your kingdom."
-setFiefBaron: "You have set the baron of the fief."
-setFiefBaroness: "You have set the baroness of the fief."
 
 #Fief messages
+inviteFiefBaron: "You have invited the baron of the fief."
+setFiefBaron: "You have set the baron of the fief."
+inviteFiefBaroness: "You have invited the baroness of the fief."
+setFiefBaroness: "You have set the baroness of the fief."
+inviteFiefCounterpart: "You have invited your counterpart."
+setFiefCounterpart: "You have set the counterpart of your fief."
+alreadyAFiefCounterpart: "&cThere is already a counterpart in your fief."
+applyPeasent: "You have applied as a peasent in the fief."
+invitePeasent: "You have invited a peasent."
+addPeasent: "You have added a peasent to your fief."
+alreadyAPeasent: "&cThat person is already a peasent in your fief."
+removePeasent: "You have removed a peasent from your fief."
+applySerf: "You have applied as a serf in the fief."
+inviteSerf: "You have invited a serf to your fief."
+addSerf: "You have added a serf to your fief."
+alreadyASerf: "&cThat person is already a serf in your fief."
+removeSerf: "You have removed a serf from your fief."
 
 #Army messages
 noArmy: "&cYou are not associated with any army."
+inviteKnight: "You have invited the knight to your army."
 setKnight: "You have set the knight of your army."
+inviteDame: "You have invited the dame to your army."
 setDame: "You have set the dame of your army."
+inviteArmyCounterpart: "You have invited the counterpart of your army."
 setArmyCounterpart: "You have set your counterpart in your army."
+alreadyAnArmyCounterpart: "&cThere is already a counterpart in your army."
+applySoldier: "You have applied as a soldier in the army."
+inviteSoldier: "You have invited a soldier to your army."
 addSoldier: "You have added a soldier to your army."
 removeSoldier: "You are removed a soldier from your army."
 capture: "You have initiated the capture of this land."
@@ -91,7 +124,7 @@ cannotBuild: "&cYou cannot build on this kingdom's land."
 
 #Bank messages
 insufficientMoney: "&cYou do not have enough money to deposit that amount."
-insufficentBankMoney: "&cThe bank does not have enough money to fufill that request."
+insufficientBankMoney: "&cThe bank does not have enough money to fufill that request."
 insufficientItems: "&cYou do not have enough items to deposit that."
 insufficientBankItems: "&cThe bank does not have enough items to fufill that request."
 depositMoney: "You have deposited money in your government's bank."

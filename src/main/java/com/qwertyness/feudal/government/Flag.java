@@ -88,9 +88,11 @@ public class Flag {
 		}
 	}
 	
-	public static void buildStructure(Location origin, Kingdom kingdom) {
+	public static List<BlockState> buildStructure(Location origin, Kingdom kingdom) {
+		List<BlockState> blockStates = new ArrayList<BlockState>();
 		for (StructureBlock block : flagStructure) {
 			Location track = origin.add(block.offsetX, block.offsetY, block.offsetZ);
+			blockStates.add(track.getBlock().getState());
 			track.getBlock().setType(block.material);
 			if (block.material == Material.BANNER) {
 				BlockState state = track.getBlock().getState();
@@ -100,6 +102,7 @@ public class Flag {
 				meta.update(true, true);
 			}
 		}
+		return blockStates;
 	}
 	
 	public static class StructureBlock {

@@ -1,36 +1,40 @@
 package com.qwertyness.feudal;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.qwertyness.feudal.chat.ChatManager;
 import com.qwertyness.feudal.command.ArmyCommand;
 import com.qwertyness.feudal.command.BankCommand;
-import com.qwertyness.feudal.command.FutureCommand;
+import com.qwertyness.feudal.command.FiefCommand;
 import com.qwertyness.feudal.command.KingdomCommand;
 import com.qwertyness.feudal.data.MessageData;
+import com.qwertyness.feudal.data.NPCData;
 import com.qwertyness.feudal.data.PlayerData;
-import com.qwertyness.feudal.data.PlayerManager;
-import com.qwertyness.feudal.data.government.ArmyManager;
-import com.qwertyness.feudal.data.government.BankManager;
-import com.qwertyness.feudal.data.government.ChurchManager;
 import com.qwertyness.feudal.data.government.FiefData;
-import com.qwertyness.feudal.data.government.FiefManager;
 import com.qwertyness.feudal.data.government.KingdomData;
-import com.qwertyness.feudal.data.government.KingdomManager;
 import com.qwertyness.feudal.data.government.LandData;
-import com.qwertyness.feudal.data.government.LandManager;
+import com.qwertyness.feudal.government.ArmyManager;
+import com.qwertyness.feudal.government.BankManager;
+import com.qwertyness.feudal.government.ChurchManager;
+import com.qwertyness.feudal.government.FiefManager;
+import com.qwertyness.feudal.government.KingdomManager;
+import com.qwertyness.feudal.government.LandManager;
+import com.qwertyness.feudal.government.PlayerManager;
 import com.qwertyness.feudal.government.settings.Settings;
 import com.qwertyness.feudal.listener.BuildListener;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.listener.TaxExecutor;
+import com.qwertyness.feudal.mail.Mail;
+import com.qwertyness.feudal.mail.MailManager;
+import com.qwertyness.feudal.mail.MailManager.MailDeliverer;
+import com.qwertyness.feudal.npc.NPCProfile;
 import com.qwertyness.feudal.util.LandUtil;
 
 import net.milkbowl.vault.economy.Economy;
@@ -43,6 +47,7 @@ public class Feudal extends JavaPlugin implements Listener {
 	private LandData landData;
 	private PlayerData playerData;
 	private MessageData messageData;
+	private NPCData npcData;
 	
 	private KingdomManager kingdomManager;
 	private FiefManager fiefManager;
@@ -51,8 +56,7 @@ public class Feudal extends JavaPlugin implements Listener {
 	private ArmyManager armyManager;
 	private ChurchManager churchManager;
 	private PlayerManager playerManager;
-	
-	private List<FutureCommand> futureCommands;
+	private MailManager mailManager;
 	
 	public void onEnable() {
 		instance = this;
@@ -64,6 +68,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.playerData = new PlayerData(this);
 		this.saveResource("messages.yml", false);
 		this.messageData = new MessageData(this);
+		this.npcData = new NPCData(this);
 		
 		//Initialize static configuration fields.
 		new Configuration(this);
@@ -76,21 +81,27 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.kingdomManager = new KingdomManager();
 		this.landManager = new LandManager();
 		this.playerManager = new PlayerManager();
+		this.mailManager = new MailManager();
 		new LandUtil(this.landManager);
 		Settings.inizializeDefaultPositions();
 		new BankCommand(this);
-		this.futureCommands = new ArrayList<FutureCommand>();
+		for (String key : this.npcData.get().getKeys(false)) {
+			NPCProfile.profiles.add(NPCProfile.fromConfigurationSection(this.npcData.get().getConfigurationSection(key)));
+		}
 		
 		//Register listeners and runnables
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new BuildListener(this), this);
 		pm.registerEvents(new ChunkListener(this), this);
+		pm.registerEvents(this.mailManager, this);
+		pm.registerEvents(new ChatManager(), this);
 		pm.registerEvents(this, this);
 		new TaxExecutor(this).runTaskTimerAsynchronously(this, 100, 1200);
 		
 		//Register command handlers
 		this.getCommand("kingdom").setExecutor(new KingdomCommand(this));
 		this.getCommand("army").setExecutor(new ArmyCommand(this));
+		this.getCommand("fief").setExecutor(new FiefCommand(this));
 		
 		//Set up vault ecnomony
 		if (Configuration.useEconomy) {
@@ -113,20 +124,22 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.landData.save();
 	}
 	
-	public static Feudal getInstance() {
-		return instance;
-	}
-	
-	@EventHandler
-	public void onJoin(PlayerJoinEvent event) {
-		this.playerManager.isPlayer(event.getPlayer().getUniqueId());
-		for (FutureCommand command : this.futureCommands) {
-			if (command.getRecipiant().getUniqueId().toString().equals(event.getPlayer().getUniqueId().toString())) {
-				if (!command.hasJoinMessage()) {
-					event.getPlayer().sendMessage(command.getJoinMessage());
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		if (command.getName().equalsIgnoreCase("mail")) {
+			for (Mail mail : new ArrayList<Mail>(this.mailManager.getMail())) {
+				if (mail.compareRecipiant(sender) && mail instanceof MailDeliverer) {
+					((MailDeliverer)mail).run(args);
 				}
 			}
 		}
+		if (command.getName().equalsIgnoreCase("runtaxes")) {
+			TaxExecutor.runTaxes();
+		}
+		return false;
+	}
+	
+	public static Feudal getInstance() {
+		return instance;
 	}
 	
 	public KingdomData getKingdomData() {return this.kingdomData;}
@@ -149,20 +162,5 @@ public class Feudal extends JavaPlugin implements Listener {
 	
 	public ArmyManager getArmyManager() {return this.armyManager;}
 	
-	public FutureCommand registerFutureCommand(FutureCommand futureCommand) {
-		this.futureCommands.add(futureCommand);
-		return futureCommand;
-	}
-	
-	public boolean checkFutureCommands(String command, String[] args, CommandSender sender) {
-		for (int i = 0;i < this.futureCommands.size();i++) {
-			FutureCommand futureCommand = this.futureCommands.get(i);
-			if (futureCommand.getCommand().equalsIgnoreCase(command) && futureCommand.compareSubcommands(args) && futureCommand.compareRecipiant(sender)) {
-				futureCommand.run(args);
-				this.futureCommands.remove(i);
-				return true;
-			}
-		}
-		return false;
-	}
+	public MailManager getMailManager() {return this.mailManager;}
 }

@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.bukkit.Chunk;
 
-import com.qwertyness.feudal.data.government.LandManager;
 import com.qwertyness.feudal.government.Fief;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.Land;
+import com.qwertyness.feudal.government.LandManager;
 
 public class LandUtil {
 	private static LandManager manager;
