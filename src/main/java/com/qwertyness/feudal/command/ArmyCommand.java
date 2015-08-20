@@ -3,6 +3,7 @@ package com.qwertyness.feudal.command;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,10 +14,13 @@ import com.qwertyness.feudal.Configuration.Messages;
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.government.Army;
 import com.qwertyness.feudal.government.Fief;
+import com.qwertyness.feudal.government.Flag;
 import com.qwertyness.feudal.government.Kingdom;
 import com.qwertyness.feudal.government.settings.Settings.GovernmentPermission;
 import com.qwertyness.feudal.government.settings.Settings.TitlePermission;
+import com.qwertyness.feudal.gui.ArmyBuyGUI;
 import com.qwertyness.feudal.mail.CommandMail;
+import com.qwertyness.feudal.npc.FeudalNPC;
 import com.qwertyness.feudal.util.Util;
 
 public class ArmyCommand implements CommandExecutor {
@@ -70,7 +74,10 @@ public class ArmyCommand implements CommandExecutor {
 			setDame(player, args[1], kingdom, fief, royal);
 		}
 		else if (args[0].equalsIgnoreCase("capture")) {
-			capture(player);
+			capture(player, kingdom, army);
+		}
+		else if (args[0].equalsIgnoreCase("buy")) {
+			buy(player, kingdom, army);
 		}
 		return false;
 	}
@@ -96,7 +103,7 @@ public class ArmyCommand implements CommandExecutor {
 			player.sendMessage(messages.prefix + messages.insufficientPermission);
 			return;
 		}
-		Player newKnight = Bukkit.getPlayer(knight);
+		OfflinePlayer newKnight = Bukkit.getOfflinePlayer(knight);
 		if (newKnight == null) {
 			player.sendMessage(messages.prefix + messages.notAPlayer);
 			return;
@@ -132,7 +139,7 @@ public class ArmyCommand implements CommandExecutor {
 			player.sendMessage(messages.prefix + messages.insufficientPermission);
 			return;
 		}
-		Player newDame = Bukkit.getPlayer(dame);
+		OfflinePlayer newDame = Bukkit.getOfflinePlayer(dame);
 		if (newDame == null) {
 			player.sendMessage(messages.prefix + messages.notAPlayer);
 			return;
@@ -162,24 +169,27 @@ public class ArmyCommand implements CommandExecutor {
 		player.sendMessage(this.messages.prefix + this.messages.inviteDame);
 	}
 	
-	public void capture(Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
-		Fief fief = Util.getFief(player);
-		if (kingdom == null) {
-			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
+	public void buy(Player player, Kingdom kingdom, Army army) {
+		String title = Util.getTitle(player, kingdom, Util.getFief(player));
+		if (!GovernmentPermission.ROYALTY.titleHasPermission(title, TitlePermission.ARMY_LEVEL)) {
+			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		String title = Util.getTitle(player, kingdom, fief);
-		Army army = null;
+		
+		new ArmyBuyGUI(player, army).openGUI();;
+	}
+	
+	public void capture(Player player, Kingdom kingdom, Army army) {
+		String title = Util.getTitle(player, kingdom, Util.getFief(player));
 		if (!GovernmentPermission.ROYALTY.titleHasPermission(title, TitlePermission.ARMY_LEVEL)) {
-			if (title.equalsIgnoreCase("royalKnight") || title.equalsIgnoreCase("royalDame")) {
-				army = kingdom.getArmy();
-			}
-			else if (title.equalsIgnoreCase("knight") || title.equalsIgnoreCase("dame")) {
-				army = Util.getFief(player).getArmy();
-			}
+			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
+			return;
 		}
 		
 		//TODO: Start capture.
+		Flag.buildStructure(player.getLocation(), kingdom);
+		for (FeudalNPC npc : army.getNPCs()) {
+			npc.spawn(player.getLocation());
+		}
 	}
 }

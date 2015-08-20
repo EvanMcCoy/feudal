@@ -257,7 +257,7 @@ public class FiefCommand implements CommandExecutor {
 						" to accept the position."), true) {
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), false);
-				Util.setPosition("peasent", kingdom, fief, player);
+				Util.setPosition("peasent", kingdom, fief, newPeasent);
 				Player peasentPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
 				if (peasentPlayer != null) {
 					peasentPlayer.sendMessage(messages.prefix + messages.acceptPosition);
@@ -329,7 +329,7 @@ public class FiefCommand implements CommandExecutor {
 						" to accept the position."), true) {
 			public void run(String[] args) {
 				Util.removePosition(plugin.getPlayerManager().getPlayer(this.recipiant.getUniqueId()), false);
-				Util.setPosition("serf", kingdom, fief, player);
+				Util.setPosition("serf", kingdom, fief, newSerf);
 				Player serfPlayer = Bukkit.getPlayer(this.recipiant.getUniqueId());
 				if (serfPlayer != null) {
 					serfPlayer.sendMessage(messages.prefix + messages.acceptPosition);

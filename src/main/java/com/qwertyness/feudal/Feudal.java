@@ -28,6 +28,7 @@ import com.qwertyness.feudal.government.KingdomManager;
 import com.qwertyness.feudal.government.LandManager;
 import com.qwertyness.feudal.government.PlayerManager;
 import com.qwertyness.feudal.government.settings.Settings;
+import com.qwertyness.feudal.gui.GUIManager;
 import com.qwertyness.feudal.listener.BuildListener;
 import com.qwertyness.feudal.listener.ChunkListener;
 import com.qwertyness.feudal.listener.TaxExecutor;
@@ -95,6 +96,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		pm.registerEvents(new ChunkListener(this), this);
 		pm.registerEvents(this.mailManager, this);
 		pm.registerEvents(new ChatManager(), this);
+		pm.registerEvents(new GUIManager(), this);
 		pm.registerEvents(this, this);
 		new TaxExecutor(this).runTaskTimerAsynchronously(this, 100, 1200);
 		

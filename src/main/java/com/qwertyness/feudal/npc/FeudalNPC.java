@@ -2,6 +2,7 @@ package com.qwertyness.feudal.npc;
 
 import java.util.UUID;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,7 +38,7 @@ public class FeudalNPC  {
 		return true;
 	}
 	
-	public void spawn() {
+	public void spawn(Location location) {
 		this.npc = NPCManager.getRegistry().createNPC(this.profile.type, this.uuid, NPCManager.getDataStore().createUniqueNPCId(NPCManager.getRegistry()), this.profile.npcName);
 		for (Trait trait : this.profile.npcTraits) {
 			this.npc.addTrait(trait);
@@ -47,6 +48,7 @@ public class FeudalNPC  {
 			entity.getEquipment().setArmorContents(new ItemStack[] {this.profile.helmet, this.profile.chestplate, this.profile.leggings, this.profile.boots});
 			entity.getEquipment().setItemInHand(this.profile.hand);
 		}
+		this.npc.spawn(location);
 	}
 	
 	public void despawn() {

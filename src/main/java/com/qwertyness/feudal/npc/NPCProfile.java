@@ -17,6 +17,10 @@ public class NPCProfile {
 	public static List<NPCProfile> profiles = new ArrayList<NPCProfile>();
 	
 	public String profileName;
+	public Material iconMaterial;
+	public String profileDisplayName;
+	public List<String> profileLore;
+	
 	public EntityType type;
 	public List<Trait> npcTraits;
 	public ItemStack helmet;
@@ -26,12 +30,28 @@ public class NPCProfile {
 	public ItemStack hand;
 	public String npcName;
 	
-	public String profileDisplayName;
+	
 	public int cost;
 	
 	public static NPCProfile fromConfigurationSection(ConfigurationSection section) {
 		NPCProfile profile = new NPCProfile();
 		profile.profileName = section.getName();
+		Material material = null;
+		try {
+			material = Material.valueOf(section.getString("icon.material"));
+		} catch(NullPointerException e) {
+			material = Material.IRON_CHESTPLATE;
+		}
+		profile.iconMaterial = material;
+		profile.profileDisplayName = ChatColor.translateAlternateColorCodes('&', section.getString("icon.displayName"));
+		List<String> lore = section.getStringList("icon.lore");
+		if (lore == null) {
+			lore = new ArrayList<String>();
+		}
+		for (int i = 0;i < lore.size();i++) {
+			lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+		}
+		
 		EntityType type = null;
 		try {
 			type = EntityType.valueOf(section.getString("type"));
@@ -46,7 +66,6 @@ public class NPCProfile {
 		profile.hand = itemFromConfigurationSection(section.getConfigurationSection("hand"));
 		profile.npcName = ChatColor.translateAlternateColorCodes('&', section.getString("name"));
 		
-		profile.profileDisplayName = ChatColor.translateAlternateColorCodes('&', section.getString("profileDisplayName"));
 		profile.cost = section.getInt("cost");
 		return profile;
 	}
