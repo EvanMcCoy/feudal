@@ -17,12 +17,13 @@ import com.qwertyness.feudal.npc.NPCProfile;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class ArmyBuyGUI implements FeudalGUI {
+public class ArmyDeployGUI implements FeudalGUI {
 	private Player player;
 	private Army army;
+	private HashMap<NPCProfile, Integer> availableSoldiers;
 	private Inventory inventory;
 	
-	public ArmyBuyGUI(Player player, Army army) {
+	public ArmyDeployGUI(Player player, Army army) {
 		this.player = player;
 		this.army = army;
 	}
@@ -32,21 +33,30 @@ public class ArmyBuyGUI implements FeudalGUI {
 	}
 
 	public void openGUI() {
-		inventory = Bukkit.createInventory(this.player, (int)Math.ceil(NPCProfile.profiles.size()/9)*9+9, "Buy/Sell Soldiers");
-		
-		for (NPCProfile profile : NPCProfile.profiles) {
+		HashMap<NPCProfile, Integer> availableToDeploy = new HashMap<NPCProfile, Integer>();
+		for (FeudalNPC npc : army.getNPCs()) {
+			if (availableToDeploy.containsKey(npc.getProfile())) {
+				availableToDeploy.put(npc.getProfile(), availableToDeploy.get(npc.getProfile()) + 1);
+			}
+			else {
+				availableToDeploy.put(npc.getProfile(), 1);
+			}
+		}
+		availableSoldiers = availableToDeploy;
+		inventory = Bukkit.createInventory(this.player, (int)Math.ceil(availableToDeploy.keySet().size()/9)*9+9, "Buy/Sell Soldiers");
+		for (NPCProfile profile : availableToDeploy.keySet()) {
 			ItemStack icon = new ItemStack(profile.iconMaterial, 0);
 			ItemMeta iconMeta = icon.getItemMeta();
 			iconMeta.setDisplayName(profile.profileDisplayName);
 			iconMeta.setLore(profile.profileLore);
-			iconMeta.getLore().add(ChatColor.GREEN + "Cost: " + ChatColor.GOLD + profile.cost);
+			iconMeta.getLore().add(ChatColor.GREEN + "Available: " + ChatColor.GOLD + availableToDeploy.get(profile));
 			icon.setItemMeta(iconMeta);
 			inventory.setItem(NPCProfile.profiles.indexOf(profile), icon);
 		}
 		
 		ItemStack confirm = new ItemStack(Material.EMERALD_BLOCK);
 		ItemMeta confirmMeta = confirm.getItemMeta();
-		confirmMeta.setDisplayName(ChatColor.GREEN + "Confirm Purchase");
+		confirmMeta.setDisplayName(ChatColor.GREEN + "Deploy");
 		confirm.setItemMeta(confirmMeta);
 		inventory.setItem(inventory.getSize() - 4, confirm);
 		
@@ -70,36 +80,36 @@ public class ArmyBuyGUI implements FeudalGUI {
 		if (clickedItem.getItemMeta().getDisplayName().contains("Cancel")) {
 			closeGUI();
 		}
-		else if (clickedItem.getItemMeta().getDisplayName().contains("Confirm Purchase")) {
-			HashMap<NPCProfile, Integer> boughtNPCs = new HashMap<NPCProfile, Integer>();
-			int cost = 0;
+		else if (clickedItem.getItemMeta().getDisplayName().contains("Deploy")) {
+			HashMap<NPCProfile, Integer> deployNPCs = new HashMap<NPCProfile, Integer>();
+			
 			for (ItemStack item : inventory.getContents()) {
 				if (item != null) {
 					if (item.getItemMeta().getDisplayName() != null) {
 						NPCProfile profile = NPCProfile.profiles.stream().filter(p -> p.profileDisplayName.equals(item.getItemMeta().getDisplayName())).findFirst().orElse(null);
-						boughtNPCs.put(profile, item.getAmount());
-						cost += profile.cost*item.getAmount();
+						deployNPCs.put(profile, item.getAmount());
 					}
 				}
 			}
 			
-			if (Configuration.useEconomy) {
-				if (army.getBank().getBalance() < cost) {
-					closeGUI();
-					player.sendMessage(ChatColor.RED + Configuration.instance.messages.insufficientBankMoney);
-					return;
-				}
-				army.getBank().withdrawMoney(cost);
-				for (NPCProfile profile : boughtNPCs.keySet()) {
-					for (int i = 0;i < boughtNPCs.get(profile);i++) {
-						army.addNPC(new FeudalNPC(profile));
+			for (NPCProfile profile : deployNPCs.keySet()) {
+				int neededAmount = deployNPCs.get(profile);
+				for (FeudalNPC npc : army.getNPCs()) {
+					if (neededAmount == 0) {
+						break;
+					}
+					if (npc.getProfile().profileName.equals(profile.profileName)) {
+						npc.spawn(player.getLocation());
+						neededAmount--;
 					}
 				}
 			}
-			
 		}
 		else {
-			clickedItem.setAmount(clickedItem.getAmount()+1);
+			NPCProfile profile = NPCProfile.profiles.stream().filter(p -> p.profileDisplayName.equals(clickedItem.getItemMeta().getDisplayName())).findFirst().orElse(null);
+			if (availableSoldiers.get(profile) > clickedItem.getAmount()) {
+				clickedItem.setAmount(clickedItem.getAmount()+1);
+			}
 		}
 	}
 
@@ -114,4 +124,5 @@ public class ArmyBuyGUI implements FeudalGUI {
 			clickedItem.setAmount(clickedItem.getAmount() - 1);
 		}
 	}
+
 }
