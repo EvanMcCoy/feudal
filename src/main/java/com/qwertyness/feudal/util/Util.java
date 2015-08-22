@@ -147,9 +147,7 @@ public class Util {
 				}
 			}
 			if (army != null) {
-				if (toStringList(getArmyMembers(army)).contains(player.player.toString())) {
-					return army;
-				}
+				return army;
 			}
 		}
 		return null;
@@ -482,8 +480,12 @@ public class Util {
 	
 	public static List<UUID> getArmyMembers(Army army) {
 		List<UUID> members = new ArrayList<UUID>();
-		members.add(army.getKnight());
-		members.add(army.getDame());
+		if (army.getKnight() != null) {
+			members.add(army.getKnight());
+		}
+		if (army.getDame() != null) {
+			members.add(army.getDame());
+		}
 		members.addAll(army.getSoldiers());
 		return members;
 	}

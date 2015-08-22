@@ -51,6 +51,7 @@ public class NPCProfile {
 		for (int i = 0;i < lore.size();i++) {
 			lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
 		}
+		profile.profileLore = lore;
 		
 		EntityType type = null;
 		try {

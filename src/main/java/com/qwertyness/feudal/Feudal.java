@@ -69,6 +69,7 @@ public class Feudal extends JavaPlugin implements Listener {
 		this.playerData = new PlayerData(this);
 		this.saveResource("messages.yml", false);
 		this.messageData = new MessageData(this);
+		this.saveResource("npcProfiles.yml", false);
 		this.npcData = new NPCData(this);
 		
 		//Initialize static configuration fields.

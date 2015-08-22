@@ -79,6 +79,9 @@ public class ArmyCommand implements CommandExecutor {
 		else if (args[0].equalsIgnoreCase("buy")) {
 			buy(player, kingdom, army);
 		}
+		else if (args[0].equalsIgnoreCase("bank")) {
+			BankCommand.bankCommand(player, args, (royal) ? "kingdomarmy" : "fiefarmy");
+		}
 		return false;
 	}
 	

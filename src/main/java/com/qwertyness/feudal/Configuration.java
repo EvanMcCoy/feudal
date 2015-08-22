@@ -18,7 +18,7 @@ public class Configuration {
 	
 	public int landTax;
 	public int fortressTax;
-	public static boolean useEconomy;
+	public static boolean useEconomy = true;
 	//In hours
 	public List<Integer> taxTimes;
 	public int maxLand;
@@ -31,6 +31,8 @@ public class Configuration {
 	public String defaultTitle;
 	public ConfigurationSection titleColors;
 	
+	public int playerCacheInterval;
+	public int landCacheInterval;
 	public Messages messages;
 	
 	public Configuration(Feudal plugin) {

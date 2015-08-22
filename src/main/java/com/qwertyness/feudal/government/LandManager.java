@@ -7,16 +7,31 @@ import java.util.UUID;
 import org.bukkit.Chunk;
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.Configuration;
 import com.qwertyness.feudal.Feudal;
+import com.qwertyness.feudal.resource.DynamicCache;
 import com.qwertyness.feudal.util.Util;
 
 public class LandManager {
 	private Feudal plugin;
+	private DynamicCache<String> cache;
 
 	public List<Land> land = new ArrayList<Land>();
 	
 	public LandManager() {
 		this.plugin = Feudal.getInstance();
+		
+		cache = new DynamicCache<String>(Configuration.instance.landCacheInterval) {
+			public void decache(String coordinates) {
+				Land decacheLand = null;
+				for (Land testLand : land) {
+					if (testLand.getCoordinates().equals(coordinates))
+						decacheLand = testLand;
+				}
+				if (decacheLand != null)
+					unregisterLand(decacheLand);
+			}
+		};
 	}
 	
 	public void registerLand(Land land) {
@@ -25,41 +40,29 @@ public class LandManager {
 		}
 	}
 	
-	public void unregisterLand(String coordinates) {
-		for (Land land : this.land) {
-			if (land.getCoordinates().equals(coordinates)) {
-				this.land.remove(land);
-			}
-		}
+	public void unregisterLand(Land land) {
+		this.land.stream().forEach(l -> {if (l.getCoordinates().equals(land.getCoordinates())) {this.land.remove(l);}});
 	}
 	
 	public Land getLand(String coordinates) {
+		cache.cached(coordinates);
 		for (Land land : this.land) {
-			if (land.getCoordinates().equals(coordinates)) {
+			if (land.getCoordinates().equals(coordinates))
 				return land;
-			}
 		}
 		
 		Land land = createLand(coordinates);
 		return land;
 	}
 	
-	public boolean isLand(String coordinates) {
-		if (getLand(coordinates) != null) {
-			return true;
-		}
-		return false;
-	}
-	
 	public Land createLand(String coordinates) {
-		if (this.plugin.getLandData().get().isConfigurationSection(coordinates)) {
+		if (this.plugin.getLandData().get().isConfigurationSection(coordinates))
 			return loadLand(coordinates);
-		}
+		
 		ConfigurationSection landSection = this.plugin.getLandData().get().createSection(coordinates);
 		Land land = new Land(Util.toChunk(coordinates), null, null, new ArrayList<UUID>(), landSection);
-		if (land.getChunk() == null) {
+		if (land.getChunk() == null)
 			return null;
-		}
 		registerLand(land);
 		return land;
 	}
@@ -75,12 +78,10 @@ public class LandManager {
 		Land land = new Land(chunk, kingdom, fief, owners, section);
 		land.setFortress(section.getBoolean("fortress"));
 		
-		if (kingdom != null) {
+		if (kingdom != null)
 			kingdom.addLand(land);
-		}
-		if (fief != null) {
+		if (fief != null)
 			fief.addLand(land);
-		}
 		registerLand(land);
 		return land;
 	}
@@ -95,8 +96,7 @@ public class LandManager {
 	}
 	
 	public void saveAll() {
-		for (Land land : this.land) {
+		for (Land land : this.land)
 			this.saveLand(land);
-		}
 	}
 }

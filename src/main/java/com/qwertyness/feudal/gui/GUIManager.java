@@ -39,6 +39,9 @@ public class GUIManager implements Listener {
 		if (clickedGUI == null) {
 			return;
 		}
+		if (event.getSlot() < 0) {
+			return;
+		}
 		
 		if (event.getClick() == ClickType.LEFT) {
 			clickedGUI.handleLeftClick(event.getSlot());
@@ -46,11 +49,12 @@ public class GUIManager implements Listener {
 		if (event.getClick() == ClickType.RIGHT) {
 			clickedGUI.handleRightClick(event.getSlot());
 		}
+		event.setCancelled(true);
 	}
 	
 	@EventHandler
 	public void onClose(InventoryCloseEvent event) {
-		for (FeudalGUI gui : guis) {
+		for (FeudalGUI gui : new ArrayList<FeudalGUI>(guis)) {
 			if (gui.getPlayer().compareTo(event.getPlayer().getUniqueId()) == 0) {
 				removeGUI(gui);
 			}

@@ -8,36 +8,43 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.qwertyness.feudal.Configuration;
 import com.qwertyness.feudal.Feudal;
 import com.qwertyness.feudal.data.FeudalPlayer;
+import com.qwertyness.feudal.resource.DynamicCache;
 
 public class PlayerManager {
-	List<FeudalPlayer> players;
+	private List<FeudalPlayer> players;
+	private DynamicCache<UUID> cache;
 	
 	public PlayerManager() {
 		players = new ArrayList<FeudalPlayer>();
+		
+		cache = new DynamicCache<UUID>(Configuration.instance.playerCacheInterval) {
+			public void decache(UUID playerUUID) {
+				unregisterPlayer(playerUUID);
+			}
+		};
 	}
 	
 	public List<FeudalPlayer> getPlayers() {
 		return this.players;
 	}
 	
-	public FeudalPlayer getPlayer(UUID player) {
+	public FeudalPlayer getPlayer(UUID player)  {
 		if (player != null) {
-			for (FeudalPlayer feudalPlayer : this.players) {
-				if (feudalPlayer.player.toString().equals(player.toString())) {
-					return feudalPlayer;
-				}
-			}
-		
-			FeudalPlayer newPlayer = null;
 			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(player);
-			if (offlinePlayer == null) {
+			if (offlinePlayer == null)
 				return null;
+			cache.cached(player);
+			
+			for (FeudalPlayer feudalPlayer : this.players) {
+				if (feudalPlayer.player.compareTo(player) == 0)
+					return feudalPlayer;
 			}
-			else {
-				newPlayer = createPlayer(player);
-			}
+			
+			FeudalPlayer newPlayer = null;
+			newPlayer = createPlayer(player);
 			return newPlayer;
 		}
 		return null;
@@ -51,15 +58,14 @@ public class PlayerManager {
 		this.players.add(player);
 	}
 	
-	public void unregisterPlayer(FeudalPlayer player) {
-		this.players.remove(player);
+	public void unregisterPlayer(UUID player) {
+		this.players.stream().forEach(p -> {if (p.player.compareTo(player) == 0) {this.players.remove(p);}});
 	}
 	
 	public FeudalPlayer createPlayer(UUID uuid) {
 		ConfigurationSection playerSection = Feudal.getInstance().getPlayerData().get().getConfigurationSection(uuid.toString());
-		if (playerSection != null) {
+		if (playerSection != null)
 			return loadPlayer(uuid.toString());
-		}
 		playerSection = Feudal.getInstance().getPlayerData().get().createSection(uuid.toString());
 		FeudalPlayer player = new FeudalPlayer(uuid, "", "", playerSection);
 		registerPlayer(player);
@@ -85,8 +91,7 @@ public class PlayerManager {
 	}
 	
 	public void saveAll() {
-		for (FeudalPlayer player : this.players) {
+		for (FeudalPlayer player : this.players)
 			this.savePlayer(player);
-		}
 	}
 }

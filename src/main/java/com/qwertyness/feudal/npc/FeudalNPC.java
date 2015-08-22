@@ -16,6 +16,7 @@ public class FeudalNPC  {
 
 	public FeudalNPC(NPCProfile profile) {
 		this.uuid = UUID.randomUUID();
+		this.profile = profile;
 	}
 	
 	public FeudalNPC(UUID uuid, NPCProfile profile) {

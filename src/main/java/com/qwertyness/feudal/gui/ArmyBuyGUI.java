@@ -25,6 +25,7 @@ public class ArmyBuyGUI implements FeudalGUI {
 	public ArmyBuyGUI(Player player, Army army) {
 		this.player = player;
 		this.army = army;
+		GUIManager.addGUI(this);
 	}
 
 	public UUID getPlayer() {
@@ -55,6 +56,8 @@ public class ArmyBuyGUI implements FeudalGUI {
 		cancelMeta.setDisplayName(ChatColor.RED + "Cancel");
 		cancel.setItemMeta(cancelMeta);
 		inventory.setItem(inventory.getSize() - 6, cancel);
+		
+		player.openInventory(inventory);
 	}
 
 	public void closeGUI() {
@@ -71,12 +74,16 @@ public class ArmyBuyGUI implements FeudalGUI {
 			closeGUI();
 		}
 		else if (clickedItem.getItemMeta().getDisplayName().contains("Confirm Purchase")) {
+			System.out.println("Confirm Purchase");
 			HashMap<NPCProfile, Integer> boughtNPCs = new HashMap<NPCProfile, Integer>();
 			int cost = 0;
 			for (ItemStack item : inventory.getContents()) {
 				if (item != null) {
 					if (item.getItemMeta().getDisplayName() != null) {
 						NPCProfile profile = NPCProfile.profiles.stream().filter(p -> p.profileDisplayName.equals(item.getItemMeta().getDisplayName())).findFirst().orElse(null);
+						if (profile == null) {
+							continue;
+						}
 						boughtNPCs.put(profile, item.getAmount());
 						cost += profile.cost*item.getAmount();
 					}
@@ -95,8 +102,8 @@ public class ArmyBuyGUI implements FeudalGUI {
 						army.addNPC(new FeudalNPC(profile));
 					}
 				}
+				closeGUI();
 			}
-			
 		}
 		else {
 			clickedItem.setAmount(clickedItem.getAmount()+1);

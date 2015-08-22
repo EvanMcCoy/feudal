@@ -10,7 +10,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.qwertyness.feudal.Configuration;
 import com.qwertyness.feudal.government.Army;
 import com.qwertyness.feudal.npc.FeudalNPC;
 import com.qwertyness.feudal.npc.NPCProfile;
@@ -26,6 +25,7 @@ public class ArmyDeployGUI implements FeudalGUI {
 	public ArmyDeployGUI(Player player, Army army) {
 		this.player = player;
 		this.army = army;
+		GUIManager.addGUI(this);
 	}
 
 	public UUID getPlayer() {
@@ -65,6 +65,8 @@ public class ArmyDeployGUI implements FeudalGUI {
 		cancelMeta.setDisplayName(ChatColor.RED + "Cancel");
 		cancel.setItemMeta(cancelMeta);
 		inventory.setItem(inventory.getSize() - 6, cancel);
+		
+		player.openInventory(inventory);
 	}
 
 	public void closeGUI() {
@@ -87,6 +89,9 @@ public class ArmyDeployGUI implements FeudalGUI {
 				if (item != null) {
 					if (item.getItemMeta().getDisplayName() != null) {
 						NPCProfile profile = NPCProfile.profiles.stream().filter(p -> p.profileDisplayName.equals(item.getItemMeta().getDisplayName())).findFirst().orElse(null);
+						if (profile == null) {
+							continue;
+						}
 						deployNPCs.put(profile, item.getAmount());
 					}
 				}
@@ -104,6 +109,7 @@ public class ArmyDeployGUI implements FeudalGUI {
 					}
 				}
 			}
+			closeGUI();
 		}
 		else {
 			NPCProfile profile = NPCProfile.profiles.stream().filter(p -> p.profileDisplayName.equals(clickedItem.getItemMeta().getDisplayName())).findFirst().orElse(null);
