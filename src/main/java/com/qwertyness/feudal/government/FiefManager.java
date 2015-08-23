@@ -28,7 +28,11 @@ public class FiefManager {
 	public Fief getFief(String kingdomName, final String fiefName) {
 		Kingdom kingdom = this.plugin.getKingdomManager().getKingdom(kingdomName);
 		if (kingdom != null) {
-			return kingdom.getFiefs().stream().filter((Fief fief) -> fief.getName().equals(fiefName)).findFirst().orElse(null);
+			for (Fief fief : kingdom.getFiefs()) {
+				if (fief.getName().equals(fiefName)) {
+					return fief;
+				}
+			}
 		}
 		return null;
 	}

@@ -101,12 +101,12 @@ public class ArmyCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setKnight(Player player, String knight, Kingdom kingdom, Fief fief, boolean royal) {
+	public void setKnight(final Player player, String knight, final Kingdom kingdom, final Fief fief, final boolean royal) {
 		if (!GovernmentPermission.ROYALTY.titleHasPermission(Util.getTitle(player, kingdom, fief), TitlePermission.ARMY_LEVEL)) {
 			player.sendMessage(messages.prefix + messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newKnight = Bukkit.getOfflinePlayer(knight);
+		final OfflinePlayer newKnight = Bukkit.getOfflinePlayer(knight);
 		if (newKnight == null) {
 			player.sendMessage(messages.prefix + messages.notAPlayer);
 			return;
@@ -137,12 +137,12 @@ public class ArmyCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setDame(Player player, String dame, Kingdom kingdom, Fief fief, boolean royal) {
+	public void setDame(final Player player, String dame, final Kingdom kingdom, final Fief fief, final boolean royal) {
 		if (!GovernmentPermission.ROYALTY.titleHasPermission(Util.getTitle(player, kingdom, fief), TitlePermission.ARMY_LEVEL)) {
 			player.sendMessage(messages.prefix + messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newDame = Bukkit.getOfflinePlayer(dame);
+		final OfflinePlayer newDame = Bukkit.getOfflinePlayer(dame);
 		if (newDame == null) {
 			player.sendMessage(messages.prefix + messages.notAPlayer);
 			return;

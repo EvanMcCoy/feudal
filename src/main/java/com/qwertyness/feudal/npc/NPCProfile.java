@@ -107,6 +107,11 @@ public class NPCProfile {
 	}
 	
 	public static NPCProfile getProfile(String npcProfile) {
-		return profiles.stream().filter(p -> p.profileName.equals(npcProfile)).findFirst().orElse(null);
+		for (NPCProfile profile : profiles) {
+			if (profile.profileName.equals(npcProfile)) {
+				return profile;
+			}
+		}
+		return null;
 	}
 }

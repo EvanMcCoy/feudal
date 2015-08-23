@@ -59,7 +59,11 @@ public class PlayerManager {
 	}
 	
 	public void unregisterPlayer(UUID player) {
-		this.players.stream().forEach(p -> {if (p.player.compareTo(player) == 0) {this.players.remove(p);}});
+		for (FeudalPlayer fPlayer : this.players) {
+			if (fPlayer.player.compareTo(player) == 0) {
+				this.players.remove(fPlayer);
+			}
+		}
 	}
 	
 	public FeudalPlayer createPlayer(UUID uuid) {

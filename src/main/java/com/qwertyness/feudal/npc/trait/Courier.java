@@ -29,8 +29,6 @@ public class Courier extends Trait {
 	public void run() {
 		Player target = getTarget();
 		if (target != null) {
-			Location location = getNextTargetLocation(target);
-			
 			NPC courier = this.getNPC();
 			Entity vehicle = this.getNPC().getEntity().getVehicle();
 			if (vehicle != null) {

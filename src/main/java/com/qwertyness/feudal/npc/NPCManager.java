@@ -2,19 +2,12 @@ package com.qwertyness.feudal.npc;
 
 import java.io.File;
 
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-
 import com.qwertyness.feudal.Feudal;
-import com.qwertyness.feudal.government.Army;
 
 import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCDataStore;
 import net.citizensnpcs.api.npc.NPCRegistry;
 import net.citizensnpcs.api.npc.SimpleNPCDataStore;
-import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.util.NBTStorage;
 import net.citizensnpcs.api.util.Storage;
 import net.citizensnpcs.api.util.YamlStorage;

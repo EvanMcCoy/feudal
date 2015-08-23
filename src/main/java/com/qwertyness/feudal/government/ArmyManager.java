@@ -23,8 +23,14 @@ public class ArmyManager {
 	public List<Attack> getAttacks() {
 		return this.attacks;
 	}
-	public Attack[] getAttacks(Chunk chunk) {
-		return (Attack[]) this.attacks.stream().filter(a -> a.compareDisputedLand(Feudal.getInstance().getLandManager().getLand(LandUtil.toString(chunk)))).toArray();
+	public List<Attack> getAttacks(Chunk chunk) {
+		List<Attack> attacks = new ArrayList<Attack>();
+		for (Attack attack : this.attacks) {
+			if (attack.compareDisputedLand(Feudal.getInstance().getLandManager().getLand(LandUtil.toString(chunk)))) {
+				attacks.add(attack);
+			}
+		}
+		return attacks;
 	}
 	public void addAttack(Attack attack) {
 		this.attacks.add(attack);

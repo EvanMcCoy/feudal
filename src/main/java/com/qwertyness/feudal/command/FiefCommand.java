@@ -160,9 +160,9 @@ public class FiefCommand implements CommandExecutor {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void setCounterpart(Player player, String counterpart) {
-		Kingdom kingdom = Util.getKingdom(player);	
-		Fief fief = Util.getFief(player);
+	public void setCounterpart(final Player player, String counterpart) {
+		final Kingdom kingdom = Util.getKingdom(player);	
+		final Fief fief = Util.getFief(player);
 		if (fief == null || kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAFief);
 			return;
@@ -177,7 +177,7 @@ public class FiefCommand implements CommandExecutor {
 			return;
 		}
 		
-		OfflinePlayer newCounterpart = Bukkit.getOfflinePlayer(counterpart);
+		final OfflinePlayer newCounterpart = Bukkit.getOfflinePlayer(counterpart);
 		if (newCounterpart == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -231,9 +231,9 @@ public class FiefCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void addPeasent(Player player, String peasent) {
-		Kingdom kingdom = Util.getKingdom(player);	
-		Fief fief = Util.getFief(player);
+	public void addPeasent(final Player player, String peasent) {
+		final Kingdom kingdom = Util.getKingdom(player);	
+		final Fief fief = Util.getFief(player);
 		if (fief == null || kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAFief);
 			return;
@@ -242,7 +242,7 @@ public class FiefCommand implements CommandExecutor {
 			player.sendMessage(this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newPeasent = Bukkit.getOfflinePlayer(peasent);
+		final OfflinePlayer newPeasent = Bukkit.getOfflinePlayer(peasent);
 		if (newPeasent == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -303,9 +303,9 @@ public class FiefCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void addSerf(Player player, String serf) {
-		Kingdom kingdom = Util.getKingdom(player);	
-		Fief fief = Util.getFief(player);
+	public void addSerf(final Player player, String serf) {
+		final Kingdom kingdom = Util.getKingdom(player);	
+		final Fief fief = Util.getFief(player);
 		if (fief == null || kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAFief);
 			return;
@@ -314,7 +314,7 @@ public class FiefCommand implements CommandExecutor {
 			player.sendMessage(this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newSerf = Bukkit.getOfflinePlayer(serf);
+		final OfflinePlayer newSerf = Bukkit.getOfflinePlayer(serf);
 		if (newSerf == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;

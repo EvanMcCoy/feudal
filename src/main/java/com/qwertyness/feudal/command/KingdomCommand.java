@@ -292,8 +292,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	//Disunite
-	public void disunite(Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void disunite(final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -365,8 +365,8 @@ public class KingdomCommand implements CommandExecutor {
 	
 	//Set fief baron/baroness
 	@SuppressWarnings("deprecation")
-	public void setFiefBaron(String fiefName, String baron, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setFiefBaron(String fiefName, String baron, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -375,7 +375,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newBaron = Bukkit.getOfflinePlayer(baron);
+		final OfflinePlayer newBaron = Bukkit.getOfflinePlayer(baron);
 		if (newBaron == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -384,7 +384,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.notAFief);
 			return;
 		}
-		Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
+		final Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
 		
 		this.plugin.getMailManager().addMail(new CommandMail("fief", new String[] {"acceptposition", kingdom.getName()}, newBaron, 
 				Arrays.asList(messages.prefix + "You have been invited as the Baron of " + 
@@ -412,8 +412,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setFiefBaroness(String fiefName, String baroness, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setFiefBaroness(String fiefName, String baroness, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -422,7 +422,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer newBaroness = Bukkit.getOfflinePlayer(baroness);
+		final OfflinePlayer newBaroness = Bukkit.getOfflinePlayer(baroness);
 		if (newBaroness == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -431,7 +431,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.notAFief);
 			return;
 		}
-		Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
+		final Fief fief = this.plugin.getFiefManager().getFief(kingdom.getName(), fiefName);
 
 		this.plugin.getMailManager().addMail(new CommandMail("fief", new String[] {"acceptposition", kingdom.getName()}, newBaroness,
 				Arrays.asList(messages.prefix + "You have been invited as the Baroness of " + 
@@ -531,8 +531,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setDuke(String dukeName, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setDuke(String dukeName, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -541,7 +541,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer duke = Bukkit.getOfflinePlayer(dukeName);
+		final OfflinePlayer duke = Bukkit.getOfflinePlayer(dukeName);
 		if (duke == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -573,8 +573,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setDuchess(String duchessName, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setDuchess(String duchessName, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -583,7 +583,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer duchess = Bukkit.getOfflinePlayer(duchessName);
+		final OfflinePlayer duchess = Bukkit.getOfflinePlayer(duchessName);
 		if (duchess == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -614,8 +614,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setCounterpart(String counterpartName, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setCounterpart(String counterpartName, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -636,7 +636,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.alreadyACounterpart);
 			return;
 		}
-		OfflinePlayer counterpart = Bukkit.getOfflinePlayer(counterpartName);
+		final OfflinePlayer counterpart = Bukkit.getOfflinePlayer(counterpartName);
 		if (counterpart == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -695,8 +695,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setPrince(String princeName, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setPrince(String princeName, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -705,7 +705,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer prince = Bukkit.getOfflinePlayer(princeName);
+		final OfflinePlayer prince = Bukkit.getOfflinePlayer(princeName);
 		if (prince == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -737,8 +737,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void setPrincess(String princessName, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void setPrincess(String princessName, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -747,7 +747,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer princess = Bukkit.getOfflinePlayer(princessName);
+		final OfflinePlayer princess = Bukkit.getOfflinePlayer(princessName);
 		if (princess == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -794,8 +794,8 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void addEarl(String earlName, Player player) {
-		Kingdom kingdom = Util.getKingdom(player);
+	public void addEarl(String earlName, final Player player) {
+		final Kingdom kingdom = Util.getKingdom(player);
 		if (kingdom == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notInAKingdom);
 			return;
@@ -804,7 +804,7 @@ public class KingdomCommand implements CommandExecutor {
 			player.sendMessage(this.messages.prefix + this.messages.insufficientPermission);
 			return;
 		}
-		OfflinePlayer earl = Bukkit.getOfflinePlayer(earlName);
+		final OfflinePlayer earl = Bukkit.getOfflinePlayer(earlName);
 		if (earl == null) {
 			player.sendMessage(this.messages.prefix + this.messages.notAPlayer);
 			return;
@@ -1041,6 +1041,10 @@ public class KingdomCommand implements CommandExecutor {
 	}
 	
 	public void broadcaseKingdomMessage(String message, Kingdom kingdom) {
-		Util.getKingdomMembers(kingdom).forEach((UUID p) -> {if (Bukkit.getPlayer(p) != null) Bukkit.getPlayer(p).sendMessage(message);});
+		for (UUID uuid : Util.getKingdomMembers(kingdom)) {
+			if (Bukkit.getPlayer(uuid) != null) {
+				Bukkit.getPlayer(uuid).sendMessage(message);
+			}
+		}
 	}
 }

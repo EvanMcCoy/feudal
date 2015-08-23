@@ -24,6 +24,7 @@ public class MessageData {
 		this.file = file;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void reload() {
 	    if (file == null) {
 	    	file = new File(plugin.getDataFolder(), "messages.yml");

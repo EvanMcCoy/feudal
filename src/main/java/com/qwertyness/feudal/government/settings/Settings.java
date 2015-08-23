@@ -145,7 +145,12 @@ public class Settings {
 		}
 		
 		public boolean titleHasPermission(String title, int level) {
-			return titles.stream().anyMatch((TitlePermission t) -> t.getTitle().equalsIgnoreCase(title) && t.hasPermission(this, level));
+			for (TitlePermission titlePermission : titles) {
+				if (titlePermission.getTitle().equalsIgnoreCase(title) && titlePermission.hasPermission(this, level)) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		public boolean checkPermission(GovernmentPermission compare) {

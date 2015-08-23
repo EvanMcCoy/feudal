@@ -80,7 +80,12 @@ public class ArmyBuyGUI implements FeudalGUI {
 			for (ItemStack item : inventory.getContents()) {
 				if (item != null) {
 					if (item.getItemMeta().getDisplayName() != null) {
-						NPCProfile profile = NPCProfile.profiles.stream().filter(p -> p.profileDisplayName.equals(item.getItemMeta().getDisplayName())).findFirst().orElse(null);
+						NPCProfile profile = null;
+						for (NPCProfile testProfile : NPCProfile.profiles) {
+							if (testProfile.profileDisplayName.equals(item.getItemMeta().getDisplayName())) {
+								profile = testProfile;
+							}
+						}
 						if (profile == null) {
 							continue;
 						}

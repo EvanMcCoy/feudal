@@ -20,11 +20,18 @@ public class KingdomManager {
 	public KingdomManager() {
 		this.plugin = Feudal.getInstance();
 		this.kingdoms = new ArrayList<Kingdom>();
-		this.plugin.getKingdomData().get().getKeys(false).forEach((String k) -> this.registerKingdom(this.loadKingdom(k)));
+		for (String key : this.plugin.getKingdomData().get().getKeys(false)) {
+			this.registerKingdom(this.loadKingdom(key));
+		}
 	}
 	
 	public Kingdom getKingdom(String kingdomName) {
-		return this.kingdoms.stream().filter((Kingdom kingdom) -> kingdom.getName().equals(kingdomName)).findFirst().orElse(null);
+		for (Kingdom kingdom : this.kingdoms) {
+			if (kingdom.getName().equals(kingdomName)) {
+				return kingdom;
+			}
+		}
+		return null;
 	}
 	
 	public boolean isKingdom(String kingdomName) {
@@ -61,7 +68,9 @@ public class KingdomManager {
 		Army army = this.plugin.getArmyManager().loadArmy(kingdomSection);
 		Church church = this.plugin.getChurchManager().loadChurch(kingdomSection);
 		List<Fief> fiefs = new ArrayList<Fief>();
-		kingdomSection.getStringList("fiefs").forEach((String f) -> fiefs.add(this.plugin.getFiefManager().loadFief(kingdomSection.getName(), f)));
+		for (String fiefName : kingdomSection.getStringList("fiefs")) {
+			fiefs.add(this.plugin.getFiefManager().loadFief(kingdomSection.getName(), fiefName));
+		}
 		Flag flag = new Flag(kingdomSection.getConfigurationSection("flag"));
 		Settings settings = new Settings(kingdomSection.getConfigurationSection("settings"));
 		

@@ -41,7 +41,11 @@ public class LandManager {
 	}
 	
 	public void unregisterLand(Land land) {
-		this.land.stream().forEach(l -> {if (l.getCoordinates().equals(land.getCoordinates())) {this.land.remove(l);}});
+		for (Land testLand : this.land) {
+			if (land.getCoordinates().equals(testLand.getCoordinates())) {
+				this.land.remove(testLand);
+			}
+		}
 	}
 	
 	public Land getLand(String coordinates) {
