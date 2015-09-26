@@ -31,8 +31,8 @@ public class Configuration {
 	public String defaultTitle;
 	public ConfigurationSection titleColors;
 	
-	public int playerCacheInterval;
-	public int landCacheInterval;
+	public int playerCacheInterval = 300;
+	public int landCacheInterval = 300;
 	public Messages messages;
 	
 	public Configuration(Feudal plugin) {
@@ -106,7 +106,7 @@ public class Configuration {
 				alreadyAFortress, notAFortress, addFortress, removeFortress, landAlreadyClaimed, noFortressInRange, claimLand, cannotUnclaimCapital, 
 				cannotUnclaimFortress, unclaimLand, autoClaimOn, autoClaimOff, cannotBuild;
 		
-		public String insufficientMoney, insufficientBankMoney, insufficientItems, insufficientBankItems, depositMoney, withdrawMoney, depositItems, withdrawItems;
+		public String economyDisabled, insufficientMoney, insufficientBankMoney, insufficientItems, insufficientBankItems, depositMoney, withdrawMoney, depositItems, withdrawItems;
 		
 		public Messages(Feudal plugin) {
 			this.plugin = plugin;
@@ -212,6 +212,7 @@ public class Configuration {
 			this.autoClaimOff = color(messages.getString("autoClaimOff"));
 			this.cannotBuild = color(messages.getString("cannotBuild"));
 			
+			this.economyDisabled = color(messages.getString("economyDisabled"));
 			this.insufficientMoney = color(messages.getString("insufficientMoney"));
 			this.insufficientBankMoney = color(messages.getString("insufficientBankMoney"));
 			this.insufficientItems = color(messages.getString("insufficientItems"));

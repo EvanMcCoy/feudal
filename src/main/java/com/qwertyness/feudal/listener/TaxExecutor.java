@@ -26,6 +26,9 @@ public class TaxExecutor extends BukkitRunnable implements Listener  {
 	}
 
 	public static void runTaxes() {
+		if (!Configuration.useEconomy) {
+			return;
+		}
 		for(Kingdom kingdom : plugin.getKingdomManager().kingdoms) {
 			for (Fief fief : kingdom.getFiefs()) {
 				for (UUID peasent : fief.getPeasents()) {

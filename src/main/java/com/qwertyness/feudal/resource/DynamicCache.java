@@ -17,7 +17,7 @@ public abstract class DynamicCache<T> {
 	private BukkitTask loop;
 	
 	/**
-	 * @param cacheInterval Interval at which to stage decaching operations, in Minecraft ticks
+	 * @param cacheInterval Interval at which to stage decaching operations, in seconds
 	 */
 	public DynamicCache(int cacheInterval) {
 		cacheHandler = new HashMap<T, Boolean>();
@@ -55,7 +55,7 @@ public abstract class DynamicCache<T> {
 			public void run() {
 				stepCache();
 			}
-		}.runTaskTimer(Feudal.getInstance(), 0, cacheInterval);
+		}.runTaskTimer(Feudal.getInstance(), 0, cacheInterval*20);
 	}
 	
 	public void cancel() {

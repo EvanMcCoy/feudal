@@ -10,6 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.trait.Trait;
 import net.md_5.bungee.api.ChatColor;
 
@@ -68,6 +69,15 @@ public class NPCProfile {
 		profile.npcName = ChatColor.translateAlternateColorCodes('&', section.getString("name"));
 		
 		profile.cost = section.getInt("cost");
+		
+		profile.npcTraits = new ArrayList<Trait>();
+		for (String traitName : section.getStringList("traits")) {
+			Trait trait = CitizensAPI.getTraitFactory().getTrait(traitName + "trait");
+			if (trait != null) {
+				profile.npcTraits.add(trait);
+			}
+		}
+		
 		return profile;
 	}
 	

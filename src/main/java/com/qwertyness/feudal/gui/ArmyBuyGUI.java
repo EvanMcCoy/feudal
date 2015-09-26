@@ -34,15 +34,16 @@ public class ArmyBuyGUI implements FeudalGUI {
 
 	public void openGUI() {
 		inventory = Bukkit.createInventory(this.player, (int)Math.ceil(NPCProfile.profiles.size()/9)*9+9, "Buy/Sell Soldiers");
-		
-		for (NPCProfile profile : NPCProfile.profiles) {
+		System.out.println(NPCProfile.profiles.size() + ":" + (Math.ceil(NPCProfile.profiles.size()/9)*9+9));
+		for (int i = 0;i < NPCProfile.profiles.size();i++) {
+			NPCProfile profile = NPCProfile.profiles.get(i);
 			ItemStack icon = new ItemStack(profile.iconMaterial, 0);
 			ItemMeta iconMeta = icon.getItemMeta();
 			iconMeta.setDisplayName(profile.profileDisplayName);
 			iconMeta.setLore(profile.profileLore);
 			iconMeta.getLore().add(ChatColor.GREEN + "Cost: " + ChatColor.GOLD + profile.cost);
 			icon.setItemMeta(iconMeta);
-			inventory.setItem(NPCProfile.profiles.indexOf(profile), icon);
+			inventory.setItem(i, icon);
 		}
 		
 		ItemStack confirm = new ItemStack(Material.EMERALD_BLOCK);

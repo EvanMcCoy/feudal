@@ -123,6 +123,7 @@ autoClaimOff: "You have stopped automatically claiming land."
 cannotBuild: "&cYou cannot build on this kingdom's land."
 
 #Bank messages
+economyDisabled: "&cThe server's economy is diabled.  Never will you be rich."
 insufficientMoney: "&cYou do not have enough money to deposit that amount."
 insufficientBankMoney: "&cThe bank does not have enough money to fufill that request."
 insufficientItems: "&cYou do not have enough items to deposit that."

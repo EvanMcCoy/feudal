@@ -41,7 +41,7 @@ public class LandManager {
 	}
 	
 	public void unregisterLand(Land land) {
-		for (Land testLand : this.land) {
+		for (Land testLand : new ArrayList<Land>(this.land)) {
 			if (land.getCoordinates().equals(testLand.getCoordinates())) {
 				this.land.remove(testLand);
 			}

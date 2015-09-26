@@ -29,6 +29,10 @@ public class BankCommand {
 	}
 
 	public static void bankCommand(Player player, String[] args, String commandOrigin) {
+		if (!Configuration.useEconomy) {
+			player.sendMessage(Configuration.instance.messages.economyDisabled);
+			return;
+		}
 		FeudalPlayer fPlayer = plugin.getPlayerManager().getPlayer(player.getUniqueId());
 		Kingdom kingdom = plugin.getKingdomManager().getKingdom(fPlayer.kingdom);
 		Fief fief = plugin.getFiefManager().getFief(fPlayer.kingdom, fPlayer.fief);

@@ -25,10 +25,13 @@ public class ChunkListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (LandUtil.toString(event.getFrom().getChunk()).equals(LandUtil.toString(event.getTo().getChunk()))) {
+		/*if (LandUtil.toString(event.getFrom().getChunk()).equals(LandUtil.toString(event.getTo().getChunk()))) {
+			return;
+		}*/
+		if (event.getFrom().getChunk().equals(event.getTo().getChunk())) {
 			return;
 		}
-		
+		System.out.println("UpdateLocation");
 		updateLocation(event.getPlayer(), event);
 		attemptClaim(event.getPlayer());
 	}
